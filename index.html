@@ -554,6 +554,74 @@
             line-height: 1.7;
         }
 
+        /* ── Difference Section ─────────────────── */
+        .difference {
+            padding: 72px 0 80px;
+        }
+
+        .difference-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .difference-content h2 {
+            font-size: clamp(26px, 4vw, 36px);
+            margin-bottom: 12px;
+        }
+
+        .difference-intro {
+            font-size: clamp(15px, 1.8vw, 17px);
+            color: var(--text-muted);
+            line-height: 1.8;
+            max-width: 560px;
+            margin: 0 auto 40px;
+        }
+
+        .difference-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .diff-card {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 26px;
+            border: 1px solid var(--card-border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .diff-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(61, 51, 42, 0.06);
+        }
+
+        .diff-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .diff-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .diff-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .difference-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* ── Newsletter Section ─────────────────── */
         .newsletter {
             text-align: center;
@@ -973,6 +1041,40 @@
                     <div class="feature-icon">🧭</div>
                     <h3>Wellbeing Assessment</h3>
                     <p>A gentle check-in across six areas of your life. Understand what's weighing on you and get personalised next steps.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Not Another Headspace -->
+    <section class="difference" id="difference">
+        <div class="container">
+            <div class="difference-content fade-in">
+                <div class="section-label">Why not just use Headspace?</div>
+                <h2>Built different, on purpose</h2>
+                <p class="difference-intro">There's nothing wrong with Headspace or Calm — they've helped millions of people. But they weren't built for you. Here's what makes Clarus different.</p>
+
+                <div class="difference-grid">
+                    <div class="diff-card fade-in">
+                        <div class="diff-icon">🇮🇪</div>
+                        <h3>Irish, not American</h3>
+                        <p>The tone, the language, the references — it's all built with Irish people in mind. No "manifesting your best self." Just practical, grounded support that speaks the way you do.</p>
+                    </div>
+                    <div class="diff-card fade-in">
+                        <div class="diff-icon">🔓</div>
+                        <h3>No paywall on your wellbeing</h3>
+                        <p>Headspace and Calm lock most features behind a subscription. Clarus gives you the tools upfront — breathing, mood tracking, CBT, the lot. Your mental health shouldn't depend on your budget.</p>
+                    </div>
+                    <div class="diff-card fade-in">
+                        <div class="diff-icon">🤫</div>
+                        <h3>Private by default</h3>
+                        <p>No accounts, no social features, no data harvesting. Everything stays on your phone. We don't need to know your name to help you breathe.</p>
+                    </div>
+                    <div class="diff-card fade-in">
+                        <div class="diff-icon">💬</div>
+                        <h3>An AI that listens, not lectures</h3>
+                        <p>Most apps give you scripted meditations. Clarus has a conversational AI companion for the moments when you need to think out loud — not follow a script.</p>
+                    </div>
                 </div>
             </div>
         </div>
