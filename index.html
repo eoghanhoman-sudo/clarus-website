@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarus — Mental Health, Made for Ireland</title>
+    <meta name="description" content="Clarus is an Irish-built mental health app. Guided breathing, ambient meditation, mood tracking, CBT tools, and an AI companion — designed with Irish people in mind.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ─────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #F5EDD9;
+            --bg-deep: #EDE4CC;
+            --card: #FFFEF7;
+            --card-border: rgba(212, 148, 43, 0.12);
+            --accent: #D4942B;
+            --accent-soft: rgba(212, 148, 43, 0.08);
+            --text: #3D332A;
+            --text-muted: #8C7D6B;
+            --text-dim: #AEA38F;
+            --surface: #F0E7D0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Layout ─────────────────────────────── */
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        section { padding: 80px 0; }
+
+        /* ── Typography ─────────────────────────── */
+        h1, h2, h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
+
+        .section-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            opacity: 0.7;
+            margin-bottom: 16px;
+        }
+
+        /* ── Navigation ─────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            background: rgba(245, 237, 217, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        .nav-cta {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            text-decoration: none;
+            padding: 8px 20px;
+            border: 1.5px solid var(--accent);
+            border-radius: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* ── Hero ────────────────────────────────── */
+        .hero {
+            padding: 160px 0 80px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 56px);
+            line-height: 1.15;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero p {
+            font-size: clamp(16px, 2vw, 19px);
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(212, 148, 43, 0.25); }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--card);
+            border: 1.5px solid var(--card-border);
+            padding: 14px 32px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ── Phone Mockups ──────────────────────── */
+        .mockup-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 64px;
+            perspective: 1200px;
+        }
+
+        .phone-frame {
+            width: 220px;
+            height: 440px;
+            background: var(--card);
+            border-radius: 32px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 60px rgba(61, 51, 42, 0.08), 0 4px 16px rgba(61, 51, 42, 0.04);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.4s ease;
+        }
+
+        .phone-frame:nth-child(1) { transform: rotate(-4deg) translateY(16px); }
+        .phone-frame:nth-child(2) { transform: translateY(-8px); z-index: 2; }
+        .phone-frame:nth-child(3) { transform: rotate(4deg) translateY(16px); }
+
+        .phone-frame:hover { transform: translateY(-12px) !important; }
+
+        .phone-notch {
+            width: 100px;
+            height: 24px;
+            background: var(--bg);
+            border-radius: 0 0 16px 16px;
+            margin: 0 auto;
+        }
+
+        .phone-screen {
+            padding: 16px;
+            height: calc(100% - 24px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Mockup content styles */
+        .mock-greeting {
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .mock-subtitle {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .mock-card {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mock-card-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .mock-card-text {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .mock-card-sub {
+            font-size: 7.5px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .mock-explore-label {
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin: 10px 0 6px;
+        }
+
+        .mock-explore-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .mock-explore-item {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .mock-explore-item span {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .mock-explore-item small {
+            font-size: 7px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Breathing mockup */
+        .mock-breathing-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            opacity: 0.3;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: breathe 5s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.85); opacity: 0.3; }
+            50% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .mock-breathing-ring .inner {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mock-breathing-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .mock-phase-label {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        .mock-timer {
+            text-align: center;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--text-dim);
+            margin-top: 6px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Chat mockup */
+        .mock-chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 8px;
+            padding-bottom: 8px;
+        }
+
+        .mock-bubble {
+            max-width: 80%;
+            padding: 8px 11px;
+            border-radius: 12px;
+            font-size: 8.5px;
+            line-height: 1.5;
+        }
+
+        .mock-bubble.user {
+            background: var(--accent);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .mock-bubble.ai {
+            background: var(--surface);
+            color: var(--text);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .mock-chat-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-top: 4px;
+        }
+
+        .mock-chat-input span {
+            font-size: 8px;
+            color: var(--text-dim);
+        }
+
+        .mock-chat-input .send {
+            width: 22px;
+            height: 22px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+        }
+
+        .mock-chat-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .mock-chat-header .avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-soft);
+            border-radius: 50%;
+            margin: 8px auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .mock-chat-header h4 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .mock-chat-header p {
+            font-size: 7.5px;
+            color: var(--text-muted);
+        }
+
+        /* ── Why Ireland Section ─────────────────── */
+        .why-ireland {
+            padding: 64px 0 72px;
+        }
+
+        .ireland-content {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .ireland-content h2 {
+            font-size: clamp(26px, 4vw, 36px);
+            margin-bottom: 16px;
+        }
+
+        .ireland-content p {
+            font-size: clamp(15px, 1.8vw, 17px);
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ── Features Section ───────────────────── */
+        .features {
+            background: var(--bg-deep);
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .features-header h2 {
+            font-size: clamp(28px, 4vw, 40px);
+            margin-bottom: 12px;
+        }
+
+        .features-header p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid var(--card-border);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(61, 51, 42, 0.06);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* ── Newsletter Section ─────────────────── */
+        .newsletter {
+            text-align: center;
+        }
+
+        .newsletter-box {
+            max-width: 520px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 24px;
+            padding: 48px 40px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 12px 40px rgba(61, 51, 42, 0.06);
+        }
+
+        .newsletter-box h2 {
+            font-size: clamp(24px, 3.5vw, 32px);
+            margin-bottom: 10px;
+        }
+
+        .newsletter-box p {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .newsletter-form input[type="email"] {
+            flex: 1;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            padding: 14px 18px;
+            border: 1.5px solid var(--card-border);
+            border-radius: 12px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .newsletter-form input[type="email"]:focus {
+            border-color: var(--accent);
+        }
+
+        .newsletter-form input[type="email"]::placeholder {
+            color: var(--text-dim);
+        }
+
+        .newsletter-form button {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .newsletter-form button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 148, 43, 0.3);
+        }
+
+        .newsletter-form button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .newsletter-note {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 14px;
+        }
+
+        .newsletter-success {
+            display: none;
+            padding: 16px;
+            background: rgba(212, 148, 43, 0.08);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        /* ── App Store Coming Soon ──────────────── */
+        .app-store-section {
+            background: var(--bg-deep);
+            text-align: center;
+        }
+
+        .app-store-section h2 {
+            font-size: clamp(24px, 3.5vw, 36px);
+            margin-bottom: 12px;
+        }
+
+        .app-store-section p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 440px;
+            margin: 0 auto 32px;
+        }
+
+        .app-store-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            opacity: 0.85;
+        }
+
+        .app-store-badge:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .app-store-badge svg { width: 28px; height: 28px; }
+
+        .app-store-badge .badge-text {
+            text-align: left;
+        }
+
+        .app-store-badge .badge-text small {
+            display: block;
+            font-size: 10px;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        .app-store-badge .badge-text span {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* ── Footer ─────────────────────────────── */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid var(--card-border);
+        }
+
+        footer p {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        footer a:hover { color: var(--accent); }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        /* ── Animations ─────────────────────────── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Responsive ─────────────────────────── */
+        @media (max-width: 768px) {
+            section { padding: 60px 0; }
+
+            .hero { padding: 120px 0 60px; }
+
+            .mockup-row {
+                gap: 12px;
+                margin-top: 48px;
+            }
+
+            .phone-frame {
+                width: 160px;
+                height: 320px;
+                border-radius: 24px;
+            }
+
+            .phone-notch { width: 72px; height: 18px; border-radius: 0 0 12px 12px; }
+            .phone-screen { padding: 10px; }
+            .mock-greeting { font-size: 12px; }
+            .mock-subtitle { font-size: 7px; }
+            .mock-card { padding: 7px; gap: 6px; }
+            .mock-card-icon { width: 20px; height: 20px; font-size: 9px; }
+            .mock-card-text { font-size: 7.5px; }
+            .mock-card-sub { font-size: 6px; }
+            .mock-breathing-ring { width: 80px; height: 80px; margin: 12px auto; }
+            .mock-breathing-ring .inner { width: 60px; height: 60px; }
+            .mock-breathing-text { font-size: 10px; }
+            .mock-phase-label { font-size: 8px; }
+            .mock-timer { font-size: 18px; }
+            .mock-bubble { font-size: 7px; }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-box {
+                padding: 32px 24px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .phone-frame:nth-child(1),
+            .phone-frame:nth-child(3) {
+                display: none;
+            }
+
+            .phone-frame:nth-child(2) {
+                width: 220px;
+                height: 440px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="#" class="nav-logo">Clarus<span>.</span></a>
+            <a href="#notify" class="nav-cta">Get notified</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Made in Ireland · Coming soon to iOS
+            </div>
+
+            <h1>Mental health,<br>made for <em>Ireland</em></h1>
+
+            <p>Clarus is an Irish-built app for looking after your head. Guided breathing, ambient meditation, mood tracking, CBT tools, and an AI companion — designed with how we actually talk and think about mental health here.</p>
+
+            <div class="hero-actions">
+                <a href="#notify" class="btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    Notify me at launch
+                </a>
+                <a href="#features" class="btn-secondary">See what's inside</a>
+            </div>
+
+            <!-- Phone Mockups -->
+            <div class="mockup-row">
+                <!-- Mockup 1: Home Screen -->
+                <div class="phone-frame fade-in">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="mock-greeting">Good morning</div>
+                        <div class="mock-subtitle">A fresh start. What does today need from you?</div>
+
+                        <div class="mock-card">
+                            <div class="mock-card-icon">🌬️</div>
+                            <div>
+                                <div class="mock-card-text">Take a breath</div>
+                                <div class="mock-card-sub">Guided breathing with ambient sound</div>
+                            </div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-icon">🎧</div>
+                            <div>
+                                <div class="mock-card-text">Sounds & meditation</div>
+                                <div class="mock-card-sub">Timed sessions with calming sounds</div>
+                            </div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-icon">😊</div>
+                            <div>
+                                <div class="mock-card-text">Check in</div>
+                                <div class="mock-card-sub">How are you feeling right now?</div>
+                            </div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-icon">💬</div>
+                            <div>
+                                <div class="mock-card-text">Talk it through</div>
+                                <div class="mock-card-sub">AI companion for thinking out loud</div>
+                            </div>
+                        </div>
+
+                        <div class="mock-explore-label">Explore</div>
+                        <div class="mock-explore-grid">
+                            <div class="mock-explore-item"><span>🧠</span><small>CBT</small></div>
+                            <div class="mock-explore-item"><span>👁️</span><small>Signs</small></div>
+                            <div class="mock-explore-item"><span>❤️</span><small>Support</small></div>
+                            <div class="mock-explore-item"><span>✅</span><small>Assess</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mockup 2: Breathing Exercise -->
+                <div class="phone-frame fade-in">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div class="mock-breathing-ring">
+                            <div class="inner">
+                                <span class="mock-breathing-text">Breathe in</span>
+                            </div>
+                        </div>
+                        <div class="mock-phase-label">Inhale slowly through your nose</div>
+                        <div class="mock-timer">3:42</div>
+                    </div>
+                </div>
+
+                <!-- Mockup 3: Chat -->
+                <div class="phone-frame fade-in">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="mock-chat-header">
+                            <div class="avatar">🤝</div>
+                            <h4>Clarus</h4>
+                            <p>Your mental health companion</p>
+                        </div>
+                        <div class="mock-chat-area">
+                            <div class="mock-bubble ai">Hi there. I'm here whenever you need to talk. What's on your mind today?</div>
+                            <div class="mock-bubble user">I've been feeling overwhelmed with work lately</div>
+                            <div class="mock-bubble ai">That sounds really tough. When work piles up it can feel like there's no space to breathe. Would you like to explore what's behind that feeling?</div>
+                        </div>
+                        <div class="mock-chat-input">
+                            <span>Say what's on your mind...</span>
+                            <div class="send">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Ireland -->
+    <section class="why-ireland" id="why">
+        <div class="container">
+            <div class="ireland-content fade-in">
+                <div class="section-label">Why this matters here</div>
+                <h2>We're not great at asking for help</h2>
+                <p>Ireland has come a long way with mental health — but there's still a gap between "I'm grand" and actually getting support. Clarus is built to sit in that gap. It's private, it's on your phone, and it doesn't need you to be in crisis to be useful. Just a quiet place to check in with yourself, whenever you need it.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="features-header fade-in">
+                <div class="section-label">What's inside</div>
+                <h2>Everything you need, nothing you don't</h2>
+                <p>Built around the things that actually help — no noise, no guilt trips, no American self-help fluff. Just honest, practical tools.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🌬️</div>
+                    <h3>Guided Breathing</h3>
+                    <p>Follow gentle inhale-hold-exhale patterns with ambient sound. Choose from rain, ocean, storm, brook, fire, or night crickets.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🎧</div>
+                    <h3>Sounds & Meditation</h3>
+                    <p>Timed meditation sessions from 2 to 30 minutes. Pick an ambient soundscape and let your mind settle.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3>Mood Tracking</h3>
+                    <p>Log how you feel with a simple check-in. Track patterns over time and notice what shifts your mood.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🧠</div>
+                    <h3>CBT Tools</h3>
+                    <p>Structured cognitive behavioural therapy modules. Learn techniques like thought records, behavioural activation, and more — at your own pace.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💬</div>
+                    <h3>AI Companion</h3>
+                    <p>Talk it through with a kind, thoughtful AI. Not a therapist — just a calm space to think out loud, without having to explain yourself.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🧭</div>
+                    <h3>Wellbeing Assessment</h3>
+                    <p>A gentle check-in across six areas of your life. Understand what's weighing on you and get personalised next steps.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter" id="notify">
+        <div class="container">
+            <div class="newsletter-box fade-in">
+                <div class="section-label">Stay in the loop</div>
+                <h2>Be the first to know</h2>
+                <p>Clarus is coming soon to the App Store. Drop your email and we'll let you know the moment it lands.</p>
+
+                <form class="newsletter-form" id="signup-form">
+                    <input type="email" id="email-input" placeholder="your@email.com" required>
+                    <button type="submit" id="submit-btn">Notify me</button>
+                </form>
+
+                <div class="newsletter-success" id="success-msg">
+                    You're on the list. We'll be in touch soon.
+                </div>
+
+                <p class="newsletter-note">No spam, ever. Just one email when we launch.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Store Coming Soon -->
+    <section class="app-store-section">
+        <div class="container fade-in">
+            <div class="section-label">Coming soon</div>
+            <h2>Built in Ireland, for iOS</h2>
+            <p>Clarus is being designed and built right here in Ireland. We're putting the finishing touches on something we think you'll love.</p>
+
+            <div class="app-store-badge" style="cursor: default;">
+                <svg viewBox="0 0 24 24" fill="white">
+                    <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.72 12.56 5.72C13.34 5.72 14.83 4.62 16.38 4.8C17.04 4.83 18.87 5.08 20.01 6.78C19.9 6.84 17.62 8.11 17.64 10.89C17.67 14.17 20.53 15.27 20.56 15.28C20.53 15.37 20.09 16.9 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
+                </svg>
+                <div class="badge-text">
+                    <small>Coming soon on the</small>
+                    <span>App Store</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="mailto:hello@clarusapp.com">Contact</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+            </div>
+            <p>&copy; 2026 Clarus. Built with care in Ireland.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ── Scroll Animations ──────────────────────
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    // Stagger delay for siblings
+                    const siblings = entry.target.parentElement.querySelectorAll('.fade-in');
+                    const index = Array.from(siblings).indexOf(entry.target);
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // ── Newsletter Signup (Buttondown) ─────────
+        const form = document.getElementById('signup-form');
+        const emailInput = document.getElementById('email-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMsg = document.getElementById('success-msg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            if (!email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch('https://api.buttondown.email/v1/subscribers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token c87ef385-7422-4f04-814e-ea88c21cfd1e'
+                    },
+                    body: JSON.stringify({
+                        email_address: email,
+                        tags: ['website-launch']
+                    })
+                });
+
+                if (res.ok || res.status === 201) {
+                    form.style.display = 'none';
+                    successMsg.style.display = 'block';
+                    document.querySelector('.newsletter-note').style.display = 'none';
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    if (res.status === 409 || (data.email_address && data.email_address[0]?.includes('already'))) {
+                        form.style.display = 'none';
+                        successMsg.textContent = "You're already on the list! We'll be in touch.";
+                        successMsg.style.display = 'block';
+                        document.querySelector('.newsletter-note').style.display = 'none';
+                    } else {
+                        submitBtn.textContent = 'Try again';
+                        submitBtn.disabled = false;
+                    }
+                }
+            } catch (err) {
+                // Fallback: open Buttondown subscribe page
+                window.open(`https://buttondown.email/clarus?email=${encodeURIComponent(email)}`, '_blank');
+                submitBtn.textContent = 'Notify me';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // ── Smooth scroll for anchor links ─────────
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
