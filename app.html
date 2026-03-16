@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#F5EDD9">
+    <title>Clarus</title>
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #F5EDD9;
+            --bg-deep: #EDE4CC;
+            --card: #FFFEF7;
+            --card-border: rgba(212, 148, 43, 0.12);
+            --accent: #D4942B;
+            --accent-soft: rgba(212, 148, 43, 0.08);
+            --text: #3D332A;
+            --text-muted: #8C7D6B;
+            --text-dim: #AEA38F;
+            --surface: #F0E7D0;
+            --border: rgba(212, 148, 43, 0.10);
+        }
+        html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+        input, textarea { font-family: 'DM Sans', -apple-system, sans-serif; }
+        .app-container {
+            max-width: 430px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+        }
+        .screen { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        .screen::-webkit-scrollbar { display: none; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 max(env(safe-area-inset-bottom, 8px), 8px);
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            background: none; border: none; padding: 4px 12px; cursor: pointer;
+            color: var(--text-dim); font-size: 10px; font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item svg { width: 22px; height: 22px; }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .card:active { transform: scale(0.98); }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.15s;
+        }
+        .btn-primary:active { opacity: 0.85; }
+        .btn-secondary {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid rgba(212, 148, 43, 0.2);
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Section colors */
+        .section-mood { background: linear-gradient(to bottom, rgba(212, 148, 43, 0.06), var(--bg) 35%); }
+        .section-breathe { background: linear-gradient(to bottom, rgba(107, 168, 148, 0.08), var(--bg) 35%); }
+        .section-chat { background: linear-gradient(to bottom, rgba(184, 133, 143, 0.08), var(--bg) 35%); }
+        .section-assess { background: linear-gradient(to bottom, rgba(92, 148, 173, 0.08), var(--bg) 35%); }
+        .section-support { background: linear-gradient(to bottom, rgba(122, 158, 107, 0.08), var(--bg) 35%); }
+        .section-signs { background: linear-gradient(to bottom, rgba(135, 120, 176, 0.08), var(--bg) 35%); }
+        .section-cbt { background: linear-gradient(to bottom, rgba(196, 122, 79, 0.08), var(--bg) 35%); }
+
+        /* Serif headings */
+        .serif { font-family: 'DM Serif Display', serif; }
+
+        /* Breathing orb */
+        .breath-orb {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            transition: transform 1s ease-in-out;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Chat bubbles */
+        .chat-bubble-user {
+            background: rgb(184, 133, 143);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 12px;
+            max-width: 80%;
+            margin-left: auto;
+            font-size: 15px;
+            line-height: 1.45;
+        }
+        .chat-bubble-assistant {
+            background: var(--card);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 10px 12px;
+            max-width: 85%;
+            font-size: 15px;
+            line-height: 1.45;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 8px 12px; border-radius: 20px;
+            font-size: 13px; cursor: pointer; border: 1px solid var(--border);
+            background: var(--card); transition: all 0.15s;
+        }
+        .tag.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .typing-dot { animation: pulse 1.2s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── Data ───────────────────────────────────────────
+
+const moodEmojis = [
+    { value: 1, emoji: "\u{1F61E}", label: "Struggling" },
+    { value: 2, emoji: "\u{1F614}", label: "Low" },
+    { value: 3, emoji: "\u{1F610}", label: "Okay" },
+    { value: 4, emoji: "\u{1F642}", label: "Good" },
+    { value: 5, emoji: "\u{1F60A}", label: "Great" },
+];
+
+const moodTags = [
+    { label: "Work stress", icon: "\u{1F4BC}" },
+    { label: "Poor sleep", icon: "\u{1F319}" },
+    { label: "Exercised", icon: "\u{1F4AA}" },
+    { label: "Social time", icon: "\u{1F465}" },
+    { label: "Anxious", icon: "\u{1F630}" },
+    { label: "Overwhelmed", icon: "\u{1F30A}" },
+    { label: "Grateful", icon: "\u{1F64F}" },
+    { label: "Lonely", icon: "\u{1FAE5}" },
+    { label: "Family", icon: "\u{1F3E0}" },
+    { label: "Creative", icon: "\u{1F3A8}" },
+    { label: "Outdoors", icon: "\u{1F333}" },
+    { label: "Productive", icon: "\u2705" },
+];
+
+const reflectionPrompts = [
+    { q: "What's one thing that affected your mood today?", p: "It can be big or small..." },
+    { q: "What are you carrying right now?", p: "Name it, even if it's hard to pin down..." },
+    { q: "What moment stood out to you today?", p: "Good, bad, or somewhere in between..." },
+    { q: "If your mood had a weather, what would it be?", p: "Stormy, cloudy, clear skies..." },
+    { q: "What do you need more of right now?", p: "Rest, connection, space, fun..." },
+];
+
+const breathPatterns = [
+    { id: "calm", name: "Calm Breath", tagline: "Gentle & grounding", icon: "\u{1F343}",
+      desc: "A simple rhythm that slows your nervous system.",
+      inhale: 4, hold1: 0, exhale: 6, hold2: 0, cycles: 5,
+      color: "rgb(107, 168, 148)", baseFreq: 130.81 },
+    { id: "478", name: "4-7-8", tagline: "Deep relaxation", icon: "\u{1F30A}",
+      desc: "The gold standard for calming your nervous system.",
+      inhale: 4, hold1: 7, exhale: 8, hold2: 0, cycles: 4,
+      color: "rgb(92, 148, 173)", baseFreq: 110.0 },
+    { id: "box", name: "Box Breathing", tagline: "Focus & control", icon: "\u{1F7E6}",
+      desc: "Equal parts in, hold, out, hold. Used by Navy SEALs.",
+      inhale: 4, hold1: 4, exhale: 4, hold2: 4, cycles: 5,
+      color: "rgb(135, 120, 176)", baseFreq: 174.61 },
+    { id: "reset", name: "Quick Reset", tagline: "60 seconds \u00B7 instant relief", icon: "\u26A1",
+      desc: "A short burst to reset your nervous system fast.",
+      inhale: 3, hold1: 0, exhale: 5, hold2: 0, cycles: 5,
+      color: "rgb(196, 156, 79)", baseFreq: 146.83 },
+];
+
+const durationOptions = [1, 2, 3, 5, 10];
+
+const supportResources = [
+    { name: "Samaritans Ireland", desc: "Free, confidential emotional support for anyone in distress or despair", phone: "116 123", hours: "24/7, every day", icon: "\u{1F4DE}", url: "https://www.samaritans.org/ireland/" },
+    { name: "Aware", desc: "Support for people affected by depression, bipolar disorder, and mood-related conditions", phone: "1800 80 48 48", hours: "10am\u201310pm, every day", icon: "\u{1F499}", url: "https://www.aware.ie" },
+    { name: "Jigsaw", desc: "Free mental health support for young people aged 12\u201325", phone: "Online chat", hours: "Mon\u2013Fri", icon: "\u{1F9E9}", url: "https://www.jigsaw.ie" },
+    { name: "MyMind", desc: "Affordable professional counselling \u2014 online and in-person across Ireland", phone: "Book online", hours: "7 days a week", icon: "\u{1F9E0}", url: "https://mymind.org" },
+    { name: "Turn2Me", desc: "Free online counselling and support groups for adults", phone: "Online sessions", hours: "Check website", icon: "\u{1F4AC}", url: "https://turn2me.ie" },
+    { name: "Pieta House", desc: "Free therapy for people who are suicidal, self-harming, or bereaved by suicide", phone: "1800 247 247", hours: "24/7 crisis helpline", icon: "\u{1F56F}\uFE0F", url: "https://www.pieta.ie" },
+    { name: "Text 50808", desc: "Free 24/7 text service. Text HELLO to 50808 to start a conversation", phone: "Text HELLO to 50808", hours: "24/7", icon: "\u{1F4F1}", url: "https://text50808.ie" },
+];
+
+const assessmentQuestions = [
+    { id: 1, domain: "work", text: "Do you feel overwhelmed by your workload or responsibilities?", icon: "\u{1F4CB}", inverted: false },
+    { id: 2, domain: "work", text: "Do you feel valued and recognised for your contributions?", icon: "\u2B50", inverted: true },
+    { id: 3, domain: "relationships", text: "Do you feel disconnected from the people closest to you?", icon: "\u{1F494}", inverted: false },
+    { id: 4, domain: "relationships", text: "Is there someone you can talk to honestly about how you feel?", icon: "\u{1F91D}", inverted: true },
+    { id: 5, domain: "body", text: "Do you experience frequent headaches, tension, or fatigue?", icon: "\u{1F629}", inverted: false },
+    { id: 6, domain: "sleep", text: "Do you have trouble falling asleep or staying asleep?", icon: "\u{1F319}", inverted: false },
+    { id: 7, domain: "sleep", text: "Do you wake up feeling rested most mornings?", icon: "\u2600\uFE0F", inverted: true },
+    { id: 8, domain: "body", text: "Are you eating regularly and in a way that feels healthy?", icon: "\u{1F34E}", inverted: true },
+    { id: 9, domain: "social", text: "Do you feel lonely or isolated, even when around others?", icon: "\u{1FAE5}", inverted: false },
+    { id: 10, domain: "social", text: "Have you withdrawn from activities or people you used to enjoy?", icon: "\u{1F6AA}", inverted: false },
+    { id: 11, domain: "purpose", text: "Do you feel a sense of meaning or direction in your life right now?", icon: "\u{1F9ED}", inverted: true },
+    { id: 12, domain: "purpose", text: "Do you find it hard to motivate yourself for things that used to matter?", icon: "\u{1F50B}", inverted: false },
+    { id: 13, domain: "work", text: "Do you dread the start of the working week?", icon: "\u{1F4C5}", inverted: false },
+    { id: 14, domain: "relationships", text: "Do you feel irritable or impatient with people more than usual?", icon: "\u{1F624}", inverted: false },
+];
+
+const lifeDomains = [
+    { id: "work", label: "Work & Purpose", icon: "\u{1F4BC}", color: "rgb(212, 148, 43)" },
+    { id: "relationships", label: "Relationships", icon: "\u{1F49B}", color: "rgb(196, 120, 79)" },
+    { id: "body", label: "Physical Health", icon: "\u{1F3C3}", color: "rgb(107, 168, 138)" },
+    { id: "sleep", label: "Sleep & Rest", icon: "\u{1F319}", color: "rgb(135, 120, 176)" },
+    { id: "social", label: "Social & Connection", icon: "\u{1F465}", color: "rgb(92, 148, 173)" },
+    { id: "purpose", label: "Purpose & Fulfilment", icon: "\u2728", color: "rgb(212, 148, 43)" },
+];
+
+const answerLabels = ["Not at all", "A little", "Moderately", "Quite a bit", "Extremely"];
+
+const signsData = [
+    { cat: "burnout", icon: "\u{1F525}", title: "Burnout", color: "rgb(212, 148, 43)",
+      desc: "Burnout is your mind and body\u2019s response to prolonged, unmanageable stress.",
+      signs: ["Exhaustion that sleep doesn\u2019t fix", "Cynicism about work or responsibilities", "Feeling detached or emotionally numb", "Reduced performance despite effort", "Sunday dread that starts Friday evening"] },
+    { cat: "anxiety", icon: "\u26A1", title: "Anxiety", color: "rgb(135, 120, 176)",
+      desc: "Anxiety is your threat detection system stuck in overdrive.",
+      signs: ["Constant worry or racing thoughts", "Physical tension (jaw, shoulders, chest)", "Avoiding situations or decisions", "Trouble concentrating or sleeping", "Feeling on edge or restless"] },
+    { cat: "depression", icon: "\u{1F327}\uFE0F", title: "Depression", color: "rgb(92, 148, 173)",
+      desc: "Depression isn\u2019t sadness. It\u2019s a flattening \u2014 of energy, interest, hope, and connection.",
+      signs: ["Loss of interest in things you used to enjoy", "Persistent low mood or emptiness", "Changes in appetite or sleep", "Difficulty making decisions", "Withdrawing from people and activities"] },
+];
+
+// ─── Storage Helpers ────────────────────────────────
+
+function loadData(key, fallback) {
+    try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; }
+    catch { return fallback; }
+}
+function saveData(key, data) {
+    try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+}
+
+// ─── App ────────────────────────────────────────────
+
+function App() {
+    const [tab, setTab] = useState("home");
+    const [subScreen, setSubScreen] = useState(null);
+
+    const navigate = (t, sub = null) => { setTab(t); setSubScreen(sub); };
+
+    return (
+        <div className="app-container">
+            <div className="screen">
+                {tab === "home" && <HomeScreen navigate={navigate} />}
+                {tab === "mood" && <MoodScreen navigate={navigate} />}
+                {tab === "breathe" && <BreathingScreen navigate={navigate} />}
+                {tab === "chat" && <ChatScreen navigate={navigate} />}
+                {tab === "assess" && <AssessmentScreen navigate={navigate} />}
+                {tab === "support" && <SupportScreen navigate={navigate} />}
+                {tab === "signs" && <SignsScreen navigate={navigate} />}
+            </div>
+            <nav className="bottom-nav">
+                <NavItem icon="home" label="Home" active={tab === "home"} onClick={() => navigate("home")} />
+                <NavItem icon="mood" label="Mood" active={tab === "mood"} onClick={() => navigate("mood")} />
+                <NavItem icon="breathe" label="Breathe" active={tab === "breathe"} onClick={() => navigate("breathe")} />
+                <NavItem icon="chat" label="Chat" active={tab === "chat"} onClick={() => navigate("chat")} />
+                <NavItem icon="support" label="Support" active={tab === "support"} onClick={() => navigate("support")} />
+            </nav>
+        </div>
+    );
+}
+
+function NavItem({ icon, label, active, onClick }) {
+    const icons = {
+        home: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+        mood: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>,
+        breathe: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v12"/><path d="M6 12h12"/></svg>,
+        chat: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+        support: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+    };
+    return (
+        <button className={`nav-item ${active ? "active" : ""}`} onClick={onClick}>
+            {icons[icon]}
+            <span>{label}</span>
+        </button>
+    );
+}
+
+// ─── Back Button ────────────────────────────────────
+
+function BackButton({ onClick, label = "Back", color = "var(--accent)" }) {
+    return (
+        <button onClick={onClick} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, color, fontSize: 13, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", padding: 0, marginBottom: 16 }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            {label}
+        </button>
+    );
+}
+
+// ─── Home Screen ────────────────────────────────────
+
+function HomeScreen({ navigate }) {
+    const name = loadData("clarus_name", "");
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+    const cards = [
+        { id: "mood", icon: "\u{1F4CA}", title: "Mood Tracker", sub: "How are you feeling right now?", color: "rgb(212, 148, 43)" },
+        { id: "breathe", icon: "\u{1F343}", title: "Breathing", sub: "Guided breathing exercises", color: "rgb(107, 168, 148)" },
+        { id: "chat", icon: "\u{1F4AC}", title: "Talk It Through", sub: "Chat with your AI companion", color: "rgb(184, 133, 143)" },
+        { id: "assess", icon: "\u{1F4CB}", title: "Wellbeing Check-in", sub: "14 questions across 6 life areas", color: "rgb(92, 148, 173)" },
+        { id: "signs", icon: "\u{1F50D}", title: "Signs to Watch For", sub: "Burnout, anxiety & depression", color: "rgb(135, 120, 176)" },
+        { id: "support", icon: "\u{1F49A}", title: "Get Support", sub: "Irish helplines & resources", color: "rgb(122, 158, 107)" },
+    ];
+
+    return (
+        <div style={{ padding: "20px 22px 40px" }}>
+            <div style={{ marginBottom: 24 }}>
+                <h1 className="serif" style={{ fontSize: 28, color: "var(--accent)", marginBottom: 4 }}>
+                    {greeting}{name ? `, ${name}` : ""}.
+                </h1>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>What would you like to do today?</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {cards.map(c => (
+                    <div key={c.id} className="card" onClick={() => navigate(c.id)} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${c.color}12`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{c.icon}</div>
+                        <div>
+                            <div style={{ fontSize: 15, fontWeight: 600 }}>{c.title}</div>
+                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{c.sub}</div>
+                        </div>
+                        <svg style={{ marginLeft: "auto", flexShrink: 0, color: "var(--text-dim)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                ))}
+            </div>
+
+            <div style={{ marginTop: 24, padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)" }}>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
+                    Clarus is not a substitute for professional medical advice. If you're struggling, please reach out to the support resources in this app.
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Mood Screen ────────────────────────────────────
+
+function MoodScreen({ navigate }) {
+    const [step, setStep] = useState(0); // 0=mood, 1=tags, 2=reflection, 3=done
+    const [moodVal, setMoodVal] = useState(null);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [note, setNote] = useState("");
+    const [reflection, setReflection] = useState("");
+    const [entries, setEntries] = useState(() => loadData("clarus_mood_entries", []));
+
+    const prompt = reflectionPrompts[new Date().getDate() % reflectionPrompts.length];
+
+    const toggleTag = (label) => {
+        setSelectedTags(prev => prev.includes(label) ? prev.filter(t => t !== label) : [...prev, label]);
+    };
+
+    const saveEntry = () => {
+        const entry = { value: moodVal, tags: selectedTags, note, reflection, date: new Date().toISOString() };
+        const updated = [...entries, entry];
+        setEntries(updated);
+        saveData("clarus_mood_entries", updated);
+        setStep(3);
+    };
+
+    const tint = "rgb(212, 148, 43)";
+
+    if (step === 3) {
+        const m = moodEmojis.find(e => e.value === moodVal);
+        return (
+            <div className="section-mood fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <div style={{ textAlign: "center", paddingTop: 60 }}>
+                    <div style={{ fontSize: 64, marginBottom: 16 }}>{m?.emoji}</div>
+                    <h2 className="serif" style={{ fontSize: 24, color: tint, marginBottom: 8 }}>Logged</h2>
+                    <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 32 }}>Thanks for checking in with yourself today.</p>
+                    <button className="btn-secondary" onClick={() => navigate("home")}>Back to Home</button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="section-mood fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => step > 0 ? setStep(step - 1) : navigate("home")} color={tint} label={step > 0 ? "Previous" : "Back"} />
+            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Mood Tracker</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
+                {step === 0 ? "How are you feeling right now?" : step === 1 ? "What\u2019s been on your mind?" : "Take a moment to reflect."}
+            </p>
+
+            {step === 0 && (
+                <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+                    {moodEmojis.map(m => (
+                        <button key={m.value} onClick={() => { setMoodVal(m.value); setStep(1); }}
+                            style={{ background: moodVal === m.value ? `${tint}15` : "var(--card)", border: `1px solid ${moodVal === m.value ? tint : "var(--border)"}`, borderRadius: 16, padding: "16px 12px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 58, transition: "all 0.15s" }}>
+                            <span style={{ fontSize: 32 }}>{m.emoji}</span>
+                            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500 }}>{m.label}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {step === 1 && (
+                <div className="fade-in">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+                        {moodTags.map(t => (
+                            <span key={t.label} className={`tag ${selectedTags.includes(t.label) ? "selected" : ""}`} onClick={() => toggleTag(t.label)}>
+                                {t.icon} {t.label}
+                            </span>
+                        ))}
+                    </div>
+                    <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Anything else on your mind? (optional)"
+                        style={{ width: "100%", minHeight: 80, padding: 12, borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 14, resize: "vertical", fontFamily: "'DM Sans', sans-serif" }} />
+                    <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => setStep(2)}>Continue</button>
+                </div>
+            )}
+
+            {step === 2 && (
+                <div className="fade-in">
+                    <div style={{ padding: 16, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginBottom: 16 }}>
+                        <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>{prompt.q}</p>
+                        <textarea value={reflection} onChange={e => setReflection(e.target.value)} placeholder={prompt.p}
+                            style={{ width: "100%", minHeight: 100, padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)", fontSize: 14, resize: "vertical", fontFamily: "'DM Sans', sans-serif" }} />
+                    </div>
+                    <button className="btn-primary" onClick={saveEntry}>Log Mood</button>
+                    <button style={{ background: "none", border: "none", color: "var(--text-muted)", fontSize: 13, cursor: "pointer", marginTop: 12, width: "100%", textAlign: "center", fontFamily: "'DM Sans', sans-serif" }} onClick={saveEntry}>Skip reflection</button>
+                </div>
+            )}
+
+            {step === 0 && entries.length > 0 && (
+                <div style={{ marginTop: 32 }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", marginBottom: 12, textTransform: "uppercase" }}>Recent Entries</p>
+                    {entries.slice(-5).reverse().map((e, i) => {
+                        const m = moodEmojis.find(x => x.value === e.value);
+                        const d = new Date(e.date);
+                        return (
+                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "var(--card)", borderRadius: 12, border: "1px solid var(--border)", marginBottom: 8 }}>
+                                <span style={{ fontSize: 24 }}>{m?.emoji}</span>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: 13, fontWeight: 600 }}>{m?.label}</div>
+                                    <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{d.toLocaleDateString("en-IE", { weekday: "short", day: "numeric", month: "short" })}</div>
+                                </div>
+                                {e.tags?.length > 0 && <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{e.tags.slice(0, 2).join(", ")}</div>}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ─── Breathing Screen ───────────────────────────────
+
+function BreathingScreen({ navigate }) {
+    const [selected, setSelected] = useState(null);
+    const [duration, setDuration] = useState(3);
+    const [running, setRunning] = useState(false);
+    const [phase, setPhase] = useState(""); // inhale, hold1, exhale, hold2
+    const [cycle, setCycle] = useState(0);
+    const [totalCycles, setTotalCycles] = useState(0);
+    const [phaseTimer, setPhaseTimer] = useState(0);
+    const [done, setDone] = useState(false);
+    const audioRef = useRef(null);
+    const intervalRef = useRef(null);
+
+    const tint = "rgb(107, 168, 148)";
+
+    const calcCycles = (pat, mins) => Math.max(1, Math.round((mins * 60) / (pat.inhale + pat.hold1 + pat.exhale + pat.hold2)));
+
+    const startExercise = () => {
+        const pat = breathPatterns.find(p => p.id === selected);
+        const tc = calcCycles(pat, duration);
+        setTotalCycles(tc);
+        setCycle(0);
+        setDone(false);
+        setRunning(true);
+        startBreathCycle(pat, 0, tc);
+        startAudio(pat);
+    };
+
+    const startAudio = (pat) => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const lfo = ctx.createOscillator();
+            const lfoGain = ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.value = pat.baseFreq;
+            lfo.type = "sine";
+            lfo.frequency.value = 0.08;
+            lfoGain.gain.value = 15;
+
+            lfo.connect(lfoGain);
+            lfoGain.connect(osc.frequency);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            gain.gain.value = 0;
+            gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
+
+            osc.start();
+            lfo.start();
+            audioRef.current = { ctx, gain, osc, lfo };
+        } catch {}
+    };
+
+    const stopAudio = () => {
+        if (audioRef.current) {
+            try {
+                const { ctx, gain } = audioRef.current;
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+                setTimeout(() => ctx.close(), 1200);
+            } catch {}
+            audioRef.current = null;
+        }
+    };
+
+    const startBreathCycle = (pat, currentCycle, total) => {
+        if (currentCycle >= total) { finish(); return; }
+        const phases = [];
+        phases.push({ name: "Breathe in", dur: pat.inhale });
+        if (pat.hold1 > 0) phases.push({ name: "Hold", dur: pat.hold1 });
+        phases.push({ name: "Breathe out", dur: pat.exhale });
+        if (pat.hold2 > 0) phases.push({ name: "Hold", dur: pat.hold2 });
+
+        let pi = 0;
+        const runPhase = () => {
+            if (pi >= phases.length) {
+                setCycle(currentCycle + 1);
+                startBreathCycle(pat, currentCycle + 1, total);
+                return;
+            }
+            const p = phases[pi];
+            setPhase(p.name);
+            setPhaseTimer(p.dur);
+            let remaining = p.dur;
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(() => {
+                remaining--;
+                setPhaseTimer(remaining);
+                if (remaining <= 0) {
+                    clearInterval(intervalRef.current);
+                    pi++;
+                    runPhase();
+                }
+            }, 1000);
+        };
+        runPhase();
+    };
+
+    const finish = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        stopAudio();
+        setRunning(false);
+        setDone(true);
+    };
+
+    const stop = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        stopAudio();
+        setRunning(false);
+        setSelected(null);
+        setDone(false);
+    };
+
+    useEffect(() => { return () => { if (intervalRef.current) clearInterval(intervalRef.current); stopAudio(); }; }, []);
+
+    if (done) {
+        return (
+            <div className="section-breathe fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>{"\u{1F343}"}</div>
+                <h2 className="serif" style={{ fontSize: 24, color: tint, marginBottom: 8 }}>Well done</h2>
+                <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 32 }}>Take that calm feeling with you.</p>
+                <button className="btn-secondary" style={{ maxWidth: 240 }} onClick={() => { setDone(false); setSelected(null); }}>Back to Breathing</button>
+            </div>
+        );
+    }
+
+    if (running) {
+        const pat = breathPatterns.find(p => p.id === selected);
+        const isInhale = phase === "Breathe in";
+        const scale = isInhale ? 1.4 : phase === "Breathe out" ? 0.85 : 1.1;
+        return (
+            <div className="section-breathe" style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ marginBottom: 32, textAlign: "center" }}>
+                    <div className="breath-orb" style={{ background: `radial-gradient(circle, ${pat.color}40, ${pat.color}15)`, transform: `scale(${scale})`, margin: "0 auto", transitionDuration: `${phase === "Breathe in" ? pat.inhale : phase === "Breathe out" ? pat.exhale : 0.5}s` }}>
+                        <div style={{ textAlign: "center" }}>
+                            <div style={{ fontSize: 32, fontWeight: 300, color: pat.color }}>{phaseTimer}</div>
+                            <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>{phase}</div>
+                        </div>
+                    </div>
+                </div>
+                <p style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 8 }}>Cycle {Math.min(cycle + 1, totalCycles)} of {totalCycles}</p>
+                <button onClick={stop} style={{ background: "none", border: "none", color: "var(--text-muted)", fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>End early</button>
+            </div>
+        );
+    }
+
+    if (selected) {
+        const pat = breathPatterns.find(p => p.id === selected);
+        const tc = calcCycles(pat, duration);
+        return (
+            <div className="section-breathe fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <BackButton onClick={() => setSelected(null)} color={tint} />
+                <div style={{ textAlign: "center", marginBottom: 24 }}>
+                    <div style={{ fontSize: 40, marginBottom: 8 }}>{pat.icon}</div>
+                    <h2 className="serif" style={{ fontSize: 22, color: tint }}>{pat.name}</h2>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{pat.desc}</p>
+                </div>
+
+                <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 8 }}>
+                    {[{ l: "In", v: pat.inhale }, ...(pat.hold1 ? [{ l: "Hold", v: pat.hold1 }] : []), { l: "Out", v: pat.exhale }, ...(pat.hold2 ? [{ l: "Hold", v: pat.hold2 }] : [])].map((p, i) => (
+                        <div key={i} style={{ textAlign: "center" }}>
+                            <div style={{ fontSize: 20, fontWeight: 600, color: tint }}>{p.v}s</div>
+                            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{p.l}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginTop: 24, marginBottom: 10, textAlign: "center" }}>Duration</p>
+                <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+                    {durationOptions.map(d => (
+                        <button key={d} onClick={() => setDuration(d)}
+                            style={{ padding: "8px 16px", borderRadius: 20, border: `1px solid ${duration === d ? tint : "var(--border)"}`, background: duration === d ? tint : "var(--card)", color: duration === d ? "white" : "var(--text)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+                            {d} min
+                        </button>
+                    ))}
+                </div>
+                <p style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", marginBottom: 24 }}>{tc} cycles</p>
+
+                <button className="btn-primary" onClick={startExercise}>Begin</button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="section-breathe" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} color={tint} />
+            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Breathing</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>Choose a pattern that fits how you feel.</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {breathPatterns.map(p => (
+                    <div key={p.id} className="card" onClick={() => setSelected(p.id)} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${p.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{p.icon}</div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 15, fontWeight: 600 }}>{p.name}</div>
+                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{p.tagline}</div>
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{Math.round(p.inhale + p.hold1 + p.exhale + p.hold2)}s/cycle</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// ─── Chat Screen ────────────────────────────────────
+
+function ChatScreen({ navigate }) {
+    const [messages, setMessages] = useState(() => {
+        const saved = loadData("clarus_chat", []);
+        if (saved.length === 0) {
+            const name = loadData("clarus_name", "");
+            return [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 I'm glad you're here. There's no agenda and no pressure. How are you feeling right now? Even a single word is a great place to start.` }];
+        }
+        return saved;
+    });
+    const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const messagesEndRef = useRef(null);
+    const chatTint = "rgb(184, 133, 143)";
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    useEffect(scrollToBottom, [messages, loading]);
+
+    const sendMessage = async () => {
+        const text = input.trim();
+        if (!text || loading) return;
+        const updated = [...messages, { role: "user", content: text }];
+        setMessages(updated);
+        saveData("clarus_chat", updated);
+        setInput("");
+        setLoading(true);
+
+        try {
+            const res = await fetch("https://clarus-api.eoghanhoman.workers.dev/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-Device-ID": getDeviceId() },
+                body: JSON.stringify({ messages: updated.map(m => ({ role: m.role, content: m.content })) }),
+            });
+            const data = await res.json();
+            if (res.status === 429) {
+                const errMsg = data.message || "You've sent a lot of messages today. Take a break and come back tomorrow.";
+                const final = [...updated, { role: "assistant", content: errMsg }];
+                setMessages(final);
+                saveData("clarus_chat", final);
+            } else if (data.content?.[0]?.text) {
+                const final = [...updated, { role: "assistant", content: data.content[0].text }];
+                setMessages(final);
+                saveData("clarus_chat", final);
+            } else {
+                throw new Error("Bad response");
+            }
+        } catch {
+            const final = [...updated, { role: "assistant", content: "I'm having trouble connecting right now. Take a breath \u2014 I'll be here when you're ready to try again." }];
+            setMessages(final);
+            saveData("clarus_chat", final);
+        }
+        setLoading(false);
+    };
+
+    const clearChat = () => {
+        const name = loadData("clarus_name", "");
+        const fresh = [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 fresh start. How are you doing?` }];
+        setMessages(fresh);
+        saveData("clarus_chat", fresh);
+    };
+
+    const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "var(--bg)", flexShrink: 0 }}>
+                <BackButton onClick={() => navigate("home")} color={chatTint} label="" />
+                <h2 className="serif" style={{ fontSize: 20, color: "var(--text)", flex: 1, textAlign: "center", marginLeft: -24 }}>Talk It Through</h2>
+                {messages.length > 1 && (
+                    <button onClick={clearChat} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 18, padding: 4 }}>{"\u21BA"}</button>
+                )}
+            </div>
+
+            <div style={{ padding: "4px 12px 8px", background: "var(--surface)", margin: "0 12px", borderRadius: 8, flexShrink: 0 }}>
+                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>I'm here to listen \u2014 not as a therapist, but as a friend who cares. Everything here stays on your device.</p>
+            </div>
+
+            <div style={{ flex: 1, overflowY: "auto", padding: "12px 0" }}>
+                {messages.map((m, i) => (
+                    <div key={i} style={{ padding: "4px 12px", display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+                        <div className={m.role === "user" ? "chat-bubble-user" : "chat-bubble-assistant"}>{m.content}</div>
+                    </div>
+                ))}
+                {loading && (
+                    <div style={{ padding: "4px 12px" }}>
+                        <div className="chat-bubble-assistant" style={{ display: "flex", gap: 4, padding: "12px 16px" }}>
+                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)" }}></span>
+                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)", animationDelay: "0.2s" }}></span>
+                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)", animationDelay: "0.4s" }}></span>
+                        </div>
+                    </div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            <div style={{ padding: "8px 12px", borderTop: "1px solid var(--border)", background: "var(--bg)", display: "flex", gap: 8, flexShrink: 0 }}>
+                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
+                    placeholder="What's on your mind?"
+                    style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "none", background: "var(--surface)", color: "var(--text)", fontSize: 15, outline: "none" }} />
+                <button onClick={sendMessage} disabled={!input.trim() || loading}
+                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 28, color: chatTint, opacity: !input.trim() || loading ? 0.3 : 1 }}>
+                    {"\u2B06\uFE0F"}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function getDeviceId() {
+    let id = localStorage.getItem("clarus_device_id");
+    if (!id) { id = crypto.randomUUID?.() || Math.random().toString(36).slice(2); localStorage.setItem("clarus_device_id", id); }
+    return id;
+}
+
+// ─── Assessment Screen ──────────────────────────────
+
+function AssessmentScreen({ navigate }) {
+    const [current, setCurrent] = useState(0);
+    const [answers, setAnswers] = useState({});
+    const [showResult, setShowResult] = useState(false);
+    const [animPct, setAnimPct] = useState(0);
+
+    const tint = "rgb(92, 148, 173)";
+
+    const answer = (val) => {
+        const q = assessmentQuestions[current];
+        setAnswers(prev => ({ ...prev, [q.id]: val }));
+        setTimeout(() => {
+            if (current < assessmentQuestions.length - 1) setCurrent(current + 1);
+            else setShowResult(true);
+        }, 350);
+    };
+
+    useEffect(() => {
+        if (showResult) {
+            const total = calcTotal();
+            const max = assessmentQuestions.length * 4;
+            const pct = max > 0 ? Math.round((total / max) * 100) : 0;
+            setTimeout(() => setAnimPct(pct), 300);
+        }
+    }, [showResult]);
+
+    const calcTotal = () => assessmentQuestions.reduce((t, q) => {
+        const raw = answers[q.id] ?? 0;
+        return t + (q.inverted ? (4 - raw) : raw);
+    }, 0);
+
+    const calcDomains = () => lifeDomains.map(d => {
+        const qs = assessmentQuestions.filter(q => q.domain === d.id);
+        const score = qs.reduce((t, q) => t + (q.inverted ? (4 - (answers[q.id] ?? 0)) : (answers[q.id] ?? 0)), 0);
+        const max = qs.length * 4;
+        return { ...d, pct: max > 0 ? Math.round((score / max) * 100) : 0 };
+    }).sort((a, b) => b.pct - a.pct);
+
+    if (showResult) {
+        const total = calcTotal();
+        const max = assessmentQuestions.length * 4;
+        const pct = max > 0 ? Math.round((total / max) * 100) : 0;
+        const level = pct <= 30 ? "Low" : pct <= 60 ? "Moderate" : "High";
+        const levelColor = pct <= 30 ? "rgb(212, 148, 43)" : pct <= 60 ? "rgb(232, 186, 97)" : "rgb(196, 120, 79)";
+        const domains = calcDomains();
+
+        return (
+            <div className="section-assess fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <BackButton onClick={() => navigate("home")} color={tint} label="Home" />
+                <div style={{ textAlign: "center", marginBottom: 24 }}>
+                    <h2 className="serif" style={{ fontSize: 26, color: tint, marginBottom: 4 }}>Your Wellbeing Snapshot</h2>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Across all areas of your life</p>
+                </div>
+
+                <div style={{ textAlign: "center", marginBottom: 24 }}>
+                    <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
+                        <circle cx="70" cy="70" r="60" fill="none" stroke={`${levelColor}20`} strokeWidth="8" />
+                        <circle cx="70" cy="70" r="60" fill="none" stroke={levelColor} strokeWidth="8" strokeLinecap="round"
+                            strokeDasharray={`${(animPct / 100) * 377} 377`} style={{ transition: "stroke-dasharray 1.2s ease-out" }} />
+                    </svg>
+                    <div style={{ marginTop: -95, marginBottom: 55 }}>
+                        <div className="serif" style={{ fontSize: 36, color: levelColor }}>{animPct}%</div>
+                        <div style={{ fontSize: 11, color: "var(--text-muted)" }}>distress</div>
+                    </div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: levelColor, marginBottom: 8 }}>{level} Concern Level</div>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", maxWidth: 280, margin: "0 auto", lineHeight: 1.5 }}>
+                        {level === "Low" ? "You're managing well. Keep nurturing your healthy habits." :
+                         level === "Moderate" ? "Some areas need attention. Explore the tips and resources." :
+                         "Multiple areas are strained. Please reach out to support resources or talk to someone you trust."}
+                    </p>
+                </div>
+
+                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 14 }}>Domain Breakdown</p>
+                {domains.map(d => (
+                    <div key={d.id} style={{ marginBottom: 16 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                            <span style={{ fontSize: 13, fontWeight: 600 }}>{d.icon} {d.label}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: d.color }}>{d.pct}%</span>
+                        </div>
+                        <div style={{ height: 6, borderRadius: 3, background: `${d.color}18` }}>
+                            <div style={{ height: 6, borderRadius: 3, background: d.color, width: `${d.pct}%`, transition: "width 0.8s ease-out" }}></div>
+                        </div>
+                    </div>
+                ))}
+
+                <button className="btn-secondary" style={{ marginTop: 16 }} onClick={() => { setCurrent(0); setAnswers({}); setShowResult(false); setAnimPct(0); }}>Retake Check-in</button>
+            </div>
+        );
+    }
+
+    const q = assessmentQuestions[current];
+    const domain = lifeDomains.find(d => d.id === q.domain);
+    const progress = (current + 1) / assessmentQuestions.length;
+
+    return (
+        <div className="section-assess fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => current > 0 ? setCurrent(current - 1) : navigate("home")} color={tint} label={current > 0 ? "Previous" : "Back"} />
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <h2 className="serif" style={{ fontSize: 22, color: tint }}>Wellbeing Check-in</h2>
+                <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{current + 1}/{assessmentQuestions.length}</span>
+            </div>
+            <div style={{ height: 4, borderRadius: 2, background: `${tint}18`, marginBottom: 8 }}>
+                <div style={{ height: 4, borderRadius: 2, background: tint, width: `${progress * 100}%`, transition: "width 0.4s ease" }}></div>
+            </div>
+
+            <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 8, background: `${domain.color}15`, color: domain.color, fontSize: 10, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 32 }}>
+                {domain.icon} {domain.label}
+            </span>
+
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>{q.icon}</div>
+                <p style={{ fontSize: 18, fontWeight: 500, lineHeight: 1.5, maxWidth: 300, margin: "0 auto" }}>{q.text}</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {answerLabels.map((label, i) => {
+                    const isSelected = answers[q.id] === i;
+                    return (
+                        <button key={i} onClick={() => answer(i)}
+                            style={{ padding: "14px 18px", borderRadius: 14, border: `1px solid ${isSelected ? tint : "var(--border)"}`, background: isSelected ? tint : "var(--card)", color: isSelected ? "white" : "var(--text)", fontSize: 15, textAlign: "left", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.15s" }}>
+                            {label}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+// ─── Signs Screen ───────────────────────────────────
+
+function SignsScreen({ navigate }) {
+    const [expanded, setExpanded] = useState(null);
+    const tint = "rgb(135, 120, 176)";
+
+    return (
+        <div className="section-signs" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} color={tint} />
+            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Signs to Watch For</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>Recognising what you're experiencing is the first step.</p>
+
+            {signsData.map(s => (
+                <div key={s.cat} className="card" style={{ marginBottom: 10, cursor: "pointer" }} onClick={() => setExpanded(expanded === s.cat ? null : s.cat)}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{s.icon}</div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 15, fontWeight: 600 }}>{s.title}</div>
+                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{s.desc}</div>
+                        </div>
+                        <svg style={{ transform: expanded === s.cat ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s", color: "var(--text-dim)", flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                    {expanded === s.cat && (
+                        <div className="fade-in" style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+                            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>Common signs</p>
+                            {s.signs.map((sign, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
+                                    <div style={{ width: 6, height: 6, borderRadius: 3, background: s.color, flexShrink: 0 }}></div>
+                                    <span style={{ fontSize: 13, color: "var(--text)" }}>{sign}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            ))}
+
+            <div style={{ marginTop: 20, padding: 16, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)" }}>
+                <p style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.6 }}>
+                    {"\u{1F49A}"} Recognising these signs in yourself isn't a weakness \u2014 it's awareness. If several of these feel familiar, consider talking to someone you trust or exploring the <span style={{ fontWeight: 600, cursor: "pointer", color: tint }} onClick={() => navigate("support")}>support resources</span> in this app.
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Support Screen ─────────────────────────────────
+
+function SupportScreen({ navigate }) {
+    const tint = "rgb(122, 158, 107)";
+
+    return (
+        <div className="section-support" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} color={tint} />
+            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Get Support</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>You don't have to do this alone.</p>
+
+            <div style={{ padding: 16, background: "rgba(196, 120, 79, 0.06)", borderRadius: 16, border: "1px solid rgba(196, 120, 79, 0.15)", marginBottom: 20 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "rgb(196, 120, 79)", marginBottom: 6 }}>In crisis or immediate danger?</p>
+                <p style={{ fontSize: 13, color: "rgba(196, 120, 79, 0.85)", lineHeight: 1.5, marginBottom: 10 }}>
+                    Call 999 or 112 for emergency services. You can also contact Samaritans on 116 123 (free, 24/7) or text HELLO to 50808.
+                </p>
+                <a href="tel:116123" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", background: "rgb(196, 120, 79)", color: "white", borderRadius: 10, textDecoration: "none", fontSize: 13, fontWeight: 600 }}>
+                    {"\u{1F4DE}"} Call Samaritans Now
+                </a>
+            </div>
+
+            <div style={{ padding: 16, background: `${tint}0A`, borderRadius: 16, marginBottom: 20 }}>
+                <p style={{ fontSize: 13, color: "var(--text)", fontStyle: "italic", lineHeight: 1.6 }}>
+                    {"\u{1F49A}"} Talking to a professional isn't just for people in crisis. Therapy is one of the most effective ways to understand yourself better and build resilience. If you've been thinking about it \u2014 that thought alone is worth following.
+                </p>
+            </div>
+
+            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 12 }}>Irish Support Services</p>
+
+            {supportResources.map((r, i) => (
+                <div key={i} className="card" style={{ marginBottom: 10, cursor: "default" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: `${tint}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{r.icon}</div>
+                        <span style={{ fontSize: 15, fontWeight: 600 }}>{r.name}</span>
+                    </div>
+                    <p style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 10 }}>{r.desc}</p>
+                    <div style={{ display: "flex", gap: 16, fontSize: 11, marginBottom: 10 }}>
+                        <span style={{ color: tint, fontWeight: 500 }}>{"\u{1F4DE}"} {r.phone}</span>
+                        <span style={{ color: "var(--text-muted)" }}>{"\u{1F552}"} {r.hours}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                        {(r.phone.startsWith("1") || r.phone.startsWith("0")) && (
+                            <a href={`tel:${r.phone.replace(/\s/g, "")}`} style={{ flex: 1, textAlign: "center", padding: "10px 0", background: tint, color: "white", borderRadius: 10, textDecoration: "none", fontSize: 12, fontWeight: 600 }}>Call</a>
+                        )}
+                        <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textAlign: "center", padding: "10px 0", background: `${tint}15`, color: tint, borderRadius: 10, border: `1px solid ${tint}30`, textDecoration: "none", fontSize: 12, fontWeight: 600 }}>Website</a>
+                    </div>
+                </div>
+            ))}
+
+            <div style={{ marginTop: 12, padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)" }}>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
+                    This app is not a substitute for professional medical advice, diagnosis, or treatment. If you're struggling, please reach out \u2014 asking for help is a sign of strength.
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Render ─────────────────────────────────────────
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
