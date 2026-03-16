@@ -1151,7 +1151,7 @@
 
         document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-        // ── Newsletter Signup (Buttondown) ─────────
+        // ── Newsletter Signup (via Cloudflare Worker) ─────────
         const form = document.getElementById('signup-form');
         const emailInput = document.getElementById('email-input');
         const submitBtn = document.getElementById('submit-btn');
@@ -1166,38 +1166,30 @@
             submitBtn.textContent = 'Sending...';
 
             try {
-                const res = await fetch('https://api.buttondown.email/v1/subscribers', {
+                const res = await fetch('https://clarus-api.eoghanhoman.workers.dev/newsletter', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token c87ef385-7422-4f04-814e-ea88c21cfd1e'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        email_address: email,
+                        email: email,
                         tags: ['website-launch']
                     })
                 });
 
-                if (res.ok || res.status === 201) {
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && (data.status === 'subscribed' || data.status === 'already_subscribed')) {
                     form.style.display = 'none';
+                    successMsg.textContent = data.status === 'already_subscribed'
+                        ? "You're already on the list! We'll be in touch."
+                        : "You're on the list. We'll be in touch soon.";
                     successMsg.style.display = 'block';
                     document.querySelector('.newsletter-note').style.display = 'none';
                 } else {
-                    const data = await res.json().catch(() => ({}));
-                    if (res.status === 409 || (data.email_address && data.email_address[0]?.includes('already'))) {
-                        form.style.display = 'none';
-                        successMsg.textContent = "You're already on the list! We'll be in touch.";
-                        successMsg.style.display = 'block';
-                        document.querySelector('.newsletter-note').style.display = 'none';
-                    } else {
-                        submitBtn.textContent = 'Try again';
-                        submitBtn.disabled = false;
-                    }
+                    submitBtn.textContent = 'Try again';
+                    submitBtn.disabled = false;
                 }
             } catch (err) {
-                // Fallback: open Buttondown subscribe page
-                window.open(`https://buttondown.email/clarus?email=${encodeURIComponent(email)}`, '_blank');
-                submitBtn.textContent = 'Notify me';
+                submitBtn.textContent = 'Try again';
                 submitBtn.disabled = false;
             }
         });
