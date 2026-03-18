@@ -919,7 +919,10 @@
             try {
                 const res = await fetch('https://clarus-api.eoghanhoman.workers.dev/newsletter', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-App-Token': '9c8c8570a6c48afd10cb945ae50a50c15b765aa65dec824e352007527cf569ed'
+                    },
                     body: JSON.stringify({ email: email, tags: ['website-launch'] })
                 });
 
