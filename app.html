@@ -387,6 +387,9 @@ function HomeScreen({ navigate }) {
                 <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
                     Clarus is not a substitute for professional medical advice. If you're struggling, please reach out to the support resources in this app.
                 </p>
+                <p style={{ fontSize: 11, color: "var(--text-dim)", lineHeight: 1.5, marginTop: 8 }}>
+                    Your mood entries and chat history are stored locally in your browser and can be cleared at any time via your browser settings. Chat messages are processed securely to generate responses but are never stored on our servers. <a href="https://clarusapp.ie/privacy.html" style={{ color: "var(--text-muted)" }}>Privacy Policy</a>
+                </p>
             </div>
         </div>
     );
@@ -785,7 +788,7 @@ function ChatScreen({ navigate }) {
             </div>
 
             <div style={{ padding: "4px 12px 8px", background: "var(--surface)", margin: "0 12px", borderRadius: 8, flexShrink: 0 }}>
-                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>I'm here to listen \u2014 not as a therapist, but as a friend who cares. Everything here stays on your device.</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>I'm here to listen \u2014 not as a therapist, but as a friend who cares. Your messages are processed securely to generate responses but are never stored on our servers.</p>
             </div>
 
             <div style={{ flex: 1, overflowY: "auto", padding: "12px 0" }}>
