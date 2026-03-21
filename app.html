@@ -13,9 +13,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0" crossorigin="anonymous"></script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -238,6 +238,11 @@ const supportResources = [
     { name: "Text 50808", desc: "Free 24/7 text service. Text HELLO to 50808 to start a conversation", phone: "Text HELLO to 50808", hours: "24/7", icon: "\u{1F4F1}", url: "https://text50808.ie" },
     { name: "Accord", desc: "Couples and relationship counselling across 46 centres in Ireland. You don\u2019t need to be in crisis \u2014 Accord helps couples at any stage. Fees are based on what you can afford", phone: "01 505 3112", hours: "Check website for local centres", icon: "\u{1F491}", url: "https://www.accord.ie" },
     { name: "One Family", desc: "Support for people parenting alone, sharing parenting, or going through separation. Helpline, counselling, and parenting programmes \u2014 confidential and non-judgmental", phone: "0818 66 22 12", hours: "Mon\u2013Fri, 10am\u20132pm", icon: "\u{1F468}\u200D\u{1F467}", url: "https://onefamily.ie" },
+    { name: "MABS", desc: "Free, confidential, independent money advice service. If you're struggling with debt, bills, mortgage arrears, or just need help making a budget", phone: "0818 07 2000", hours: "Mon\u2013Fri, 9am\u20138pm", icon: "\u{1F4B7}", url: "https://www.mabs.ie" },
+    { name: "Women\u2019s Aid", desc: "Support for women and children experiencing domestic violence and abuse. Free, confidential 24/7 helpline", phone: "1800 341 900", hours: "24/7 helpline", icon: "\u{1F6E1}\uFE0F", url: "https://www.womensaid.ie" },
+    { name: "AMEN", desc: "Confidential support for male victims of domestic abuse. Helpline, support meetings, and court accompaniment", phone: "046 902 3718", hours: "Mon\u2013Fri, 9am\u20135pm", icon: "\u{1F91D}", url: "https://www.amen.ie" },
+    { name: "Rape Crisis Centre", desc: "Free counselling and support for anyone affected by sexual violence \u2014 recent or historic", phone: "1800 77 8888", hours: "24/7 helpline", icon: "\u{1F49C}", url: "https://www.drcc.ie" },
+    { name: "Parentline", desc: "Support for parents under pressure. Confidential space to talk through parenting struggles", phone: "1890 927 277", hours: "Mon\u2013Fri, 10am\u20139pm; Sat 10am\u20131pm", icon: "\u{1F476}", url: "https://www.parentline.ie" },
 ];
 
 const communityResources = [
@@ -249,6 +254,7 @@ const communityResources = [
     { name: "Alone Ireland", category: "Older adult support", desc: "Support, friendship, and practical help for older people who are isolated or lonely.", icon: "\u{1F91D}", url: "https://alone.ie" },
     { name: "SpunOut.ie", category: "Young adult resources", desc: "Ireland\u2019s youth information platform \u2014 mental health, relationships, money, and identity (16-25).", icon: "\u{1F4F1}", url: "https://spunout.ie" },
     { name: "See Change", category: "Stigma reduction", desc: "Ireland\u2019s national stigma reduction partnership. Start conversations about mental health in your community.", icon: "\u{1F5E3}\uFE0F", url: "https://seechange.ie" },
+    { name: "Money Advice & Budgeting Service", category: "Financial wellbeing", desc: "MABS isn\u2019t just for people in debt. They help with budgeting, dealing with creditors, understanding your options. Free, confidential, every county.", icon: "\u{1F4B0}", url: "https://www.mabs.ie" },
 ];
 
 const assessmentQuestions = [
@@ -292,6 +298,9 @@ const signsData = [
     { cat: "substance", icon: "\u{1FA9E}", title: "Substance Use", color: "rgb(140, 107, 97)",
       desc: "Alcohol and substance use often starts as coping and gradually becomes the problem itself. In Ireland, where drinking is woven into social life, it\u2019s especially hard to see when your relationship with alcohol has shifted.",
       signs: ["Drinking to cope with stress, boredom, or difficult feelings", "Needing more to feel the same effect", "Next-day anxiety and regret (\u2018the fear\u2019)", "Hiding or minimising how much you drink", "Drinking is affecting relationships or responsibilities"] },
+    { cat: "trauma", icon: "\u{1F6E1}\uFE0F", title: "Trauma", color: "rgb(179, 82, 79)",
+      desc: "Trauma is your nervous system stuck in high-alert mode. It\u2019s not about being \u2018weak\u2019 \u2014 it\u2019s about what you\u2019ve survived.",
+      signs: ["Hypervigilance \u2014 always on guard", "Avoidance of certain places, people, or topics", "Emotional flashbacks or sudden mood shifts", "Difficulty trusting people or feeling safe in relationships"] },
 ];
 
 // ─── Storage Helpers ────────────────────────────────
@@ -758,7 +767,7 @@ function ChatScreen({ navigate }) {
         setLoading(true);
 
         try {
-            const res = await fetch("https://clarus-api.eoghanhoman.workers.dev/chat", {
+            const res = await fetch("https://clarus-api.eoghanhoman.workers.dev/web/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "X-Device-ID": getDeviceId() },
                 body: JSON.stringify({ messages: updated.map(m => ({ role: m.role, content: m.content })) }),
@@ -840,7 +849,7 @@ function ChatScreen({ navigate }) {
 
 function getDeviceId() {
     let id = localStorage.getItem("clarus_device_id");
-    if (!id) { id = crypto.randomUUID?.() || Math.random().toString(36).slice(2); localStorage.setItem("clarus_device_id", id); }
+    if (!id) { id = crypto.randomUUID?.() || ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)); localStorage.setItem("clarus_device_id", id); }
     return id;
 }
 
