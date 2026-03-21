@@ -238,6 +238,16 @@ const supportResources = [
     { name: "Text 50808", desc: "Free 24/7 text service. Text HELLO to 50808 to start a conversation", phone: "Text HELLO to 50808", hours: "24/7", icon: "\u{1F4F1}", url: "https://text50808.ie" },
 ];
 
+const communityResources = [
+    { name: "Men\u2019s Sheds Ireland", category: "Community & belonging", desc: "A place for men to connect, talk, and work on projects together. Over 450 sheds across Ireland.", icon: "\u{1F3E0}", url: "https://menssheds.ie" },
+    { name: "GAA Healthy Clubs", category: "Sport & wellbeing", desc: "Your local GAA club as a community health hub. Mental health awareness, physical activity, and social connection.", icon: "\u{1F3D0}", url: "https://www.gaa.ie/community/healthy-clubs" },
+    { name: "parkrun Ireland", category: "Movement & connection", desc: "Free, weekly 5k walk/run events every Saturday morning. It\u2019s not about speed \u2014 it\u2019s about showing up.", icon: "\u{1F3C3}", url: "https://www.parkrun.ie" },
+    { name: "Grow Mental Health", category: "Peer support groups", desc: "Free peer support groups that meet weekly across Ireland. Run by people who\u2019ve been through it.", icon: "\u{1F331}", url: "https://grow.ie" },
+    { name: "Alone Ireland", category: "Older adult support", desc: "Support, friendship, and practical help for older people who are isolated or lonely.", icon: "\u{1F91D}", url: "https://alone.ie" },
+    { name: "SpunOut.ie", category: "Young adult resources", desc: "Ireland\u2019s youth information platform \u2014 mental health, relationships, money, and identity (16-25).", icon: "\u{1F4F1}", url: "https://spunout.ie" },
+    { name: "See Change", category: "Stigma reduction", desc: "Ireland\u2019s national stigma reduction partnership. Start conversations about mental health in your community.", icon: "\u{1F5E3}\uFE0F", url: "https://seechange.ie" },
+];
+
 const assessmentQuestions = [
     { id: 1, domain: "work", text: "Do you feel overwhelmed by your workload or responsibilities?", icon: "\u{1F4CB}", inverted: false },
     { id: 2, domain: "work", text: "Do you feel valued and recognised for your contributions?", icon: "\u2B50", inverted: true },
@@ -276,6 +286,9 @@ const signsData = [
     { cat: "depression", icon: "\u{1F327}\uFE0F", title: "Depression", color: "rgb(92, 148, 173)",
       desc: "Depression isn\u2019t sadness. It\u2019s a flattening \u2014 of energy, interest, hope, and connection.",
       signs: ["Loss of interest in things you used to enjoy", "Persistent low mood or emptiness", "Changes in appetite or sleep", "Difficulty making decisions", "Withdrawing from people and activities"] },
+    { cat: "substance", icon: "\u{1FA9E}", title: "Substance Use", color: "rgb(140, 107, 97)",
+      desc: "Alcohol and substance use often starts as coping and gradually becomes the problem itself. In Ireland, where drinking is woven into social life, it\u2019s especially hard to see when your relationship with alcohol has shifted.",
+      signs: ["Drinking to cope with stress, boredom, or difficult feelings", "Needing more to feel the same effect", "Next-day anxiety and regret (\u2018the fear\u2019)", "Hiding or minimising how much you drink", "Drinking is affecting relationships or responsibilities"] },
 ];
 
 // ─── Storage Helpers ────────────────────────────────
@@ -357,8 +370,8 @@ function HomeScreen({ navigate }) {
         { id: "breathe", icon: "\u{1F343}", title: "Breathing", sub: "Guided breathing exercises", color: "rgb(107, 168, 148)" },
         { id: "chat", icon: "\u{1F4AC}", title: "Talk It Through", sub: "Chat with your AI companion", color: "rgb(184, 133, 143)" },
         { id: "assess", icon: "\u{1F4CB}", title: "Wellbeing Check-in", sub: "14 questions across 6 life areas", color: "rgb(92, 148, 173)" },
-        { id: "signs", icon: "\u{1F50D}", title: "Signs to Watch For", sub: "Burnout, anxiety & depression", color: "rgb(135, 120, 176)" },
-        { id: "support", icon: "\u{1F49A}", title: "Get Support", sub: "Irish helplines & resources", color: "rgb(122, 158, 107)" },
+        { id: "signs", icon: "\u{1F50D}", title: "Signs to Watch For", sub: "Burnout, anxiety, depression & substance use", color: "rgb(135, 120, 176)" },
+        { id: "support", icon: "\u{1F49A}", title: "Get Support", sub: "Helplines, community groups & resources", color: "rgb(122, 158, 107)" },
     ];
 
     return (
@@ -718,7 +731,7 @@ function ChatScreen({ navigate }) {
         const saved = loadData("clarus_chat", []);
         if (saved.length === 0) {
             const name = loadData("clarus_name", "");
-            return [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 I'm glad you're here. There's no agenda and no pressure. How are you feeling right now? Even a single word is a great place to start.` }];
+            return [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 I'm here whenever you're ready. You can talk about what's on your mind, work through something that's bothering you, or just vent. There's no agenda and no right way to start.` }];
         }
         return saved;
     });
@@ -1051,6 +1064,23 @@ function SupportScreen({ navigate }) {
                         )}
                         <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textAlign: "center", padding: "10px 0", background: `${tint}15`, color: tint, borderRadius: 10, border: `1px solid ${tint}30`, textDecoration: "none", fontSize: 12, fontWeight: 600 }}>Website</a>
                     </div>
+                </div>
+            ))}
+
+            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 4, marginTop: 20 }}>Community & Connection</p>
+            <p style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 12 }}>Support isn't always professional. Sometimes it's a room full of people who get it.</p>
+
+            {communityResources.map((r, i) => (
+                <div key={`c${i}`} className="card" style={{ marginBottom: 10, cursor: "default" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(107, 140, 107, 0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{r.icon}</div>
+                        <div>
+                            <div style={{ fontSize: 15, fontWeight: 600 }}>{r.name}</div>
+                            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{r.category}</div>
+                        </div>
+                    </div>
+                    <p style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 10 }}>{r.desc}</p>
+                    <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px 0", background: "rgba(107, 140, 107, 0.08)", color: "rgb(107, 140, 107)", borderRadius: 10, border: "1px solid rgba(107, 140, 107, 0.2)", textDecoration: "none", fontSize: 12, fontWeight: 600 }}>Find out more</a>
                 </div>
             ))}
 
