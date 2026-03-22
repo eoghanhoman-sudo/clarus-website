@@ -356,6 +356,7 @@ function JournalScreen({ navigate }) {
     const [emotion, setEmotion] = useState(null);
     const [text, setText] = useState("");
     const [entries, setEntries] = useState(() => loadData("clarus_journal", []));
+    const [showMore, setShowMore] = useState(false);
 
     const emotions = [
         { id: 1, l: "Anxiety", e: "😰", cat: "c" },
@@ -409,7 +410,6 @@ function JournalScreen({ navigate }) {
     if (view === "emotion") {
         const common = emotions.filter(e => e.cat === "c");
         const more = emotions.filter(e => e.cat === "m");
-        const [showMore, setShowMore] = useState(false);
 
         return (
             <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
