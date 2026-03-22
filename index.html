@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarus — Mental Health, Made for Ireland</title>
+    <meta name="robots" content="index, follow">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="shortcut icon" href="/favicon.ico">
@@ -41,7 +42,7 @@
         }
 
         .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-        section { padding: 80px 0; }
+        .hero, .spotlight, .why-ireland, .difference, .monday-note, .newsletter, .app-store-section { padding: 80px 0; }
         h1, h2, h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
 
         .section-label {
@@ -500,6 +501,7 @@
     </style>
 </head>
 <body>
+<div role="application">
 
     <!-- Navigation -->
     <nav>
@@ -514,7 +516,7 @@
     </nav>
 
     <!-- Hero -->
-    <section class="hero">
+    <div class="hero" role="banner">
         <div class="container">
             <div class="hero-inner">
                 <div class="hero-text fade-in">
@@ -599,10 +601,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- What's Inside - Feature Grid -->
-    <section id="features" class="spotlight">
+    <div id="features" class="spotlight">
         <div class="container">
             <div class="features-intro fade-in">
                 <h2>What's inside</h2>
@@ -666,10 +668,10 @@
                 ✓ Every tool is free. No paywall, no premium tier.
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Spotlight 1: Breathing -->
-    <section class="spotlight dark-bg">
+    <div class="spotlight dark-bg">
         <div class="container">
             <div class="spotlight-hero fade-in">
                 <div class="spotlight-visual">
@@ -704,10 +706,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Spotlight 2: Signs Check-In -->
-    <section class="spotlight">
+    <div class="spotlight">
         <div class="container">
             <div class="spotlight-hero reverse fade-in">
                 <div class="spotlight-visual">
@@ -740,10 +742,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Spotlight 3: Chat -->
-    <section class="spotlight dark-bg">
+    <div class="spotlight dark-bg">
         <div class="container">
             <div class="spotlight-hero fade-in">
                 <div class="spotlight-visual">
@@ -778,10 +780,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Ireland Stats -->
-    <section class="why-ireland" id="why">
+    <div class="why-ireland" id="why">
         <div class="container">
             <div class="ireland-inner fade-in">
                 <div class="ireland-text">
@@ -809,10 +811,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- What Makes This Different -->
-    <section class="difference" id="difference">
+    <div class="difference" id="difference">
         <div class="container">
             <div class="difference-header fade-in">
                 <h2>What makes this different</h2>
@@ -840,10 +842,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- The Monday Note -->
-    <section class="monday-note fade-in">
+    <div class="monday-note fade-in">
         <div class="container">
             <div class="monday-inner">
                 <div class="section-label">Every Monday morning</div>
@@ -859,10 +861,10 @@
                 <p style="font-size: 14px; color: var(--text-dim); font-style: italic;">A new issue every Monday morning.</p>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Newsletter -->
-    <section class="newsletter" id="newsletter">
+    <div class="newsletter" id="newsletter">
         <div class="container">
             <div class="newsletter-box fade-in">
                 <div class="section-label">Get The Monday Note</div>
@@ -883,10 +885,10 @@
                 <p class="newsletter-note">No spam, ever. Just one thoughtful email every Monday.</p>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- App Store -->
-    <section class="app-store-section">
+    <div class="app-store-section">
         <div class="container fade-in">
             <div class="section-label">Coming soon</div>
             <h2>Built in Ireland, for iOS</h2>
@@ -896,7 +898,7 @@
                 <div class="badge-text"><small>Coming soon on the</small><span>App Store</span></div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -990,5 +992,6 @@
             });
         });
     </script>
+</div>
 </body>
 </html>
