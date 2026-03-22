@@ -346,6 +346,45 @@
         .ps-chart { display: flex; align-items: flex-end; gap: 6px; justify-content: center; height: 60px; margin-top: 16px; }
         .ps-bar { width: 18px; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.5; }
 
+        /* ── Mobile Inline Visuals ─────────────────── */
+        .mobile-visual { display: none; }
+
+        /* Home cards */
+        .mv-home { display: flex; flex-direction: column; gap: 8px; }
+        .mv-home-card {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--surface); border-radius: 12px; padding: 12px 14px;
+        }
+        .mv-home-card span { font-size: 20px; flex-shrink: 0; }
+        .mv-home-card strong { display: block; font-size: 14px; font-weight: 600; }
+        .mv-home-card small { font-size: 12px; color: var(--text-muted); }
+
+        /* Breathing orb */
+        .mv-breathing { text-align: center; padding: 20px 0; }
+        .mv-orb {
+            width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 16px;
+            background: radial-gradient(circle at 40% 40%, var(--accent), rgba(212, 148, 43, 0.15));
+            animation: orb-breathe 6s ease-in-out infinite;
+        }
+        .mv-phase { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text-muted); }
+
+        /* Technique cards */
+        .mv-techniques { display: flex; flex-direction: column; gap: 8px; }
+        .mv-tech {
+            background: var(--surface); border-radius: 12px; padding: 14px;
+        }
+        .mv-tech-cat { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+        .mv-tech strong { font-family: 'DM Serif Display', serif; font-size: 15px; font-weight: 400; }
+
+        /* Chat bubbles */
+        .mv-chat { display: flex; flex-direction: column; gap: 8px; }
+        .mv-bubble-ai, .mv-bubble-user {
+            max-width: 85%; padding: 10px 14px; border-radius: 16px;
+            font-size: 14px; line-height: 1.5;
+        }
+        .mv-bubble-ai { background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; }
+        .mv-bubble-user { background: var(--accent); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+
         /* ── Stats ────────────────────────────────── */
         .stats {
             padding: 100px 0;
@@ -447,6 +486,7 @@
         @media (max-width: 900px) {
             .journey { grid-template-columns: 1fr; gap: 0; }
             .journey-phone { display: none; }
+            .mobile-visual { display: block; margin: 20px 0 0; }
             .journey-section {
                 min-height: auto; padding: 40px 0;
                 border-bottom: 1px solid var(--card-border);
@@ -543,13 +583,28 @@
             <div class="journey-section fade-in" data-screen="home">
                 <div class="section-label">Your home screen</div>
                 <h2>Everything starts here</h2>
-                <p>Open the app and it knows the time of day, how you've been feeling, what might help. No menus to dig through — just the right tools, ready.</p>
+                <p>Open the app and it knows the time of day, how you've been feeling, what might help.</p>
+                <!-- Mobile inline visual -->
+                <div class="mobile-visual">
+                    <div class="mv-home">
+                        <div class="mv-home-card"><span>🌬️</span><div><strong>Breathe</strong><small>Guided breathing + sound</small></div></div>
+                        <div class="mv-home-card"><span>😊</span><div><strong>Check in</strong><small>How are you feeling?</small></div></div>
+                        <div class="mv-home-card"><span>📝</span><div><strong>Journal</strong><small>Three words or more</small></div></div>
+                        <div class="mv-home-card"><span>💬</span><div><strong>Talk</strong><small>Think out loud</small></div></div>
+                    </div>
+                </div>
             </div>
 
             <div class="journey-section fade-in" data-screen="breathing">
                 <div class="section-label">Guided breathing</div>
                 <h2>Slow down in minutes</h2>
-                <p>Four patterns. Seven ambient sounds. Pick what fits and breathe.</p>
+                <!-- Mobile inline visual -->
+                <div class="mobile-visual">
+                    <div class="mv-breathing">
+                        <div class="mv-orb"></div>
+                        <div class="mv-phase">Breathe in</div>
+                    </div>
+                </div>
                 <div class="sound-chips">
                     <span class="sound-chip active">Rain</span>
                     <span class="sound-chip">Ocean</span>
@@ -564,6 +619,14 @@
             <div class="journey-section fade-in" data-screen="toolkit">
                 <div class="section-label">Practical toolkit</div>
                 <h2>41 tools across 17 topics</h2>
+                <!-- Mobile inline visual -->
+                <div class="mobile-visual">
+                    <div class="mv-techniques">
+                        <div class="mv-tech"><span class="mv-tech-cat">Alcohol</span><strong>The Honest Drink Diary</strong></div>
+                        <div class="mv-tech"><span class="mv-tech-cat">Work</span><strong>The Sunday Reset</strong></div>
+                        <div class="mv-tech"><span class="mv-tech-cat">Anger</span><strong>The Anger Iceberg</strong></div>
+                    </div>
+                </div>
                 <div class="pillar-list">
                     <div class="pillar-row"><span class="pillar-dot"></span>Anxiety<span class="pillar-count">3</span></div>
                     <div class="pillar-row"><span class="pillar-dot"></span>Work & Pressure<span class="pillar-count">3</span></div>
@@ -579,7 +642,14 @@
             <div class="journey-section fade-in" data-screen="chat">
                 <div class="section-label">AI companion</div>
                 <h2>Think out loud, without judgement</h2>
-                <p>Not a therapist. A calm companion you can talk to at 2am or on a Tuesday lunchbreak. Private, always available, never tires of listening.</p>
+                <!-- Mobile inline visual -->
+                <div class="mobile-visual">
+                    <div class="mv-chat">
+                        <div class="mv-bubble-ai">What's on your mind?</div>
+                        <div class="mv-bubble-user">Been drinking more than I should</div>
+                        <div class="mv-bubble-ai">That awareness matters. What's underneath it?</div>
+                    </div>
+                </div>
             </div>
 
             <div class="journey-section fade-in" data-screen="more">
