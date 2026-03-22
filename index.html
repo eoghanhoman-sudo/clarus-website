@@ -488,10 +488,13 @@
             .journey-phone { display: none; }
             .mobile-visual { display: block; margin: 20px 0 0; }
             .journey-section {
-                min-height: auto; padding: 40px 0;
-                border-bottom: 1px solid var(--card-border);
+                min-height: auto; padding: 40px 24px;
+                margin: 0 -24px;
+                border-bottom: none;
             }
-            .journey-section:last-child { border-bottom: none; }
+            .journey-section:nth-child(even) {
+                background: var(--bg-deep);
+            }
             .journey-section h2 { font-size: 26px; }
             .journey-section > p { font-size: 15px; }
 
