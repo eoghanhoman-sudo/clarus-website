@@ -447,17 +447,57 @@
         @media (max-width: 900px) {
             .journey { grid-template-columns: 1fr; gap: 0; }
             .journey-phone { display: none; }
-            .journey-section { min-height: auto; padding: 60px 0; }
-            .monday-inner { grid-template-columns: 1fr; gap: 48px; }
+            .journey-section {
+                min-height: auto; padding: 40px 0;
+                border-bottom: 1px solid var(--card-border);
+            }
+            .journey-section:last-child { border-bottom: none; }
+            .journey-section h2 { font-size: 26px; }
+            .journey-section > p { font-size: 15px; }
+
+            /* Tighten pillar list */
+            .pillar-row { padding: 10px 0; font-size: 14px; }
+
+            /* Keep more-grid as 2-col on mobile */
+            .more-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .more-item { padding: 14px; }
+            .more-item h3 { font-size: 14px; }
+            .more-item p { font-size: 11px; }
+
+            /* Tighten other sections */
+            .stats { padding: 60px 0; }
+            .stats-header { margin-bottom: 40px; }
+            .stats-row { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+            .stat-number { font-size: 36px; }
+            .stat-label { font-size: 12px; }
+
+            .monday-note { padding: 60px 0; }
+            .monday-inner { grid-template-columns: 1fr; gap: 32px; }
             .monday-text { text-align: center; }
             .monday-text > p { margin-left: auto; margin-right: auto; }
             .monday-signup { flex-direction: column; }
-            .stats-row { grid-template-columns: 1fr; gap: 48px; }
-            .more-grid { grid-template-columns: 1fr; }
+            .monday-preview { padding: 24px; }
+            .monday-preview h3 { font-size: 18px; }
+            .monday-preview p { font-size: 13px; }
+
+            .closing { padding: 60px 0 48px; }
         }
 
         @media (max-width: 768px) {
-            .hero { padding: 140px 0 60px; }
+            .hero { padding: 120px 0 40px; }
+            .hero h1 { font-size: 36px; letter-spacing: -0.5px; }
+            .hero > .container > p { font-size: 16px; }
+            .hero-actions { flex-direction: column; align-items: center; gap: 10px; }
+
+            .nav-links a:not(.nav-cta) { display: none; }
+
+            .sound-chips { gap: 6px; }
+            .sound-chip { font-size: 12px; padding: 6px 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 30px; }
+            .stats-row { grid-template-columns: 1fr; gap: 32px; }
         }
     </style>
 </head>
