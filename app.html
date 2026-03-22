@@ -54,8 +54,6 @@
         }
         .screen { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
         .screen::-webkit-scrollbar { display: none; }
-
-        /* Bottom Nav */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -72,9 +70,6 @@
             transition: color 0.2s;
         }
         .nav-item.active { color: var(--accent); }
-        .nav-item svg { width: 22px; height: 22px; }
-
-        /* Cards */
         .card {
             background: var(--card);
             border: 1px solid var(--card-border);
@@ -84,8 +79,6 @@
             transition: transform 0.15s, box-shadow 0.15s;
         }
         .card:active { transform: scale(0.98); }
-
-        /* Buttons */
         .btn-primary {
             background: var(--accent);
             color: white;
@@ -101,992 +94,1518 @@
         }
         .btn-primary:active { opacity: 0.85; }
         .btn-secondary {
-            background: var(--accent-soft);
+            background: transparent;
             color: var(--accent);
-            border: 1px solid rgba(212, 148, 43, 0.2);
+            border: 1px solid var(--accent);
             border-radius: 14px;
-            padding: 14px 24px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 15px;
+            padding: 12px 20px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
         }
-
-        /* Section colors */
-        .section-mood { background: linear-gradient(to bottom, rgba(212, 148, 43, 0.06), var(--bg) 35%); }
-        .section-breathe { background: linear-gradient(to bottom, rgba(107, 168, 148, 0.08), var(--bg) 35%); }
-        .section-chat { background: linear-gradient(to bottom, rgba(184, 133, 143, 0.08), var(--bg) 35%); }
-        .section-assess { background: linear-gradient(to bottom, rgba(92, 148, 173, 0.08), var(--bg) 35%); }
-        .section-support { background: linear-gradient(to bottom, rgba(122, 158, 107, 0.08), var(--bg) 35%); }
-        .section-signs { background: linear-gradient(to bottom, rgba(135, 120, 176, 0.08), var(--bg) 35%); }
-        .section-cbt { background: linear-gradient(to bottom, rgba(196, 122, 79, 0.08), var(--bg) 35%); }
-
-        /* Serif headings */
-        .serif { font-family: 'DM Serif Display', serif; }
-
-        /* Breathing orb */
-        .breath-orb {
-            width: 180px; height: 180px;
-            border-radius: 50%;
-            transition: transform 1s ease-in-out;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-        }
-
-        /* Chat bubbles */
-        .chat-bubble-user {
-            background: rgb(184, 133, 143);
-            color: white;
-            border-radius: 12px;
-            padding: 10px 12px;
-            max-width: 80%;
-            margin-left: auto;
-            font-size: 15px;
-            line-height: 1.45;
-        }
-        .chat-bubble-assistant {
-            background: var(--card);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 10px 12px;
-            max-width: 85%;
-            font-size: 15px;
-            line-height: 1.45;
-        }
-
-        /* Tags */
-        .tag {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 8px 12px; border-radius: 20px;
-            font-size: 13px; cursor: pointer; border: 1px solid var(--border);
-            background: var(--card); transition: all 0.15s;
-        }
-        .tag.selected { background: var(--accent); color: white; border-color: var(--accent); }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        .typing-dot { animation: pulse 1.2s ease-in-out infinite; }
+        .serif { font-family: 'DM Serif Display', serif; font-weight: 400; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.25); opacity: 0.9; } }
     </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
-
-// ─── Data ───────────────────────────────────────────
-
-const moodEmojis = [
-    { value: 1, emoji: "\u{1F61E}", label: "Struggling" },
-    { value: 2, emoji: "\u{1F614}", label: "Low" },
-    { value: 3, emoji: "\u{1F610}", label: "Okay" },
-    { value: 4, emoji: "\u{1F642}", label: "Good" },
-    { value: 5, emoji: "\u{1F60A}", label: "Great" },
-];
-
-const moodTags = [
-    { label: "Work stress", icon: "\u{1F4BC}" },
-    { label: "Poor sleep", icon: "\u{1F319}" },
-    { label: "Exercised", icon: "\u{1F4AA}" },
-    { label: "Social time", icon: "\u{1F465}" },
-    { label: "Anxious", icon: "\u{1F630}" },
-    { label: "Overwhelmed", icon: "\u{1F30A}" },
-    { label: "Grateful", icon: "\u{1F64F}" },
-    { label: "Lonely", icon: "\u{1FAE5}" },
-    { label: "Family", icon: "\u{1F3E0}" },
-    { label: "Creative", icon: "\u{1F3A8}" },
-    { label: "Outdoors", icon: "\u{1F333}" },
-    { label: "Productive", icon: "\u2705" },
-];
-
-const reflectionPrompts = [
-    { q: "What's one thing that affected your mood today?", p: "It can be big or small..." },
-    { q: "What are you carrying right now?", p: "Name it, even if it's hard to pin down..." },
-    { q: "What moment stood out to you today?", p: "Good, bad, or somewhere in between..." },
-    { q: "If your mood had a weather, what would it be?", p: "Stormy, cloudy, clear skies..." },
-    { q: "What do you need more of right now?", p: "Rest, connection, space, fun..." },
-];
-
-const breathPatterns = [
-    { id: "calm", name: "Calm Breath", tagline: "Gentle & grounding", icon: "\u{1F343}",
-      desc: "A simple rhythm that slows your nervous system.",
-      inhale: 4, hold1: 0, exhale: 6, hold2: 0, cycles: 5,
-      color: "rgb(107, 168, 148)", baseFreq: 130.81 },
-    { id: "478", name: "4-7-8", tagline: "Deep relaxation", icon: "\u{1F30A}",
-      desc: "The gold standard for calming your nervous system.",
-      inhale: 4, hold1: 7, exhale: 8, hold2: 0, cycles: 4,
-      color: "rgb(92, 148, 173)", baseFreq: 110.0 },
-    { id: "box", name: "Box Breathing", tagline: "Focus & control", icon: "\u{1F7E6}",
-      desc: "Equal parts in, hold, out, hold. Used by Navy SEALs.",
-      inhale: 4, hold1: 4, exhale: 4, hold2: 4, cycles: 5,
-      color: "rgb(135, 120, 176)", baseFreq: 174.61 },
-    { id: "reset", name: "Quick Reset", tagline: "60 seconds \u00B7 instant relief", icon: "\u26A1",
-      desc: "A short burst to reset your nervous system fast.",
-      inhale: 3, hold1: 0, exhale: 5, hold2: 0, cycles: 5,
-      color: "rgb(196, 156, 79)", baseFreq: 146.83 },
-];
-
-const durationOptions = [1, 2, 3, 5, 10];
-
-const supportResources = [
-    { name: "Samaritans Ireland", desc: "Free, confidential emotional support for anyone in distress or despair.", phone: "116 123", hours: "24/7, every day", icon: "\u{1F4DE}", url: "https://www.samaritans.org/ireland/", needs: ["crisis","low"] },
-    { name: "Pieta House", desc: "Free therapy for people who are suicidal, self-harming, or bereaved by suicide.", phone: "1800 247 247", hours: "24/7 crisis helpline", icon: "\u{1F56F}\uFE0F", url: "https://www.pieta.ie", needs: ["crisis","happened"] },
-    { name: "Text 50808", desc: "Free 24/7 text service. Text HELLO to 50808 to start a conversation with a trained crisis volunteer.", phone: "Text HELLO to 50808", hours: "24/7", icon: "\u{1F4F1}", url: "https://text50808.ie", needs: ["crisis","low"] },
-    { name: "Aware", desc: "Support for people affected by depression, bipolar disorder, and mood-related conditions.", phone: "1800 80 48 48", hours: "10am\u201310pm, every day", icon: "\u{1F499}", url: "https://www.aware.ie", needs: ["low"] },
-    { name: "Jigsaw", desc: "Free mental health support for young people aged 12\u201325.", phone: "Online chat", hours: "Mon\u2013Fri", icon: "\u{1F9E9}", url: "https://www.jigsaw.ie", needs: ["low","people"] },
-    { name: "MyMind", desc: "Affordable professional counselling \u2014 online and in-person across Ireland.", phone: "Book online", hours: "7 days a week", icon: "\u{1F9E0}", url: "https://mymind.org", needs: ["low","relationship","happened"] },
-    { name: "Turn2Me", desc: "Free online counselling and support groups for adults experiencing mental health difficulties.", phone: "Online sessions", hours: "Check website", icon: "\u{1F4AC}", url: "https://turn2me.ie", needs: ["low","people"] },
-    { name: "Accord", desc: "Couples and relationship counselling across 46 centres in Ireland. Fees are based on what you can afford.", phone: "01 505 3112", hours: "Check website for local centres", icon: "\u{1F491}", url: "https://www.accord.ie", needs: ["relationship"] },
-    { name: "One Family", desc: "Support for people parenting alone, sharing parenting, or going through separation. Helpline, counselling, and parenting programmes.", phone: "0818 66 22 12", hours: "Mon\u2013Fri, 10am\u20132pm", icon: "\u{1F468}\u200D\u{1F467}", url: "https://onefamily.ie", needs: ["relationship","parenting"] },
-    { name: "MABS", desc: "Free, confidential, independent money advice. Help with debt, bills, mortgage arrears, or just making a budget \u2014 available in every county.", phone: "0818 07 2000", hours: "Mon\u2013Fri, 9am\u20138pm", icon: "\u{1F4B7}", url: "https://www.mabs.ie", needs: ["money"] },
-    { name: "Women\u2019s Aid", desc: "Support for women and children experiencing domestic violence and abuse. Free, confidential helpline.", phone: "1800 341 900", hours: "24/7 helpline", icon: "\u{1F6E1}\uFE0F", url: "https://www.womensaid.ie", needs: ["happened","relationship"] },
-    { name: "AMEN", desc: "Confidential support for male victims of domestic abuse. Helpline, support meetings, and court accompaniment.", phone: "046 902 3718", hours: "Mon\u2013Fri, 9am\u20135pm", icon: "\u{1F91D}", url: "https://www.amen.ie", needs: ["happened"] },
-    { name: "Rape Crisis Centre", desc: "Free counselling and support for anyone affected by sexual violence \u2014 recent or historic. You can call even if you're not sure.", phone: "1800 77 8888", hours: "24/7 helpline", icon: "\u{1F49C}", url: "https://www.drcc.ie", needs: ["happened"] },
-    { name: "Parentline", desc: "Support for parents under pressure. If you're struggling, feeling overwhelmed, or worried about your child \u2014 a confidential space to talk.", phone: "1890 927 277", hours: "Mon\u2013Fri, 10am\u20139pm; Sat 10am\u20131pm", icon: "\u{1F476}", url: "https://www.parentline.ie", needs: ["parenting"] },
-];
-
-const communityResources = [
-    { name: "Men\u2019s Sheds Ireland", category: "Community & belonging", desc: "A place for men to connect, talk, and work on projects together. Over 450 sheds across Ireland \u2014 no referrals, no fees, no pressure.", icon: "\u{1F3E0}", url: "https://menssheds.ie", needs: ["people","low"] },
-    { name: "Women\u2019s Sheds Ireland", category: "Community & belonging", desc: "180+ community-led spaces where women gather to connect, learn skills, and look after their wellbeing. No referrals, no fees.", icon: "\u{1F3E1}", url: "https://www.womensshedsireland.com", needs: ["people"] },
-    { name: "GAA Healthy Clubs", category: "Sport & wellbeing", desc: "Your local GAA club as a community health hub. 350+ clubs offering mental health awareness, activity, and connection.", icon: "\u{1F3D0}", url: "https://www.gaa.ie/my-gaa/community-and-health/healthy-club/", needs: ["people"] },
-    { name: "parkrun Ireland", category: "Movement & connection", desc: "Free weekly 5k walk/run every Saturday morning. It\u2019s not about speed \u2014 it\u2019s about showing up.", icon: "\u{1F3C3}", url: "https://www.parkrun.ie", needs: ["people","low"] },
-    { name: "Grow Mental Health", category: "Peer support groups", desc: "Free weekly peer support groups across Ireland. Run by people who\u2019ve been through it. No therapists, no diagnoses.", icon: "\u{1F331}", url: "https://grow.ie", needs: ["people","low"] },
-    { name: "Alone Ireland", category: "Older adult support", desc: "Support, friendship, and practical help for older people who are isolated or lonely. Befriending calls, social activities, and 24/7 support line (0818 222 024).", icon: "\u{1F91D}", url: "https://alone.ie", needs: ["people"] },
-    { name: "SpunOut.ie", category: "Young adult resources", desc: "Ireland\u2019s youth information platform covering mental health, relationships, money, and identity. For 16\u201325 year olds.", icon: "\u{1F4F1}", url: "https://spunout.ie", needs: ["people","low"] },
-    { name: "See Change", category: "Stigma reduction", desc: "Ireland\u2019s national stigma reduction partnership. Start a conversation about mental health in your workplace or community.", icon: "\u{1F5E3}\uFE0F", url: "https://seechange.ie", needs: ["people"] },
-    { name: "MABS", category: "Financial wellbeing", desc: "Not just for people in debt. Help with budgeting, creditors, and building financial confidence. Free, confidential, every county.", icon: "\u{1F4B0}", url: "https://www.mabs.ie", needs: ["money"] },
-];
-
-const supportNeeds = [
-    { id: "low", label: "I'm feeling low or anxious", icon: "\u{2601}\uFE0F", tint: "rgb(122, 158, 107)" },
-    { id: "relationship", label: "Relationship or family stuff", icon: "\u{2764}\uFE0F", tint: "rgb(166, 115, 140)" },
-    { id: "money", label: "Money worries", icon: "\u{1F4B7}", tint: "rgb(140, 140, 107)" },
-    { id: "people", label: "I want to find my people", icon: "\u{1F465}", tint: "rgb(107, 140, 140)" },
-    { id: "happened", label: "Something happened to me", icon: "\u{1F6E1}\uFE0F", tint: "rgb(148, 107, 140)" },
-    { id: "parenting", label: "Parenting is hard right now", icon: "\u{1F476}", tint: "rgb(140, 128, 97)" },
-];
-
-const needNudges = {
-    low: { emoji: "\u{1F49A}", text: "1 in 4 Irish adults will experience a mental health difficulty. You\u2019re not alone in this." },
-    relationship: { emoji: "\u{1F49B}", text: "Asking for help with a relationship isn\u2019t giving up on it. It\u2019s the opposite." },
-    money: { emoji: "\u{1F499}", text: "46% of Irish adults report financial stress. MABS is free, confidential, and in every county." },
-    people: { emoji: "\u{1F91D}", text: "Connection isn\u2019t a luxury. It\u2019s how we\u2019re built. Showing up somewhere is enough." },
-    happened: { emoji: "\u{1F49C}", text: "Whatever happened, it wasn\u2019t your fault. These services exist because you deserve support." },
-    parenting: { emoji: "\u{1F9E1}", text: "1 in 5 Irish mothers experience postnatal depression. Good parents struggle too." },
-};
-
-const assessmentQuestions = [
-    { id: 1, domain: "work", text: "Do you feel overwhelmed by your workload or responsibilities?", icon: "\u{1F4CB}", inverted: false },
-    { id: 2, domain: "work", text: "Do you feel valued and recognised for your contributions?", icon: "\u2B50", inverted: true },
-    { id: 3, domain: "relationships", text: "Do you feel disconnected from the people closest to you?", icon: "\u{1F494}", inverted: false },
-    { id: 4, domain: "relationships", text: "Is there someone you can talk to honestly about how you feel?", icon: "\u{1F91D}", inverted: true },
-    { id: 5, domain: "body", text: "Do you experience frequent headaches, tension, or fatigue?", icon: "\u{1F629}", inverted: false },
-    { id: 6, domain: "sleep", text: "Do you have trouble falling asleep or staying asleep?", icon: "\u{1F319}", inverted: false },
-    { id: 7, domain: "sleep", text: "Do you wake up feeling rested most mornings?", icon: "\u2600\uFE0F", inverted: true },
-    { id: 8, domain: "body", text: "Are you eating regularly and in a way that feels healthy?", icon: "\u{1F34E}", inverted: true },
-    { id: 9, domain: "social", text: "Do you feel lonely or isolated, even when around others?", icon: "\u{1FAE5}", inverted: false },
-    { id: 10, domain: "social", text: "Have you withdrawn from activities or people you used to enjoy?", icon: "\u{1F6AA}", inverted: false },
-    { id: 11, domain: "purpose", text: "Do you feel a sense of meaning or direction in your life right now?", icon: "\u{1F9ED}", inverted: true },
-    { id: 12, domain: "purpose", text: "Do you find it hard to motivate yourself for things that used to matter?", icon: "\u{1F50B}", inverted: false },
-    { id: 13, domain: "work", text: "Do you dread the start of the working week?", icon: "\u{1F4C5}", inverted: false },
-    { id: 14, domain: "relationships", text: "Do you feel irritable or impatient with people more than usual?", icon: "\u{1F624}", inverted: false },
-];
-
-const lifeDomains = [
-    { id: "work", label: "Work & Purpose", icon: "\u{1F4BC}", color: "rgb(212, 148, 43)" },
-    { id: "relationships", label: "Relationships", icon: "\u{1F49B}", color: "rgb(196, 120, 79)" },
-    { id: "body", label: "Physical Health", icon: "\u{1F3C3}", color: "rgb(107, 168, 138)" },
-    { id: "sleep", label: "Sleep & Rest", icon: "\u{1F319}", color: "rgb(135, 120, 176)" },
-    { id: "social", label: "Social & Connection", icon: "\u{1F465}", color: "rgb(92, 148, 173)" },
-    { id: "purpose", label: "Purpose & Fulfilment", icon: "\u2728", color: "rgb(212, 148, 43)" },
-];
-
-const answerLabels = ["Not at all", "A little", "Moderately", "Quite a bit", "Extremely"];
-
-const signsData = [
-    { cat: "burnout", icon: "\u{1F525}", title: "Burnout", color: "rgb(212, 148, 43)",
-      desc: "Burnout is your mind and body\u2019s response to prolonged, unmanageable stress.",
-      signs: ["Exhaustion that sleep doesn\u2019t fix", "Cynicism about work or responsibilities", "Feeling detached or emotionally numb", "Reduced performance despite effort", "Sunday dread that starts Friday evening"] },
-    { cat: "anxiety", icon: "\u26A1", title: "Anxiety", color: "rgb(135, 120, 176)",
-      desc: "Anxiety is your threat detection system stuck in overdrive.",
-      signs: ["Constant worry or racing thoughts", "Physical tension (jaw, shoulders, chest)", "Avoiding situations or decisions", "Trouble concentrating or sleeping", "Feeling on edge or restless"] },
-    { cat: "depression", icon: "\u{1F327}\uFE0F", title: "Depression", color: "rgb(92, 148, 173)",
-      desc: "Depression isn\u2019t sadness. It\u2019s a flattening \u2014 of energy, interest, hope, and connection.",
-      signs: ["Loss of interest in things you used to enjoy", "Persistent low mood or emptiness", "Changes in appetite or sleep", "Difficulty making decisions", "Withdrawing from people and activities"] },
-    { cat: "substance", icon: "\u{1FA9E}", title: "Substance Use", color: "rgb(140, 107, 97)",
-      desc: "Alcohol and substance use often starts as coping and gradually becomes the problem itself. In Ireland, where drinking is woven into social life, it\u2019s especially hard to see when your relationship with alcohol has shifted.",
-      signs: ["Drinking to cope with stress, boredom, or difficult feelings", "Needing more to feel the same effect", "Next-day anxiety and regret (\u2018the fear\u2019)", "Hiding or minimising how much you drink", "Drinking is affecting relationships or responsibilities"] },
-    { cat: "trauma", icon: "\u{1F6E1}\uFE0F", title: "Trauma", color: "rgb(179, 82, 79)",
-      desc: "Trauma is your nervous system stuck in high-alert mode. It\u2019s not about being \u2018weak\u2019 \u2014 it\u2019s about what you\u2019ve survived.",
-      signs: ["Hypervigilance \u2014 always on guard", "Avoidance of certain places, people, or topics", "Emotional flashbacks or sudden mood shifts", "Difficulty trusting people or feeling safe in relationships"] },
-];
-
-// ─── Storage Helpers ────────────────────────────────
+const { useState, useEffect, useRef } = React;
 
 function loadData(key, fallback) {
-    try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; }
-    catch { return fallback; }
+    try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
 }
 function saveData(key, data) {
-    try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+    localStorage.setItem(key, JSON.stringify(data));
 }
-
-// ─── App ────────────────────────────────────────────
 
 function App() {
     const [tab, setTab] = useState("home");
     const [subScreen, setSubScreen] = useState(null);
-
     const navigate = (t, sub = null) => { setTab(t); setSubScreen(sub); };
+
+    const tabs = [
+        { id: "home", label: "Home", icon: "🏠" },
+        { id: "support", label: "Support", icon: "❤️" },
+        { id: "mood", label: "Mood", icon: "😊" },
+        { id: "toolkit", label: "Toolkit", icon: "🛠️" },
+        { id: "chat", label: "Chat", icon: "💬" },
+    ];
 
     return (
         <div className="app-container">
             <div className="screen">
                 {tab === "home" && <HomeScreen navigate={navigate} />}
-                {tab === "mood" && <MoodScreen navigate={navigate} />}
-                {tab === "breathe" && <BreathingScreen navigate={navigate} />}
-                {tab === "chat" && <ChatScreen navigate={navigate} />}
-                {tab === "assess" && <AssessmentScreen navigate={navigate} />}
                 {tab === "support" && <SupportScreen navigate={navigate} />}
+                {tab === "mood" && <MoodScreen navigate={navigate} subScreen={subScreen} />}
+                {tab === "toolkit" && <ToolkitScreen navigate={navigate} />}
+                {tab === "chat" && <ChatScreen navigate={navigate} />}
                 {tab === "signs" && <SignsScreen navigate={navigate} />}
+                {tab === "breathing" && <BreathingScreen navigate={navigate} />}
+                {tab === "grounding" && <GroundingScreen navigate={navigate} />}
+                {tab === "articles" && <ArticlesScreen navigate={navigate} />}
+                {tab === "assessment" && <AssessmentScreen navigate={navigate} />}
             </div>
-            <nav className="bottom-nav">
-                <NavItem icon="home" label="Home" active={tab === "home"} onClick={() => navigate("home")} />
-                <NavItem icon="mood" label="Mood" active={tab === "mood"} onClick={() => navigate("mood")} />
-                <NavItem icon="breathe" label="Breathe" active={tab === "breathe"} onClick={() => navigate("breathe")} />
-                <NavItem icon="chat" label="Chat" active={tab === "chat"} onClick={() => navigate("chat")} />
-                <NavItem icon="support" label="Support" active={tab === "support"} onClick={() => navigate("support")} />
-            </nav>
+            <div className="bottom-nav">
+                {tabs.map(t => (
+                    <button key={t.id} className={`nav-item ${tab === t.id ? "active" : ""}`} onClick={() => navigate(t.id)}>
+                        <span style={{ fontSize: 20 }}>{t.icon}</span>
+                        <span>{t.label}</span>
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
 
-function NavItem({ icon, label, active, onClick }) {
-    const icons = {
-        home: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-        mood: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>,
-        breathe: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v12"/><path d="M6 12h12"/></svg>,
-        chat: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-        support: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-    };
+function BackButton({ onClick, color = "var(--accent)" }) {
     return (
-        <button className={`nav-item ${active ? "active" : ""}`} onClick={onClick}>
-            {icons[icon]}
-            <span>{label}</span>
+        <button onClick={onClick} style={{
+            background: "none", border: "none", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+            fontWeight: 500, color, marginBottom: 14, padding: "4px 0"
+        }}>
+            <span>‹</span> Back
         </button>
     );
 }
-
-// ─── Back Button ────────────────────────────────────
-
-function BackButton({ onClick, label = "Back", color = "var(--accent)" }) {
-    return (
-        <button onClick={onClick} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, color, fontSize: 13, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", padding: 0, marginBottom: 16 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            {label}
-        </button>
-    );
-}
-
-// ─── Home Screen ────────────────────────────────────
 
 function HomeScreen({ navigate }) {
-    const name = loadData("clarus_name", "");
-    const hour = new Date().getHours();
-    const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    const [greeting, setGreeting] = useState("");
+    const facts = [
+        "1 in 4 Irish adults will experience a mental health difficulty in their lifetime",
+        "The average delay in seeking help in Ireland is 7 years",
+        "450,000 Irish adults live with anxiety disorders",
+        "Mental health conditions are treatable — recovery is possible",
+        "Asking for help is a sign of strength, not weakness"
+    ];
 
-    const cards = [
-        { id: "mood", icon: "\u{1F4CA}", title: "Mood Tracker", sub: "How are you feeling right now?", color: "rgb(212, 148, 43)" },
-        { id: "breathe", icon: "\u{1F343}", title: "Breathing", sub: "Guided breathing exercises", color: "rgb(107, 168, 148)" },
-        { id: "chat", icon: "\u{1F4AC}", title: "Talk It Through", sub: "Chat with your AI companion", color: "rgb(184, 133, 143)" },
-        { id: "assess", icon: "\u{1F4CB}", title: "Wellbeing Check-in", sub: "14 questions across 6 life areas", color: "rgb(92, 148, 173)" },
-        { id: "signs", icon: "\u{1F50D}", title: "Signs to Watch For", sub: "Burnout, anxiety, depression & substance use", color: "rgb(135, 120, 176)" },
-        { id: "support", icon: "\u{1F49A}", title: "Get Support", sub: "Helplines, community groups & resources", color: "rgb(122, 158, 107)" },
+    useEffect(() => {
+        const updateGreeting = () => {
+            const hour = new Date().getHours();
+            if (hour < 5) setGreeting("Good night");
+            else if (hour < 12) setGreeting("Good morning");
+            else if (hour < 17) setGreeting("Good afternoon");
+            else setGreeting("Good evening");
+        };
+        updateGreeting();
+    }, []);
+
+    const getHero = () => {
+        const hour = new Date().getHours();
+        if (hour < 5 || hour >= 22) return { title: "Wind down", color: "#6B8E99", action: "breathing" };
+        if (hour < 10) return { title: "Start your day", color: "#D4942B", action: "mood" };
+        if (hour < 14) return { title: "Midday check-in", color: "#8B7355", action: "mood", sub: "journal" };
+        if (hour < 17) return { title: "Afternoon pause", color: "#6B8E99", action: "breathing" };
+        return { title: "Evening check-in", color: "#8B7355", action: "mood" };
+    };
+
+    const hero = getHero();
+    const day = new Date().getDate();
+    const fact = facts[day % facts.length];
+
+    const gridItems = [
+        { label: "Mood", emoji: "😊", a: "mood" },
+        { label: "Journal", emoji: "📝", a: "mood", sub: "journal" },
+        { label: "Breathe", emoji: "🫁", a: "breathing" },
+        { label: "Toolkit", emoji: "🛠️", a: "toolkit" },
+        { label: "Signs", emoji: "🔍", a: "signs" },
+        { label: "Articles", emoji: "📚", a: "articles" },
+        { label: "Grounding", emoji: "🌍", a: "grounding" },
+        { label: "Check-in", emoji: "📋", a: "assessment" },
+        { label: "Chat", emoji: "💬", a: "chat" },
     ];
 
     return (
-        <div style={{ padding: "20px 22px 40px" }}>
-            <div style={{ marginBottom: 24 }}>
-                <h1 className="serif" style={{ fontSize: 28, color: "var(--accent)", marginBottom: 4 }}>
-                    {greeting}{name ? `, ${name}` : ""}.
-                </h1>
-                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>What would you like to do today?</p>
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <h1 className="serif" style={{ fontSize: 28, marginBottom: 4 }}>{greeting}</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>You're in the right place.</p>
+
+            <div onClick={() => navigate(hero.action, hero.sub)} style={{
+                padding: 20, borderRadius: 16, background: `${hero.color}15`,
+                border: `1px solid ${hero.color}30`, cursor: "pointer", marginBottom: 20
+            }}>
+                <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{hero.title}</p>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Let's take a moment</p>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {cards.map(c => (
-                    <div key={c.id} className="card" onClick={() => navigate(c.id)} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${c.color}12`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{c.icon}</div>
-                        <div>
-                            <div style={{ fontSize: 15, fontWeight: 600 }}>{c.title}</div>
-                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{c.sub}</div>
-                        </div>
-                        <svg style={{ marginLeft: "auto", flexShrink: 0, color: "var(--text-dim)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <div style={{ padding: 14, borderRadius: 14, background: "var(--card)", border: "1px solid var(--border)", marginBottom: 20 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 8 }}>Did you know?</p>
+                <p style={{ fontSize: 12.5, color: "var(--text)", lineHeight: 1.5 }}>{fact}</p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+                {gridItems.map(f => (
+                    <div key={f.label} onClick={() => navigate(f.a, f.sub)} className="card" style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 14 }}>
+                        <span style={{ fontSize: 24 }}>{f.emoji}</span>
+                        <span style={{ fontSize: 13, fontWeight: 500 }}>{f.label}</span>
                     </div>
                 ))}
             </div>
 
-            <div style={{ marginTop: 24, padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)" }}>
-                <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
-                    Clarus is not a substitute for professional medical advice. If you're struggling, please reach out to the support resources in this app.
-                </p>
-                <p style={{ fontSize: 11, color: "var(--text-dim)", lineHeight: 1.5, marginTop: 8 }}>
-                    Your mood entries and chat history are stored locally in your browser and can be cleared at any time via your browser settings. Chat messages are processed securely to generate responses but are never stored on our servers. <a href="https://clarusapp.ie/privacy.html" style={{ color: "var(--text-muted)" }}>Privacy Policy</a>
+            <div style={{ padding: 12, background: "var(--card)", borderRadius: 12, border: "1px solid var(--border)" }}>
+                <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>
+                    Your data is stored securely on this device. Chat is processed securely. <a href="/privacy.html" target="_blank" style={{ color: "var(--accent)" }}>Learn more</a>.
                 </p>
             </div>
         </div>
     );
 }
 
-// ─── Mood Screen ────────────────────────────────────
+function MoodScreen({ navigate, subScreen }) {
+    const [mood, setMood] = useState(null);
+    const [tags, setTags] = useState([]);
+    const [entries, setEntries] = useState(() => loadData("clarus_mood", []));
 
-function MoodScreen({ navigate }) {
-    const [step, setStep] = useState(0); // 0=mood, 1=tags, 2=reflection, 3=done
-    const [moodVal, setMoodVal] = useState(null);
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [note, setNote] = useState("");
-    const [reflection, setReflection] = useState("");
-    const [entries, setEntries] = useState(() => loadData("clarus_mood_entries", []));
+    const moods = [
+        { v: 1, e: "😢" },
+        { v: 2, e: "😞" },
+        { v: 3, e: "😐" },
+        { v: 4, e: "🙂" },
+        { v: 5, e: "😄" },
+    ];
 
-    const prompt = reflectionPrompts[new Date().getDate() % reflectionPrompts.length];
-
-    const toggleTag = (label) => {
-        setSelectedTags(prev => prev.includes(label) ? prev.filter(t => t !== label) : [...prev, label]);
+    const tagGroups = {
+        positive: ["Grateful", "Energised", "Exercised", "Social time", "Creative", "Productive", "Outdoors", "Good sleep", "Family", "Relaxed"],
+        difficult: ["Work stress", "Poor sleep", "Anxious", "Sad", "Lonely", "Low energy", "Overwhelmed", "Irritable"],
+        situational: ["Money stress", "Screen overload", "Pain", "Hormonal", "Hopeful", "Angry"]
     };
 
-    const saveEntry = () => {
-        const entry = { value: moodVal, tags: selectedTags, note, reflection, date: new Date().toISOString() };
-        const updated = [...entries, entry];
-        setEntries(updated);
-        saveData("clarus_mood_entries", updated);
-        setStep(3);
+    const save = () => {
+        if (mood !== null) {
+            const e = [...entries, { date: new Date().toISOString(), v: mood, tags }];
+            setEntries(e);
+            saveData("clarus_mood", e);
+            setMood(null);
+            setTags([]);
+        }
     };
 
-    const tint = "rgb(212, 148, 43)";
+    if (subScreen === "journal") {
+        return <JournalScreen navigate={navigate} />;
+    }
 
-    if (step === 3) {
-        const m = moodEmojis.find(e => e.value === moodVal);
-        return (
-            <div className="section-mood fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-                <div style={{ textAlign: "center", paddingTop: 60 }}>
-                    <div style={{ fontSize: 64, marginBottom: 16 }}>{m?.emoji}</div>
-                    <h2 className="serif" style={{ fontSize: 24, color: tint, marginBottom: 8 }}>Logged</h2>
-                    <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 32 }}>Thanks for checking in with yourself today.</p>
-                    <button className="btn-secondary" onClick={() => navigate("home")}>Back to Home</button>
+    return (
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, color: "#8B7355", marginBottom: 4 }}>How are you feeling?</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Check in with yourself.</p>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                {moods.map(m => (
+                    <div key={m.v} onClick={() => setMood(m.v)} style={{
+                        flex: 1, textAlign: "center", padding: 12, borderRadius: 12,
+                        background: mood === m.v ? "var(--card)" : "transparent",
+                        border: `2px solid ${mood === m.v ? "#8B7355" : "var(--border)"}`,
+                        cursor: "pointer"
+                    }}>
+                        <div style={{ fontSize: 24, marginBottom: 4 }}>{m.e}</div>
+                    </div>
+                ))}
+            </div>
+
+            {mood !== null && (
+                <div style={{ animation: "slideUp 0.3s ease-out" }}>
+                    <h2 className="serif" style={{ fontSize: 16, marginBottom: 12 }}>What contributed?</h2>
+                    {Object.entries(tagGroups).map(([section, list]) => (
+                        <div key={section} style={{ marginBottom: 16 }}>
+                            <p style={{ fontSize: 10, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 8 }}>{section}</p>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                                {list.map(tag => (
+                                    <button key={tag} onClick={() => setTags(t => t.includes(tag) ? t.filter(x => x !== tag) : [...t, tag])} style={{
+                                        padding: "8px 12px", borderRadius: 20, fontSize: 12,
+                                        background: tags.includes(tag) ? "#8B7355" : "var(--card)",
+                                        color: tags.includes(tag) ? "white" : "var(--text)",
+                                        border: tags.includes(tag) ? "none" : "1px solid var(--border)",
+                                        cursor: "pointer"
+                                    }}>
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+
+                    <button onClick={save} className="btn-primary" style={{ marginTop: 20, marginBottom: 12 }}>Save mood</button>
+                    <button onClick={() => navigate("mood", "journal")} className="btn-secondary" style={{ marginBottom: 12 }}>Write in journal</button>
                 </div>
+            )}
+
+            {entries.length > 0 && (
+                <div style={{ marginTop: 20 }}>
+                    <h2 className="serif" style={{ fontSize: 16, marginBottom: 12 }}>Recent</h2>
+                    {entries.slice(-3).reverse().map((e, i) => (
+                        <div key={i} style={{ display: "flex", gap: 10, padding: 12, background: "var(--card)", borderRadius: 12, marginBottom: 8 }}>
+                            <span style={{ fontSize: 20 }}>{moods.find(m => m.v === e.v)?.e}</span>
+                            <div style={{ flex: 1, fontSize: 12, fontWeight: 500 }}>
+                                {new Date(e.date).toLocaleDateString()}
+                                {e.tags.length > 0 && <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{e.tags.join(", ")}</div>}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function JournalScreen({ navigate }) {
+    const [view, setView] = useState("home");
+    const [emotion, setEmotion] = useState(null);
+    const [text, setText] = useState("");
+    const [entries, setEntries] = useState(() => loadData("clarus_journal", []));
+
+    const emotions = [
+        { id: 1, l: "Anxiety", e: "😰", cat: "c" },
+        { id: 2, l: "Stress", e: "😓", cat: "c" },
+        { id: 3, l: "Sadness", e: "😢", cat: "c" },
+        { id: 4, l: "Overwhelm", e: "🌊", cat: "c" },
+        { id: 5, l: "Anger", e: "😠", cat: "c" },
+        { id: 6, l: "Tired", e: "😴", cat: "c" },
+        { id: 7, l: "Gratitude", e: "🙏", cat: "c" },
+        { id: 8, l: "Hope", e: "✨", cat: "c" },
+        { id: 9, l: "Just Write", e: "📝", cat: "c" },
+        { id: 10, l: "Guilt", e: "😔", cat: "m" },
+        { id: 11, l: "Loneliness", e: "🌙", cat: "m" },
+        { id: 12, l: "Excitement", e: "🎉", cat: "m" },
+        { id: 13, l: "Shame", e: "😳", cat: "m" },
+        { id: 14, l: "Relationship", e: "💑", cat: "m" },
+        { id: 15, l: "Nostalgic", e: "🕰️", cat: "m" },
+        { id: 16, l: "Regret", e: "🤔", cat: "m" },
+        { id: 17, l: "Money", e: "💸", cat: "m" },
+        { id: 18, l: "Parent", e: "👶", cat: "m" },
+        { id: 19, l: "Rage", e: "🔥", cat: "m" },
+        { id: 20, l: "Proud", e: "🦁", cat: "m" },
+        { id: 21, l: "Content", e: "😌", cat: "m" },
+    ];
+
+    const save = () => {
+        if (emotion && text.trim()) {
+            const e = [...entries, { date: new Date().toISOString(), emotion: emotion.l, text }];
+            setEntries(e);
+            saveData("clarus_journal", e);
+            setEmotion(null);
+            setText("");
+            setView("home");
+        }
+    };
+
+    if (view === "write") {
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+                <BackButton onClick={() => setView("emotion")} />
+                <h1 className="serif" style={{ fontSize: 22, color: "#8B7355", marginBottom: 4 }}>{emotion?.l}</h1>
+                <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write here..." style={{
+                    flex: 1, padding: 14, borderRadius: 12, border: "1px solid var(--border)",
+                    background: "var(--card)", fontFamily: "inherit", fontSize: 14, resize: "none"
+                }} />
+                <button onClick={save} className="btn-primary" style={{ marginTop: 12 }}>Save entry</button>
+            </div>
+        );
+    }
+
+    if (view === "emotion") {
+        const common = emotions.filter(e => e.cat === "c");
+        const more = emotions.filter(e => e.cat === "m");
+        const [showMore, setShowMore] = useState(false);
+
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <BackButton onClick={() => setView("home")} />
+                <h1 className="serif" style={{ fontSize: 22, color: "#8B7355", marginBottom: 4 }}>What are you feeling?</h1>
+
+                <div style={{ marginBottom: 20 }}>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>Common</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 12 }}>
+                        {common.map(e => (
+                            <div key={e.id} onClick={() => { setEmotion(e); setView("write"); }} style={{
+                                padding: 12, borderRadius: 12, background: "var(--card)",
+                                border: "1px solid var(--border)", textAlign: "center", cursor: "pointer"
+                            }}>
+                                <div style={{ fontSize: 24, marginBottom: 6 }}>{e.e}</div>
+                                <div style={{ fontSize: 11, fontWeight: 500 }}>{e.l}</div>
+                            </div>
+                        ))}
+                    </div>
+                    {!showMore && <button onClick={() => setShowMore(true)} style={{
+                        width: "100%", padding: 10, background: "transparent",
+                        border: "1px dashed var(--border)", borderRadius: 10, cursor: "pointer",
+                        fontSize: 12, fontWeight: 500, color: "var(--text-muted)"
+                    }}>More feelings →</button>}
+                </div>
+
+                {showMore && (
+                    <div>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>All feelings</p>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                            {more.map(e => (
+                                <div key={e.id} onClick={() => { setEmotion(e); setView("write"); }} style={{
+                                    padding: 12, borderRadius: 12, background: "var(--card)",
+                                    border: "1px solid var(--border)", textAlign: "center", cursor: "pointer"
+                                }}>
+                                    <div style={{ fontSize: 24, marginBottom: 6 }}>{e.e}</div>
+                                    <div style={{ fontSize: 11, fontWeight: 500 }}>{e.l}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
 
     return (
-        <div className="section-mood fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-            <BackButton onClick={() => step > 0 ? setStep(step - 1) : navigate("home")} color={tint} label={step > 0 ? "Previous" : "Back"} />
-            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Mood Tracker</h1>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
-                {step === 0 ? "How are you feeling right now?" : step === 1 ? "What\u2019s been on your mind?" : "Take a moment to reflect."}
-            </p>
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("mood")} />
+            <h1 className="serif" style={{ fontSize: 22, color: "#8B7355", marginBottom: 4 }}>Journaling</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>Reflect on your day.</p>
 
-            {step === 0 && (
-                <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
-                    {moodEmojis.map(m => (
-                        <button key={m.value} onClick={() => { setMoodVal(m.value); setStep(1); }}
-                            style={{ background: moodVal === m.value ? `${tint}15` : "var(--card)", border: `1px solid ${moodVal === m.value ? tint : "var(--border)"}`, borderRadius: 16, padding: "16px 12px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 58, transition: "all 0.15s" }}>
-                            <span style={{ fontSize: 32 }}>{m.emoji}</span>
-                            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500 }}>{m.label}</span>
-                        </button>
+            <div onClick={() => { setEmotion({ id: 9, l: "Three Words" }); setView("write"); }} className="card" style={{ marginBottom: 16, cursor: "pointer" }}>
+                <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>📝 Just three words</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Describe your day in three words</p>
+            </div>
+
+            <button onClick={() => setView("emotion")} className="btn-primary" style={{ marginBottom: 20 }}>Start writing</button>
+
+            {entries.length > 0 && (
+                <div>
+                    <h2 className="serif" style={{ fontSize: 16, marginBottom: 12 }}>Recent entries</h2>
+                    {entries.slice(-5).reverse().map((e, i) => (
+                        <div key={i} style={{ padding: 14, background: "var(--card)", borderRadius: 12, marginBottom: 8 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{e.emotion}</p>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>{new Date(e.date).toLocaleDateString()}</p>
+                            <p style={{ fontSize: 12, lineHeight: 1.4 }}>{e.text.substring(0, 80)}...</p>
+                        </div>
                     ))}
-                </div>
-            )}
-
-            {step === 1 && (
-                <div className="fade-in">
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
-                        {moodTags.map(t => (
-                            <span key={t.label} className={`tag ${selectedTags.includes(t.label) ? "selected" : ""}`} onClick={() => toggleTag(t.label)}>
-                                {t.icon} {t.label}
-                            </span>
-                        ))}
-                    </div>
-                    <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Anything else on your mind? (optional)"
-                        style={{ width: "100%", minHeight: 80, padding: 12, borderRadius: 12, border: "1px solid var(--border)", background: "var(--card)", color: "var(--text)", fontSize: 14, resize: "vertical", fontFamily: "'DM Sans', sans-serif" }} />
-                    <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => setStep(2)}>Continue</button>
-                </div>
-            )}
-
-            {step === 2 && (
-                <div className="fade-in">
-                    <div style={{ padding: 16, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginBottom: 16 }}>
-                        <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 8 }}>{prompt.q}</p>
-                        <textarea value={reflection} onChange={e => setReflection(e.target.value)} placeholder={prompt.p}
-                            style={{ width: "100%", minHeight: 100, padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text)", fontSize: 14, resize: "vertical", fontFamily: "'DM Sans', sans-serif" }} />
-                    </div>
-                    <button className="btn-primary" onClick={saveEntry}>Log Mood</button>
-                    <button style={{ background: "none", border: "none", color: "var(--text-muted)", fontSize: 13, cursor: "pointer", marginTop: 12, width: "100%", textAlign: "center", fontFamily: "'DM Sans', sans-serif" }} onClick={saveEntry}>Skip reflection</button>
-                </div>
-            )}
-
-            {step === 0 && entries.length > 0 && (
-                <div style={{ marginTop: 32 }}>
-                    <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", marginBottom: 12, textTransform: "uppercase" }}>Recent Entries</p>
-                    {entries.slice(-5).reverse().map((e, i) => {
-                        const m = moodEmojis.find(x => x.value === e.value);
-                        const d = new Date(e.date);
-                        return (
-                            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "var(--card)", borderRadius: 12, border: "1px solid var(--border)", marginBottom: 8 }}>
-                                <span style={{ fontSize: 24 }}>{m?.emoji}</span>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontSize: 13, fontWeight: 600 }}>{m?.label}</div>
-                                    <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{d.toLocaleDateString("en-IE", { weekday: "short", day: "numeric", month: "short" })}</div>
-                                </div>
-                                {e.tags?.length > 0 && <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{e.tags.slice(0, 2).join(", ")}</div>}
-                            </div>
-                        );
-                    })}
                 </div>
             )}
         </div>
     );
 }
 
-// ─── Breathing Screen ───────────────────────────────
-
 function BreathingScreen({ navigate }) {
-    const [selected, setSelected] = useState(null);
-    const [duration, setDuration] = useState(3);
-    const [running, setRunning] = useState(false);
-    const [phase, setPhase] = useState(""); // inhale, hold1, exhale, hold2
+    const [exercising, setExercising] = useState(null);
+    const [phase, setPhase] = useState("");
+    const [phaseTime, setPhaseTime] = useState(0);
     const [cycle, setCycle] = useState(0);
-    const [totalCycles, setTotalCycles] = useState(0);
-    const [phaseTimer, setPhaseTimer] = useState(0);
-    const [done, setDone] = useState(false);
-    const audioRef = useRef(null);
-    const intervalRef = useRef(null);
+    const timerRef = useRef(null);
 
-    const tint = "rgb(107, 168, 148)";
+    const patterns = [
+        { id: "calm", name: "Calm", sub: "Slow & soothing", inhale: 6, hold: 0, exhale: 9, hold2: 3, time: "3 min", color: "#6B8E99" },
+        { id: "box", name: "Box", sub: "Balanced rhythm", inhale: 7, hold: 7, exhale: 7, hold2: 7, time: "3 min", color: "#7A6B8E" },
+        { id: "478", name: "4-7-8", sub: "Grounding", inhale: 5, hold: 8, exhale: 10, hold2: 3, time: "3 min", color: "#8B7355" },
+        { id: "reset", name: "Reset", sub: "Quick relief", inhale: 5, hold: 3, exhale: 8, hold2: 3, time: "2 min", color: "#D4942B" },
+    ];
 
-    const calcCycles = (pat, mins) => Math.max(1, Math.round((mins * 60) / (pat.inhale + pat.hold1 + pat.exhale + pat.hold2)));
-
-    const startExercise = () => {
-        const pat = breathPatterns.find(p => p.id === selected);
-        const tc = calcCycles(pat, duration);
-        setTotalCycles(tc);
+    const startExercise = (p) => {
+        setExercising(p);
         setCycle(0);
-        setDone(false);
-        setRunning(true);
-        startBreathCycle(pat, 0, tc);
-        startAudio(pat);
+        setPhase("ready");
     };
 
-    const startAudio = (pat) => {
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const lfo = ctx.createOscillator();
-            const lfoGain = ctx.createGain();
-
-            osc.type = "sine";
-            osc.frequency.value = pat.baseFreq;
-            lfo.type = "sine";
-            lfo.frequency.value = 0.08;
-            lfoGain.gain.value = 15;
-
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            gain.gain.value = 0;
-            gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
-
-            osc.start();
-            lfo.start();
-            audioRef.current = { ctx, gain, osc, lfo };
-        } catch {}
+    const startBreath = () => {
+        if (!exercising) return;
+        setCycle(0);
+        runPhase("inhale");
     };
 
-    const stopAudio = () => {
-        if (audioRef.current) {
-            try {
-                const { ctx, gain } = audioRef.current;
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
-                setTimeout(() => ctx.close(), 1200);
-            } catch {}
-            audioRef.current = null;
-        }
-    };
+    const runPhase = (phaseName) => {
+        if (!exercising) return;
+        setPhase(phaseName);
+        let duration = 0;
+        if (phaseName === "inhale") duration = exercising.inhale * 1000;
+        else if (phaseName === "hold") duration = exercising.hold * 1000;
+        else if (phaseName === "exhale") duration = exercising.exhale * 1000;
+        else if (phaseName === "hold2") duration = exercising.hold2 * 1000;
 
-    const startBreathCycle = (pat, currentCycle, total) => {
-        if (currentCycle >= total) { finish(); return; }
-        const phases = [];
-        phases.push({ name: "Breathe in", dur: pat.inhale });
-        if (pat.hold1 > 0) phases.push({ name: "Hold", dur: pat.hold1 });
-        phases.push({ name: "Breathe out", dur: pat.exhale });
-        if (pat.hold2 > 0) phases.push({ name: "Hold", dur: pat.hold2 });
-
-        let pi = 0;
-        const runPhase = () => {
-            if (pi >= phases.length) {
-                setCycle(currentCycle + 1);
-                startBreathCycle(pat, currentCycle + 1, total);
-                return;
+        let elapsed = 0;
+        const tick = () => {
+            elapsed += 50;
+            setPhaseTime(Math.min(elapsed, duration));
+            if (elapsed < duration) {
+                timerRef.current = setTimeout(tick, 50);
+            } else {
+                nextPhase(phaseName);
             }
-            const p = phases[pi];
-            setPhase(p.name);
-            setPhaseTimer(p.dur);
-            let remaining = p.dur;
-            if (intervalRef.current) clearInterval(intervalRef.current);
-            intervalRef.current = setInterval(() => {
-                remaining--;
-                setPhaseTimer(remaining);
-                if (remaining <= 0) {
-                    clearInterval(intervalRef.current);
-                    pi++;
-                    runPhase();
-                }
-            }, 1000);
         };
-        runPhase();
+        timerRef.current = setTimeout(tick, 50);
+    };
+
+    const nextPhase = (currentPhase) => {
+        if (currentPhase === "inhale") runPhase("hold");
+        else if (currentPhase === "hold") runPhase("exhale");
+        else if (currentPhase === "exhale") runPhase("hold2");
+        else if (currentPhase === "hold2") {
+            setCycle(c => c + 1);
+            if (cycle < 3) runPhase("inhale");
+            else finish();
+        }
     };
 
     const finish = () => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        stopAudio();
-        setRunning(false);
-        setDone(true);
+        setExercising(null);
+        setPhase("");
     };
 
     const stop = () => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        stopAudio();
-        setRunning(false);
-        setSelected(null);
-        setDone(false);
-    };
-
-    useEffect(() => { return () => { if (intervalRef.current) clearInterval(intervalRef.current); stopAudio(); }; }, []);
-
-    if (done) {
-        return (
-            <div className="section-breathe fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>{"\u{1F343}"}</div>
-                <h2 className="serif" style={{ fontSize: 24, color: tint, marginBottom: 8 }}>Well done</h2>
-                <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 32 }}>Take that calm feeling with you.</p>
-                <button className="btn-secondary" style={{ maxWidth: 240 }} onClick={() => { setDone(false); setSelected(null); }}>Back to Breathing</button>
-            </div>
-        );
-    }
-
-    if (running) {
-        const pat = breathPatterns.find(p => p.id === selected);
-        const isInhale = phase === "Breathe in";
-        const scale = isInhale ? 1.4 : phase === "Breathe out" ? 0.85 : 1.1;
-        return (
-            <div className="section-breathe" style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ marginBottom: 32, textAlign: "center" }}>
-                    <div className="breath-orb" style={{ background: `radial-gradient(circle, ${pat.color}40, ${pat.color}15)`, transform: `scale(${scale})`, margin: "0 auto", transitionDuration: `${phase === "Breathe in" ? pat.inhale : phase === "Breathe out" ? pat.exhale : 0.5}s` }}>
-                        <div style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: 32, fontWeight: 300, color: pat.color }}>{phaseTimer}</div>
-                            <div style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>{phase}</div>
-                        </div>
-                    </div>
-                </div>
-                <p style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 8 }}>Cycle {Math.min(cycle + 1, totalCycles)} of {totalCycles}</p>
-                <button onClick={stop} style={{ background: "none", border: "none", color: "var(--text-muted)", fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>End early</button>
-            </div>
-        );
-    }
-
-    if (selected) {
-        const pat = breathPatterns.find(p => p.id === selected);
-        const tc = calcCycles(pat, duration);
-        return (
-            <div className="section-breathe fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-                <BackButton onClick={() => setSelected(null)} color={tint} />
-                <div style={{ textAlign: "center", marginBottom: 24 }}>
-                    <div style={{ fontSize: 40, marginBottom: 8 }}>{pat.icon}</div>
-                    <h2 className="serif" style={{ fontSize: 22, color: tint }}>{pat.name}</h2>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{pat.desc}</p>
-                </div>
-
-                <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 8 }}>
-                    {[{ l: "In", v: pat.inhale }, ...(pat.hold1 ? [{ l: "Hold", v: pat.hold1 }] : []), { l: "Out", v: pat.exhale }, ...(pat.hold2 ? [{ l: "Hold", v: pat.hold2 }] : [])].map((p, i) => (
-                        <div key={i} style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: 20, fontWeight: 600, color: tint }}>{p.v}s</div>
-                            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{p.l}</div>
-                        </div>
-                    ))}
-                </div>
-
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginTop: 24, marginBottom: 10, textAlign: "center" }}>Duration</p>
-                <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 24 }}>
-                    {durationOptions.map(d => (
-                        <button key={d} onClick={() => setDuration(d)}
-                            style={{ padding: "8px 16px", borderRadius: 20, border: `1px solid ${duration === d ? tint : "var(--border)"}`, background: duration === d ? tint : "var(--card)", color: duration === d ? "white" : "var(--text)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
-                            {d} min
-                        </button>
-                    ))}
-                </div>
-                <p style={{ fontSize: 12, color: "var(--text-dim)", textAlign: "center", marginBottom: 24 }}>{tc} cycles</p>
-
-                <button className="btn-primary" onClick={startExercise}>Begin</button>
-            </div>
-        );
-    }
-
-    return (
-        <div className="section-breathe" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-            <BackButton onClick={() => navigate("home")} color={tint} />
-            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Breathing</h1>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>Choose a pattern that fits how you feel.</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {breathPatterns.map(p => (
-                    <div key={p.id} className="card" onClick={() => setSelected(p.id)} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${p.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{p.icon}</div>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 15, fontWeight: 600 }}>{p.name}</div>
-                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{p.tagline}</div>
-                        </div>
-                        <div style={{ fontSize: 11, color: "var(--text-dim)" }}>{Math.round(p.inhale + p.hold1 + p.exhale + p.hold2)}s/cycle</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-// ─── Chat Screen ────────────────────────────────────
-
-function ChatScreen({ navigate }) {
-    const [messages, setMessages] = useState(() => {
-        const saved = loadData("clarus_chat", []);
-        if (saved.length === 0) {
-            const name = loadData("clarus_name", "");
-            return [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 I'm here whenever you're ready. You can talk about what's on your mind, work through something that's bothering you, or just vent. There's no agenda and no right way to start.` }];
-        }
-        return saved;
-    });
-    const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false);
-    const messagesEndRef = useRef(null);
-    const chatTint = "rgb(184, 133, 143)";
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-    useEffect(scrollToBottom, [messages, loading]);
-
-    const sendMessage = async () => {
-        const text = input.trim();
-        if (!text || loading) return;
-        const updated = [...messages, { role: "user", content: text }];
-        setMessages(updated);
-        saveData("clarus_chat", updated);
-        setInput("");
-        setLoading(true);
-
-        try {
-            const res = await fetch("https://clarus-api.eoghanhoman.workers.dev/web/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "X-Device-ID": getDeviceId() },
-                body: JSON.stringify({ messages: updated.map(m => ({ role: m.role, content: m.content })) }),
-            });
-            const data = await res.json();
-            if (res.status === 429) {
-                const errMsg = data.message || "You've sent a lot of messages today. Take a break and come back tomorrow.";
-                const final = [...updated, { role: "assistant", content: errMsg }];
-                setMessages(final);
-                saveData("clarus_chat", final);
-            } else if (data.content?.[0]?.text) {
-                const final = [...updated, { role: "assistant", content: data.content[0].text }];
-                setMessages(final);
-                saveData("clarus_chat", final);
-            } else {
-                throw new Error("Bad response");
-            }
-        } catch {
-            const final = [...updated, { role: "assistant", content: "I'm having trouble connecting right now. Take a breath \u2014 I'll be here when you're ready to try again." }];
-            setMessages(final);
-            saveData("clarus_chat", final);
-        }
-        setLoading(false);
-    };
-
-    const clearChat = () => {
-        const name = loadData("clarus_name", "");
-        const fresh = [{ role: "assistant", content: `Hey${name ? `, ${name}` : ""} \u2014 fresh start. How are you doing?` }];
-        setMessages(fresh);
-        saveData("clarus_chat", fresh);
-    };
-
-    const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
-
-    return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", background: "var(--bg)", flexShrink: 0 }}>
-                <BackButton onClick={() => navigate("home")} color={chatTint} label="" />
-                <h2 className="serif" style={{ fontSize: 20, color: "var(--text)", flex: 1, textAlign: "center", marginLeft: -24 }}>Talk It Through</h2>
-                {messages.length > 1 && (
-                    <button onClick={clearChat} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: 18, padding: 4 }}>{"\u21BA"}</button>
-                )}
-            </div>
-
-            <div style={{ padding: "4px 12px 8px", background: "var(--surface)", margin: "0 12px", borderRadius: 8, flexShrink: 0 }}>
-                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>I'm here to listen \u2014 not as a therapist, but as a friend who cares. Your messages are processed securely to generate responses but are never stored on our servers.</p>
-            </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "12px 0" }}>
-                {messages.map((m, i) => (
-                    <div key={i} style={{ padding: "4px 12px", display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-                        <div className={m.role === "user" ? "chat-bubble-user" : "chat-bubble-assistant"}>{m.content}</div>
-                    </div>
-                ))}
-                {loading && (
-                    <div style={{ padding: "4px 12px" }}>
-                        <div className="chat-bubble-assistant" style={{ display: "flex", gap: 4, padding: "12px 16px" }}>
-                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)" }}></span>
-                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)", animationDelay: "0.2s" }}></span>
-                            <span className="typing-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--text-muted)", animationDelay: "0.4s" }}></span>
-                        </div>
-                    </div>
-                )}
-                <div ref={messagesEndRef} />
-            </div>
-
-            <div style={{ padding: "8px 12px", borderTop: "1px solid var(--border)", background: "var(--bg)", display: "flex", gap: 8, flexShrink: 0 }}>
-                <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
-                    placeholder="What's on your mind?"
-                    style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "none", background: "var(--surface)", color: "var(--text)", fontSize: 15, outline: "none" }} />
-                <button onClick={sendMessage} disabled={!input.trim() || loading}
-                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: 28, color: chatTint, opacity: !input.trim() || loading ? 0.3 : 1 }}>
-                    {"\u2B06\uFE0F"}
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function getDeviceId() {
-    let id = localStorage.getItem("clarus_device_id");
-    if (!id) { id = crypto.randomUUID?.() || ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)); localStorage.setItem("clarus_device_id", id); }
-    return id;
-}
-
-// ─── Assessment Screen ──────────────────────────────
-
-function AssessmentScreen({ navigate }) {
-    const [current, setCurrent] = useState(0);
-    const [answers, setAnswers] = useState({});
-    const [showResult, setShowResult] = useState(false);
-    const [animPct, setAnimPct] = useState(0);
-
-    const tint = "rgb(92, 148, 173)";
-
-    const answer = (val) => {
-        const q = assessmentQuestions[current];
-        setAnswers(prev => ({ ...prev, [q.id]: val }));
-        setTimeout(() => {
-            if (current < assessmentQuestions.length - 1) setCurrent(current + 1);
-            else setShowResult(true);
-        }, 350);
+        if (timerRef.current) clearTimeout(timerRef.current);
+        setExercising(null);
+        setPhase("");
     };
 
     useEffect(() => {
-        if (showResult) {
-            const total = calcTotal();
-            const max = assessmentQuestions.length * 4;
-            const pct = max > 0 ? Math.round((total / max) * 100) : 0;
-            setTimeout(() => setAnimPct(pct), 300);
-        }
-    }, [showResult]);
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, []);
 
-    const calcTotal = () => assessmentQuestions.reduce((t, q) => {
-        const raw = answers[q.id] ?? 0;
-        return t + (q.inverted ? (4 - raw) : raw);
-    }, 0);
-
-    const calcDomains = () => lifeDomains.map(d => {
-        const qs = assessmentQuestions.filter(q => q.domain === d.id);
-        const score = qs.reduce((t, q) => t + (q.inverted ? (4 - (answers[q.id] ?? 0)) : (answers[q.id] ?? 0)), 0);
-        const max = qs.length * 4;
-        return { ...d, pct: max > 0 ? Math.round((score / max) * 100) : 0 };
-    }).sort((a, b) => b.pct - a.pct);
-
-    if (showResult) {
-        const total = calcTotal();
-        const max = assessmentQuestions.length * 4;
-        const pct = max > 0 ? Math.round((total / max) * 100) : 0;
-        const level = pct <= 30 ? "Low" : pct <= 60 ? "Moderate" : "High";
-        const levelColor = pct <= 30 ? "rgb(212, 148, 43)" : pct <= 60 ? "rgb(232, 186, 97)" : "rgb(196, 120, 79)";
-        const domains = calcDomains();
-
+    if (exercising && phase === "ready") {
         return (
-            <div className="section-assess fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-                <BackButton onClick={() => navigate("home")} color={tint} label="Home" />
-                <div style={{ textAlign: "center", marginBottom: 24 }}>
-                    <h2 className="serif" style={{ fontSize: 26, color: tint, marginBottom: 4 }}>Your Wellbeing Snapshot</h2>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Across all areas of your life</p>
-                </div>
-
-                <div style={{ textAlign: "center", marginBottom: 24 }}>
-                    <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
-                        <circle cx="70" cy="70" r="60" fill="none" stroke={`${levelColor}20`} strokeWidth="8" />
-                        <circle cx="70" cy="70" r="60" fill="none" stroke={levelColor} strokeWidth="8" strokeLinecap="round"
-                            strokeDasharray={`${(animPct / 100) * 377} 377`} style={{ transition: "stroke-dasharray 1.2s ease-out" }} />
-                    </svg>
-                    <div style={{ marginTop: -95, marginBottom: 55 }}>
-                        <div className="serif" style={{ fontSize: 36, color: levelColor }}>{animPct}%</div>
-                        <div style={{ fontSize: 11, color: "var(--text-muted)" }}>distress</div>
-                    </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: levelColor, marginBottom: 8 }}>{level} Concern Level</div>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)", maxWidth: 280, margin: "0 auto", lineHeight: 1.5 }}>
-                        {level === "Low" ? "You're managing well. Keep nurturing your healthy habits." :
-                         level === "Moderate" ? "Some areas need attention. Explore the tips and resources." :
-                         "Multiple areas are strained. Please reach out to support resources or talk to someone you trust."}
-                    </p>
-                </div>
-
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 14 }}>Domain Breakdown</p>
-                {domains.map(d => (
-                    <div key={d.id} style={{ marginBottom: 16 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-                            <span style={{ fontSize: 13, fontWeight: 600 }}>{d.icon} {d.label}</span>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: d.color }}>{d.pct}%</span>
-                        </div>
-                        <div style={{ height: 6, borderRadius: 3, background: `${d.color}18` }}>
-                            <div style={{ height: 6, borderRadius: 3, background: d.color, width: `${d.pct}%`, transition: "width 0.8s ease-out" }}></div>
-                        </div>
-                    </div>
-                ))}
-
-                <button className="btn-secondary" style={{ marginTop: 16 }} onClick={() => { setCurrent(0); setAnswers({}); setShowResult(false); setAnimPct(0); }}>Retake Check-in</button>
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <h1 className="serif" style={{ fontSize: 24, marginBottom: 8 }}>{exercising.name}</h1>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 40 }}>{exercising.sub}</p>
+                <button onClick={startBreath} className="btn-primary" style={{ width: 200 }}>Start</button>
+                <button onClick={() => setExercising(null)} className="btn-secondary" style={{ width: 200, marginTop: 12 }}>Back</button>
             </div>
         );
     }
 
-    const q = assessmentQuestions[current];
-    const domain = lifeDomains.find(d => d.id === q.domain);
-    const progress = (current + 1) / assessmentQuestions.length;
+    if (exercising && phase) {
+        const phases = { inhale: "Breathe in", hold: "Hold", exhale: "Let it go", hold2: "Rest" };
+        const orb = { inhale: 0.75, hold: 1.0, exhale: 0.5, hold2: 0.6 };
+        const progress = {
+            inhale: phaseTime / (exercising.inhale * 1000),
+            hold: phaseTime / (exercising.hold * 1000),
+            exhale: phaseTime / (exercising.exhale * 1000),
+            hold2: phaseTime / (exercising.hold2 * 1000),
+        }[phase] || 0;
+        const scale = 0.55 + (orb[phase] - 0.55) * (1 - Math.pow(1 - progress, 3));
+
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 40 }}>Cycle {cycle + 1}/4</p>
+                <div style={{ width: 200, height: 200, marginBottom: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{
+                        width: 200 * scale, height: 200 * scale, borderRadius: "50%",
+                        background: `${exercising.color}40`, transition: "all 0.05s linear"
+                    }} />
+                </div>
+                <p className="serif" style={{ fontSize: 16, marginBottom: 8 }}>{phases[phase]}</p>
+                <button onClick={stop} className="btn-secondary">Stop</button>
+            </div>
+        );
+    }
 
     return (
-        <div className="section-assess fade-in" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-            <BackButton onClick={() => current > 0 ? setCurrent(current - 1) : navigate("home")} color={tint} label={current > 0 ? "Previous" : "Back"} />
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, color: "#6B8E99", marginBottom: 4 }}>Breathing</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Calm your nervous system.</p>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                <h2 className="serif" style={{ fontSize: 22, color: tint }}>Wellbeing Check-in</h2>
-                <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{current + 1}/{assessmentQuestions.length}</span>
-            </div>
-            <div style={{ height: 4, borderRadius: 2, background: `${tint}18`, marginBottom: 8 }}>
-                <div style={{ height: 4, borderRadius: 2, background: tint, width: `${progress * 100}%`, transition: "width 0.4s ease" }}></div>
-            </div>
-
-            <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 8, background: `${domain.color}15`, color: domain.color, fontSize: 10, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 32 }}>
-                {domain.icon} {domain.label}
-            </span>
-
-            <div style={{ textAlign: "center", marginBottom: 36 }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>{q.icon}</div>
-                <p style={{ fontSize: 18, fontWeight: 500, lineHeight: 1.5, maxWidth: 300, margin: "0 auto" }}>{q.text}</p>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {answerLabels.map((label, i) => {
-                    const isSelected = answers[q.id] === i;
-                    return (
-                        <button key={i} onClick={() => answer(i)}
-                            style={{ padding: "14px 18px", borderRadius: 14, border: `1px solid ${isSelected ? tint : "var(--border)"}`, background: isSelected ? tint : "var(--card)", color: isSelected ? "white" : "var(--text)", fontSize: 15, textAlign: "left", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.15s" }}>
-                            {label}
-                        </button>
-                    );
-                })}
-            </div>
+            {patterns.map(p => (
+                <div key={p.id} onClick={() => startExercise(p)} className="card" style={{ marginBottom: 10, cursor: "pointer" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <div>
+                            <p style={{ fontSize: 14, fontWeight: 600 }}>{p.name}</p>
+                            <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{p.sub}</p>
+                        </div>
+                        <p style={{ fontSize: 12, fontWeight: 500, color: p.color }}>{p.time}</p>
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
 
-// ─── Signs Screen ───────────────────────────────────
-
-function SignsScreen({ navigate }) {
+function ToolkitScreen({ navigate }) {
     const [expanded, setExpanded] = useState(null);
-    const tint = "rgb(135, 120, 176)";
+    const [expandedTech, setExpandedTech] = useState(null);
+
+    const pillars = [
+        { id: 1, name: "Cognitive Restructuring", emoji: "🔍", techs: [
+            { id: "t1", name: "Thought Record", desc: "Identify unhelpful patterns", steps: ["Identify the trigger situation", "Write automatic thoughts", "Challenge with evidence for and against", "Generate a balanced alternative thought"] },
+            { id: "t2", name: "Cognitive Defusion", desc: "Step back from thoughts", steps: ["Notice the thought", "Say 'I'm having a thought that...'", "Observe it like a cloud passing", "Return to the present moment"] },
+            { id: "t3", name: "Best Friend Test", desc: "Challenge self-criticism", steps: ["Write down what you're telling yourself", "Imagine a friend said this about themselves", "What would you say to them?", "Now say that to yourself"] }
+        ]},
+        { id: 2, name: "Behavioural Activation", emoji: "📋", techs: [
+            { id: "t4", name: "Activity Scheduling", desc: "Do first, feel later", steps: ["List activities you used to enjoy", "Schedule 3 this week", "Do them regardless of mood", "Rate mood before and after"] },
+            { id: "t5", name: "Task Breakdown Ladder", desc: "Make big things tiny", steps: ["Write the overwhelming task", "Break into smallest possible steps", "Do only the first one", "Full credit — then decide on the next"] },
+            { id: "t6", name: "Opposite Action", desc: "Break the avoidance cycle", steps: ["Notice the urge to avoid", "Identify the opposite action", "Do it for just 5 minutes", "Notice what actually happens"] }
+        ]},
+        { id: 3, name: "Anxiety Management", emoji: "⏰", techs: [
+            { id: "t7", name: "Worry Window", desc: "Schedule your worries", steps: ["Set a 15-minute daily worry time", "When worries arise, write them down", "Postpone to worry window", "In the window: worry freely, then stop"] },
+            { id: "t8", name: "Exposure Ladder", desc: "Face fears in small steps", steps: ["List avoided situations", "Rate each 1-10 anxiety", "Start with 3/10 item", "Stay until anxiety drops by half"] }
+        ]},
+        { id: 4, name: "Mindfulness & Grounding", emoji: "🧘", techs: [
+            { id: "t9", name: "5-4-3-2-1 Grounding", desc: "Anchor in the present", steps: ["5 things you see", "4 things you can touch", "3 things you hear", "2 you smell, 1 you taste"] },
+            { id: "t10", name: "Body Scan", desc: "Release tension", steps: ["Sit or lie comfortably", "Notice sensations from toes to head", "Breathe into areas of tension", "Relax each area on exhale"] },
+            { id: "t11", name: "3-Minute Breathing Space", desc: "Emergency pause", steps: ["Minute 1: What am I experiencing right now?", "Minute 2: Focus on breath only", "Minute 3: Expand awareness to whole body"] }
+        ]},
+        { id: 5, name: "ACT Techniques", emoji: "🧭", techs: [
+            { id: "t12", name: "Values Compass", desc: "Reconnect with what matters", steps: ["List 5 life domains (work, relationships, health...)", "For each: what matters most?", "Rate how aligned you are (1-10)", "One small step toward your highest value"] },
+            { id: "t13", name: "Willingness Practice", desc: "Make room for discomfort", steps: ["Name the uncomfortable feeling", "Notice where it lives in your body", "Breathe into it — don't fight it", "Ask: what would I do if this feeling wasn't in charge?"] }
+        ]},
+        { id: 6, name: "Relationships", emoji: "💑", techs: [
+            { id: "t25", name: "Communication Audit", desc: "Check your connection", steps: ["Rate relationship satisfaction 1-10", "What's working well?", "What needs talking about?", "Plan when and how to raise it"] },
+            { id: "t26", name: "Repair Conversation", desc: "Rebuild after conflict", steps: ["Name what happened without blame", "Share your perspective with 'I' statements", "Listen to theirs without defending", "Agree on one thing to do differently"] },
+            { id: "t27", name: "Loneliness-in-Love Check", desc: "When you're together but alone", steps: ["Rate emotional connection 1-10", "When did you last feel truly seen?", "What's one thing you miss?", "Share it with your partner this week"] }
+        ]},
+        { id: 7, name: "Financial Stress", emoji: "💸", techs: [
+            { id: "t28", name: "Money Anxiety Audit", desc: "Name your worries", steps: ["List every financial worry", "Sort: urgent / soon / later", "For urgent: what's one step?", "For later: set a date to revisit"] },
+            { id: "t29", name: "Catastrophic Thinking Budget", desc: "Reality-check financial fears", steps: ["Write worst-case scenario", "Write best-case scenario", "Write most likely scenario", "Plan for most likely — not worst"] }
+        ]},
+        { id: 8, name: "Self-Compassion", emoji: "🫂", techs: [
+            { id: "t32", name: "Inner Critic Interview", desc: "Understand your harsh voice", steps: ["Write what the critic says", "Ask: whose voice is this really?", "What is it trying to protect you from?", "Thank it, then choose a kinder response"] },
+            { id: "t33", name: "Self-Compassion Letter", desc: "Write to yourself as a friend", steps: ["Describe what you're struggling with", "What would you say to a friend in this situation?", "Write that to yourself", "Read it when you need it"] }
+        ]},
+        { id: 9, name: "Anger & Frustration", emoji: "🔥", techs: [
+            { id: "t34", name: "Anger Iceberg", desc: "What's beneath the anger?", steps: ["Notice the anger (tip of iceberg)", "Ask: what's underneath? (hurt? fear? shame?)", "Name the actual feeling", "Address the root, not just the anger"] },
+            { id: "t35", name: "90-Second Cool-Down", desc: "Ride the chemical wave", steps: ["Notice the anger surge", "Set a 90-second timer (that's how long the chemicals last)", "Breathe slowly — don't act", "After 90 seconds, choose your response deliberately"] }
+        ]},
+        { id: 10, name: "Digital Wellbeing", emoji: "📱", techs: [
+            { id: "t36", name: "Phone Audit", desc: "Understand your patterns", steps: ["Track screen time for 3 days", "Notice: when do you reach for your phone?", "Genuine use vs escape?", "Replace one escape session with something else"] },
+            { id: "t37", name: "Comparison Detox", desc: "Reclaim your feed", steps: ["Notice which accounts trigger comparison", "Unfollow or mute 5 accounts", "Follow 3 accounts that inspire rather than deflate", "Check: how do you feel after 10 minutes scrolling?"] }
+        ]},
+        { id: 11, name: "Sleep & Rest", emoji: "🌙", techs: [
+            { id: "t20", name: "Thought Download", desc: "Clear racing thoughts", steps: ["15 minutes before bed, brain dump onto paper", "Write everything — no filtering or solving", "Close the notebook", "Tell yourself: 'These will be here tomorrow'"] },
+            { id: "t21", name: "Wind-Down Hour", desc: "Create a sleep boundary", steps: ["Set an alarm 60 minutes before bed", "No screens from that point", "Same 3 activities each night (ritual)", "Keep the bedroom for sleep only"] }
+        ]},
+        { id: 12, name: "Work & Pressure", emoji: "💼", techs: [
+            { id: "t22", name: "Sunday Reset", desc: "Start the week grounded", steps: ["Review last week: what worked?", "Identify your top 3 priorities", "Batch similar tasks together", "Plan your first small win for Monday"] },
+            { id: "t23", name: "Shutdown Ritual", desc: "Leave work at work", steps: ["At end of day: write tomorrow's top 3", "Close all work tabs and apps", "Say out loud: 'Shutdown complete'", "Do not check email until morning"] },
+            { id: "t24", name: "Presenteeism Check", desc: "Are you there but not there?", steps: ["Rate your effectiveness this week 1-10", "How many hours were genuinely productive?", "What's the gap costing you?", "One thing to change this week"] }
+        ]},
+        { id: 13, name: "Alcohol & Substance Awareness", emoji: "🪞", techs: [
+            { id: "t15", name: "Honest Drink Diary", desc: "Track the real pattern", steps: ["Log every drink for 2 weeks", "Note: time, situation, feeling before", "Review: what patterns emerge?", "Which feelings are you medicating?"] },
+            { id: "t16", name: "Urge Delay", desc: "Ride out the craving", steps: ["When the urge hits, set a 10-minute timer", "Do something else (walk, call, breathe)", "After 10 minutes, check: still want it?", "The urge usually peaks and passes"] },
+            { id: "t17", name: "Cost-Benefit Reality Check", desc: "See the full picture", steps: ["Draw 4 boxes: benefits of drinking, costs of drinking, benefits of changing, costs of changing", "Fill each honestly", "Which boxes are heavier?", "What does the honest picture tell you?"] }
+        ]},
+        { id: 14, name: "Grief & Loss", emoji: "🕊️", techs: [
+            { id: "t18", name: "Unsent Letter", desc: "Express what's unsaid", steps: ["Write everything you wish you'd said", "Don't filter — let it all come", "Include what you miss and what you're angry about", "Keep it, burn it, or revisit it — your choice"] },
+            { id: "t19", name: "Grief Wave", desc: "Ride it rather than fight it", steps: ["Notice the grief wave arriving", "Name it: 'Grief is here right now'", "Let it wash through — don't suppress it", "It will pass. Each wave gets a little shorter."] }
+        ]},
+        { id: 15, name: "Parenting & Identity", emoji: "👶", techs: [
+            { id: "t30", name: "Parental Guilt Check", desc: "Set realistic standards", steps: ["Name the guilt specifically", "Ask: whose standard is this?", "What's actually necessary vs. Instagram parenting?", "Good enough is genuinely good enough"] },
+            { id: "t31", name: "Identity Reclaim", desc: "Remember who you are beyond 'parent'", steps: ["List 5 things that defined you before children", "Which still matter?", "Schedule one this week — even 20 minutes", "You're a better parent when you're a whole person"] }
+        ]},
+        { id: 16, name: "Life Transitions", emoji: "🔄", techs: [
+            { id: "t38", name: "Identity Map", desc: "Navigate who you're becoming", steps: ["List all the roles/identities you hold", "Which are shifting or ending?", "What stays constant about you?", "What do you want to build next?"] },
+            { id: "t39", name: "Letting Go Inventory", desc: "Release what no longer fits", steps: ["List what you're holding onto", "For each: is this still serving me?", "What would it feel like to release it?", "Choose one thing to gently put down this week"] }
+        ]},
+        { id: 17, name: "Perfectionism & People-Pleasing", emoji: "⭐", techs: [
+            { id: "t40", name: "Good Enough Threshold", desc: "Define 'done' before starting", steps: ["Before any task, define 'good enough'", "Write it down specifically", "Stop there deliberately", "Notice: the world didn't end"] },
+            { id: "t41", name: "People-Pleasing Audit", desc: "Find where you disappear", steps: ["This week, notice every time you say yes", "For each: did I want to, or did I feel I had to?", "Count the 'had to' responses", "Practice one honest 'no' this week — small is fine"] }
+        ]}
+    ];
 
     return (
-        <div className="section-signs" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-            <BackButton onClick={() => navigate("home")} color={tint} />
-            <h1 className="serif" style={{ fontSize: 22, color: tint, marginBottom: 4 }}>Signs to Watch For</h1>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>Recognising what you're experiencing is the first step.</p>
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, color: "#7A6B8E", marginBottom: 4 }}>Toolkit</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Practical techniques for everyday challenges.</p>
 
-            {signsData.map(s => (
-                <div key={s.cat} className="card" style={{ marginBottom: 10, cursor: "pointer" }} onClick={() => setExpanded(expanded === s.cat ? null : s.cat)}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{s.icon}</div>
+            {pillars.map(p => (
+                <div key={p.id} style={{ marginBottom: 8 }}>
+                    <div onClick={() => setExpanded(expanded === p.id ? null : p.id)} style={{
+                        display: "flex", alignItems: "center", gap: 12, padding: 12, borderRadius: 12,
+                        background: "var(--card)", border: "1px solid var(--border)", cursor: "pointer"
+                    }}>
+                        <span style={{ fontSize: 20 }}>{p.emoji}</span>
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 15, fontWeight: 600 }}>{s.title}</div>
-                            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{s.desc}</div>
+                            <p style={{ fontSize: 13, fontWeight: 600 }}>{p.name}</p>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)" }}>{p.techs.length} techniques</p>
                         </div>
-                        <svg style={{ transform: expanded === s.cat ? "rotate(90deg)" : "rotate(0)", transition: "transform 0.2s", color: "var(--text-dim)", flexShrink: 0 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        <span style={{ fontSize: 10, transform: expanded === p.id ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
                     </div>
-                    {expanded === s.cat && (
-                        <div className="fade-in" style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
-                            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>Common signs</p>
-                            {s.signs.map((sign, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0" }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: 3, background: s.color, flexShrink: 0 }}></div>
-                                    <span style={{ fontSize: 13, color: "var(--text)" }}>{sign}</span>
+
+                    {expanded === p.id && (
+                        <div style={{ marginTop: 4 }}>
+                            {p.techs.map(t => (
+                                <div key={t.id} style={{ marginBottom: 4 }}>
+                                    <div onClick={() => setExpandedTech(expandedTech === t.id ? null : t.id)} style={{
+                                        padding: "10px 12px", borderRadius: 10, background: "rgba(122, 107, 142, 0.08)",
+                                        cursor: "pointer", marginLeft: 8
+                                    }}>
+                                        <p style={{ fontSize: 12, fontWeight: 500 }}>{t.name}</p>
+                                        <p style={{ fontSize: 11, color: "var(--text-muted)" }}>{t.desc}</p>
+                                    </div>
+
+                                    {expandedTech === t.id && (
+                                        <div style={{ padding: "10px 12px", marginLeft: 8, background: "rgba(122, 107, 142, 0.04)" }}>
+                                            <ol style={{ fontSize: 11, lineHeight: 1.6, marginLeft: 16 }}>
+                                                {t.steps.map((s, i) => <li key={i} style={{ marginBottom: 4 }}>{s}</li>)}
+                                            </ol>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
             ))}
+        </div>
+    );
+}
 
-            <div style={{ marginTop: 20, padding: 16, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)" }}>
-                <p style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.6 }}>
-                    {"\u{1F49A}"} Recognising these signs in yourself isn't a weakness \u2014 it's awareness. If several of these feel familiar, consider talking to someone you trust or exploring the <span style={{ fontWeight: 600, cursor: "pointer", color: tint }} onClick={() => navigate("support")}>support resources</span> in this app.
-                </p>
+function SignsScreen({ navigate }) {
+    const [tab, setTab] = useState("self");
+    const [expanded, setExpanded] = useState(null);
+    const [expandedSign, setExpandedSign] = useState(null);
+    const [view, setView] = useState("browse");
+    const [checkInIndex, setCheckInIndex] = useState(0);
+    const [checkInAnswers, setCheckInAnswers] = useState({});
+    const [coachStep, setCoachStep] = useState(0);
+
+    const selfSigns = {
+        burnout: [
+            { id: "s1", icon: "🔋", title: "Constant exhaustion", desc: "Deep, bone-level weariness that sleep doesn't fix.", selfCheck: "Do you feel exhausted even after rest — a deep tiredness that sleep doesn't fix?", helps: "Protect your sleep. Set a hard stop time for work. Try breathing exercises before bed." },
+            { id: "s2", icon: "🔥", title: "Emotional numbness", desc: "Things that used to bring joy now feel flat.", selfCheck: "Do things that used to make you feel something now leave you feeling flat?", helps: "Schedule one activity that used to bring pleasure, even if you don't feel like it." },
+            { id: "s3", icon: "📉", title: "Declining performance", desc: "Routine tasks feel overwhelming. More mistakes, less focus.", selfCheck: "Are routine tasks feeling overwhelming? Are you making more mistakes?", helps: "Break tasks into tiny steps. Drop standards temporarily — done beats perfect when you're depleted." },
+            { id: "s4", icon: "🏃", title: "Withdrawal from people", desc: "Cancelling plans, avoiding colleagues, preferring isolation.", selfCheck: "Are you pulling away from people — cancelling plans, preferring to be alone?", helps: "Try going for 30 minutes instead of cancelling entirely. One micro-connection per day." },
+            { id: "s5", icon: "😤", title: "Irritability & cynicism", desc: "Small things trigger big reactions. Cynical about things that mattered.", selfCheck: "Do small things trigger big reactions? Do you feel cynical about things that used to matter?", helps: "Name the irritability: 'I'm reacting strongly because I'm depleted.' Try grounding before responding." },
+            { id: "s6", icon: "🚫", title: "Loss of purpose", desc: "The 'why' behind work feels hollow. Going through the motions.", selfCheck: "Does the 'why' behind your work or daily life feel hollow?", helps: "Reconnect with your values — but rest first. One boundary this week. One thing you stop doing." }
+        ],
+        anxiety: [
+            { id: "s7", icon: "💭", title: "Racing thoughts", desc: "Mind loops through worries and what-ifs constantly.", selfCheck: "Is your mind racing through worries and what-ifs that you can't switch off?", helps: "The Worry Window technique: schedule worry time so it stops hijacking your day." },
+            { id: "s8", icon: "🫁", title: "Physical tension", desc: "Tight chest, clenched jaw, restless legs, churning stomach.", selfCheck: "Do you carry physical tension — tight chest, clenched jaw, churning stomach?", helps: "5-4-3-2-1 Grounding works in under 4 minutes. Breathing exercises activate your calming nervous system." },
+            { id: "s9", icon: "🚪", title: "Avoidance of situations", desc: "Declining invitations, dodging calls, avoiding triggers.", selfCheck: "Are you avoiding situations, calls, or places because they make you anxious?", helps: "Start with what feels only slightly uncomfortable (3/10). Each small step rewires your brain." },
+            { id: "s10", icon: "🌀", title: "Difficulty deciding", desc: "Even small choices feel paralysing. Analysis paralysis.", selfCheck: "Do even small decisions feel paralysing? Do you second-guess yourself constantly?", helps: "Set a 2-minute timer for small decisions. 'Good enough' is revolutionary when you're anxious." },
+            { id: "s11", icon: "😰", title: "Sense of dread", desc: "Heavy unnamed feeling something bad is about to happen.", selfCheck: "Do you often feel a heavy sense of dread without knowing why?", helps: "Name it: 'I notice I'm experiencing free-floating anxiety.' Breathing exercises help interrupt the cycle." }
+        ],
+        depression: [
+            { id: "s12", icon: "🪫", title: "Loss of interest", desc: "Things you enjoyed feel grey or pointless now.", selfCheck: "Have things you used to enjoy lost their appeal or started feeling pointless?", helps: "Don't wait for motivation — schedule one enjoyable activity and do it anyway. Feelings follow action." },
+            { id: "s13", icon: "🐌", title: "Low energy", desc: "Everything takes more effort. Body feels heavy.", selfCheck: "Does everything take more effort than it should? Does getting through a day feel like wading through treacle?", helps: "Start absurdly small. Your first step might be 'sit up in bed.' Full credit for that." },
+            { id: "s14", icon: "🔇", title: "Withdrawal & isolation", desc: "Pulling away from people and activities that connect you.", selfCheck: "Are you pulling away from people? Do you feel like a burden?", helps: "One micro-connection per day. A text, a voice note. 'I'm a burden' is a lie depression tells." },
+            { id: "s15", icon: "🔄", title: "Negative self-talk", desc: "Inner voice saying you're not good enough or things won't improve.", selfCheck: "Is there a voice telling you you're not good enough — and it feels true?", helps: "Try: 'I notice I'm having the thought that I'm useless.' This simple reframe creates crucial distance." },
+            { id: "s16", icon: "🌊", title: "Hopelessness", desc: "Future looks blank or grey. Can't imagine improvement.", selfCheck: "Does the future look blank or hopeless?", helps: "Depression is highly treatable. The hopelessness is a symptom, not a prophecy. Please reach out to someone." }
+        ],
+        substance: [
+            { id: "s17", icon: "🍺", title: "Drinking to cope", desc: "Reaching for drinks when stressed, anxious, or sad automatically.", selfCheck: "Do you regularly reach for a drink to cope with feelings rather than just socially?", helps: "Track what you're feeling before you reach for a drink. The pattern reveals the real need." },
+            { id: "s18", icon: "📈", title: "Tolerance increase", desc: "Needing more drinks to feel the same effect.", selfCheck: "Has your tolerance noticeably increased over the past year?", helps: "Try the Urge Delay: set a 10-minute timer. The urge usually peaks and passes within that window." },
+            { id: "s19", icon: "🌅", title: "Next-day anxiety", desc: "The 'fear' — anxiety and dread the morning after drinking.", selfCheck: "Do you regularly experience next-day anxiety or dread after drinking?", helps: "If 'the fear' is weekly, that's worth noticing. How many anxious days are actually hangover days?" },
+            { id: "s20", icon: "🤫", title: "Hiding consumption", desc: "Downplaying or hiding how much you drink.", selfCheck: "Do you hide or minimise how much you drink — from others or yourself?", helps: "The fact you recognise this takes courage. An honest diary for yourself first — no one else needs to see it." },
+            { id: "s21", icon: "💔", title: "Impact on life", desc: "Arguments, missed commitments, regrettable moments due to drinking.", selfCheck: "Has drinking led to arguments, missed commitments, or regrettable moments?", helps: "Write down the last 3 times drinking caused a consequence you didn't want. Your GP is a good first step." }
+        ],
+        trauma: [
+            { id: "s22", icon: "🔒", title: "Hypervigilance", desc: "Constantly scanning for danger, always on guard.", selfCheck: "Do you feel constantly on edge or watchful — even in safe situations?", helps: "Grounding exercises help your nervous system register safety. Breathing exercises often work better than thinking." },
+            { id: "s23", icon: "🚫", title: "Avoidance", desc: "Places, people, or topics you avoid due to painful associations.", selfCheck: "Are there places, people, or topics you actively avoid because they bring up something painful?", helps: "Notice what you're avoiding without forcing confrontation. A trauma-informed therapist can help you approach things safely." },
+            { id: "s24", icon: "🌊", title: "Emotional flashbacks", desc: "Sudden floods of emotion disproportionate to current situation.", selfCheck: "Do you experience sudden floods of emotion — fear, shame, rage — that seem disproportionate?", helps: "Name it: 'This is an emotional flashback. I am safe now.' Ground yourself: feel your feet, name what you see." },
+            { id: "s25", icon: "😶", title: "Difficulty trusting", desc: "Keeping people at distance, expecting to be let down.", selfCheck: "Do you find it hard to trust people or feel safe in close relationships?", helps: "Start with one person. Trust is rebuilt in small steps. A therapist can provide a safe space to practice." }
+        ]
+    };
+
+    const othersSigns = {
+        burnout: [
+            { id: "o1", icon: "🔄", title: "Personality shift", desc: "They seem different — quieter, more irritable, less engaged. Trust your instinct.", helps: "'You seem different lately' is enough. You don't need to name what's wrong." },
+            { id: "o2", icon: "📵", title: "Withdrawal & cancelling", desc: "Pulling back from plans, taking longer to reply, saying 'I'm fine'.", helps: "Keep inviting gently: 'No worries if you can't — just want you to know you're welcome.'" },
+            { id: "o3", icon: "🎭", title: "Performing normality", desc: "Putting on a brave face, forced laughter, deflecting real questions.", helps: "'You don't have to be okay around me.' Sometimes that's the most powerful thing to say." },
+            { id: "o4", icon: "💤", title: "Visible exhaustion", desc: "Dark circles, low energy, stopped taking care of themselves.", helps: "Offer something practical: 'Can I bring you food?' Meet them with action, not observation." },
+            { id: "o8", icon: "📋", title: "Work overwhelm", desc: "Talking about drowning — or worse, gone silent about work entirely.", helps: "'How are things at work, honestly?' If they deflect, note the silence." }
+        ],
+        anxiety: [
+            { id: "o6", icon: "⚡", title: "Unusually anxious", desc: "Jumpy, restless, hyper-alert. Worrying more than usual about everything.", helps: "Don't say 'just relax.' Try: 'That sounds stressful. What would help right now?'" }
+        ],
+        depression: [
+            { id: "o5", icon: "😔", title: "Loss of interest", desc: "Things they loved don't seem to matter anymore. The colour's drained.", helps: "Re-introduce shared activities in low-pressure ways. Don't ask them to perform enthusiasm." },
+            { id: "o7", icon: "💬", title: "Burden talk", desc: "Saying 'what's the point' or 'everyone would be better off without me' — even joking.", helps: "Don't dismiss it. 'It sounds like you're going through something hard. I want to hear about it.'" }
+        ]
+    };
+
+    const categoryNames = {
+        burnout: { name: "Burnout", emoji: "🔥", color: "#D4942B" },
+        anxiety: { name: "Anxiety", emoji: "⚡", color: "#6B8E99" },
+        depression: { name: "Depression", emoji: "🌧️", color: "#8B7355" },
+        substance: { name: "Substance Use", emoji: "🪞", color: "#7A6B8E" },
+        trauma: { name: "Trauma", emoji: "🔒", color: "#C47850" }
+    };
+
+    const allSelfSigns = Object.entries(selfSigns).flatMap(([cat, signs]) => signs.map(s => ({ ...s, cat })));
+
+    const coachSteps = [
+        { title: "Before You Start", content: "You don't need to fix anything or have answers. You just need to show you've noticed and that you care. Most people say afterward: 'I wish someone had asked sooner.' An imperfect attempt at connection is infinitely better than comfortable silence.",
+          doList: ["Choose a private, low-pressure moment", "Accept they might deflect the first time", "Check your own emotional state first"],
+          dontList: ["Ambush them when busy or stressed", "Have this conversation over text", "Make it about you: 'I've been so worried'"] },
+        { title: "Opening the Door", content: "The first words set the tone. You're opening a door, not pushing them through it.",
+          scripts: [
+            { label: "Gentle check-in", text: "\"I've noticed you seem a bit different lately, and I wanted to check in. No pressure to talk — but I'm here if you want to.\"" },
+            { label: "Normalising", text: "\"I went through something similar last year and it really helped to talk to someone. You don't have to be in crisis to ask for help.\"" },
+            { label: "Naming what you see", text: "\"I noticed you've cancelled the last few things and you seem really tired. That's not a judgement — I just care about you.\"" }
+          ],
+          doList: ["Use 'I' statements: 'I've noticed...', 'I wanted to check in...'", "Leave space for silence", "Make it clear they don't have to respond now"],
+          dontList: ["Start with 'We need to talk'", "List everything you've noticed at once", "Say 'You seem depressed' — labels shut people down"] },
+        { title: "If They Open Up", content: "Your job is to listen — really listen. Not to fix, not to relate, not to minimise. Just receive what they're telling you.",
+          scripts: [
+            { label: "Validating", text: "\"That sounds really hard. I'm glad you told me.\"" },
+            { label: "Asking what they need", text: "\"What would help right now? I'm happy to just listen, or we can figure something out together.\"" }
+          ],
+          doList: ["Listen more than you speak — aim for 80/20", "Validate: 'That makes complete sense'", "Tolerate silence — that's where processing happens"],
+          dontList: ["'I know how you feel'", "Jump to solutions: 'Have you tried...'", "Minimise: 'Everyone feels like that' or 'It could be worse'"] },
+        { title: "If They Deflect", content: "Most people deflect the first time — 'I'm fine', 'Just tired.' This doesn't mean it failed. You've planted a seed. Many people come back days or weeks later.",
+          scripts: [
+            { label: "Leaving the door open", text: "\"Okay — no pressure at all. Just know that if anything changes, I'm here. You don't have to handle things alone.\"" },
+            { label: "Gentle persistence", text: "\"I hear you. I'm asking because I care, not because I'm judging. If the answer changes, you can always come back to me.\"" }
+          ],
+          doList: ["Respect their response", "Keep showing up — continue inviting them", "Check in again in a few days"],
+          dontList: ["Push harder: 'Come on, I can tell something's wrong'", "Withdraw because they didn't open up", "Talk to others without their consent"] },
+        { title: "Suggesting Next Steps", content: "If they've acknowledged something is wrong, gently suggesting support can be transformative — as an offer, not an instruction.",
+          scripts: [
+            { label: "Offering to help", text: "\"Would it help if I looked into some options with you? Even just a GP appointment — I can sit with you while you do it.\"" },
+            { label: "Sharing a resource", text: "\"I came across this app called Clarus — it has a self check-in and some practical tools. No pressure, but thought of you.\"" }
+          ],
+          doList: ["Offer to do things together: 'I'll sit with you while you call'", "Suggest small steps, not big commitments", "Frame help as normal: 'Like going to the doctor for a sore knee'"],
+          dontList: ["Issue ultimatums", "Make them feel broken: 'You really need help'", "Overwhelm with options — pick one suggestion"] }
+    ];
+
+    // CHECK-IN VIEW
+    if (view === "checkin") {
+        if (checkInIndex >= allSelfSigns.length) {
+            const results = {};
+            Object.keys(categoryNames).forEach(cat => {
+                const catSigns = allSelfSigns.filter(s => s.cat === cat);
+                const yes = catSigns.filter(s => checkInAnswers[s.id] === "yes").length;
+                const sometimes = catSigns.filter(s => checkInAnswers[s.id] === "sometimes").length;
+                results[cat] = { total: catSigns.length, resonating: yes + sometimes, yes, sometimes };
+            });
+            const totalResonating = Object.values(results).reduce((a, b) => a + b.resonating, 0);
+            const resonatingSigns = allSelfSigns.filter(s => checkInAnswers[s.id] === "yes" || checkInAnswers[s.id] === "sometimes");
+
+            return (
+                <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                    <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Your Results</h1>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>
+                        {totalResonating === 0 ? "Nothing resonated strongly right now — that's a good sign." :
+                         totalResonating <= 3 ? "A few things resonated. That's worth noticing." :
+                         totalResonating <= 7 ? "Several signs resonated. You're carrying more than you might realise." :
+                         "Quite a lot resonated. Please be gentle with yourself — and consider reaching out."}
+                    </p>
+
+                    <div style={{ padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginBottom: 20 }}>
+                        <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 12 }}>By category</p>
+                        {Object.entries(results).map(([cat, data]) => (
+                            <div key={cat} style={{ marginBottom: 10 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                    <span style={{ fontSize: 11, fontWeight: 500 }}>{categoryNames[cat].emoji} {categoryNames[cat].name}</span>
+                                    <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{data.resonating}/{data.total}</span>
+                                </div>
+                                <div style={{ height: 6, background: "var(--border)", borderRadius: 3 }}>
+                                    <div style={{ height: "100%", background: categoryNames[cat].color, borderRadius: 3, width: `${(data.resonating / data.total) * 100}%`, transition: "width 0.3s" }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {resonatingSigns.length > 0 && (
+                        <div style={{ marginBottom: 20 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 10 }}>Signs that resonated</p>
+                            {resonatingSigns.map(s => (
+                                <div key={s.id} style={{ padding: 12, background: "var(--card)", borderRadius: 10, border: "1px solid var(--border)", marginBottom: 6 }}>
+                                    <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{s.icon} {s.title}</p>
+                                    <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>{s.helps}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div style={{ padding: 14, background: "rgba(212, 148, 43, 0.08)", borderRadius: 14, marginBottom: 20 }}>
+                        <p style={{ fontSize: 12, lineHeight: 1.5 }}>❤️ Whatever you're carrying, recognising it is the first step. You don't have to face it all at once.</p>
+                    </div>
+
+                    <button onClick={() => { setView("browse"); setCheckInIndex(0); setCheckInAnswers({}); }} className="btn-primary">Done</button>
+                </div>
+            );
+        }
+
+        const currentSign = allSelfSigns[checkInIndex];
+        const progress = ((checkInIndex + 1) / allSelfSigns.length) * 100;
+
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{checkInIndex + 1} of {allSelfSigns.length}</span>
+                        <span style={{ fontSize: 11, color: categoryNames[currentSign.cat].color }}>{categoryNames[currentSign.cat].emoji} {categoryNames[currentSign.cat].name}</span>
+                    </div>
+                    <div style={{ height: 4, background: "var(--border)", borderRadius: 2 }}>
+                        <div style={{ height: "100%", background: categoryNames[currentSign.cat].color, borderRadius: 2, width: `${progress}%`, transition: "width 0.3s" }} />
+                    </div>
+                </div>
+
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <div style={{ textAlign: "center", marginBottom: 24 }}>
+                        <span style={{ fontSize: 36 }}>{currentSign.icon}</span>
+                    </div>
+                    <p className="serif" style={{ fontSize: 18, textAlign: "center", lineHeight: 1.5, marginBottom: 30, maxWidth: 320, margin: "0 auto 30px" }}>{currentSign.selfCheck}</p>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {[{ key: "yes", label: "Yes, this resonates" }, { key: "sometimes", label: "Sometimes or partly" }, { key: "no", label: "Not really" }].map(opt => (
+                            <button key={opt.key} onClick={() => {
+                                setCheckInAnswers({ ...checkInAnswers, [currentSign.id]: opt.key });
+                                setTimeout(() => setCheckInIndex(checkInIndex + 1), 300);
+                            }} style={{
+                                padding: 14, borderRadius: 12, fontSize: 13, fontWeight: 500, cursor: "pointer",
+                                background: checkInAnswers[currentSign.id] === opt.key ? categoryNames[currentSign.cat].color : "var(--card)",
+                                color: checkInAnswers[currentSign.id] === opt.key ? "white" : "var(--text)",
+                                border: `1px solid ${checkInAnswers[currentSign.id] === opt.key ? categoryNames[currentSign.cat].color : "var(--border)"}`,
+                                transition: "all 0.2s"
+                            }}>{opt.label}</button>
+                        ))}
+                    </div>
+                </div>
+
+                <button onClick={() => { setView("browse"); setCheckInIndex(0); setCheckInAnswers({}); }} style={{
+                    background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "var(--text-muted)", marginTop: 16, textAlign: "center"
+                }}>Exit check-in</button>
+            </div>
+        );
+    }
+
+    // CONVERSATION COACH VIEW
+    if (view === "coach") {
+        const step = coachSteps[coachStep];
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <BackButton onClick={() => { setView("browse"); setCoachStep(0); }} />
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                    <h1 className="serif" style={{ fontSize: 20 }}>Conversation Coach</h1>
+                    <span style={{ fontSize: 12, color: "var(--text-muted)", paddingTop: 6 }}>{coachStep + 1}/5</span>
+                </div>
+
+                <h2 className="serif" style={{ fontSize: 17, color: "#8B7355", marginBottom: 10 }}>{step.title}</h2>
+                <p style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.6, marginBottom: 16 }}>{step.content}</p>
+
+                {step.scripts && (
+                    <div style={{ marginBottom: 16 }}>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 8 }}>What to say</p>
+                        {step.scripts.map((s, i) => (
+                            <div key={i} style={{ padding: 12, background: "rgba(139, 115, 85, 0.06)", borderRadius: 10, marginBottom: 6 }}>
+                                <p style={{ fontSize: 11, fontWeight: 600, color: "#8B7355", marginBottom: 4 }}>{s.label}</p>
+                                <p style={{ fontSize: 12, lineHeight: 1.5, fontStyle: "italic" }}>{s.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+                    <div>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: "#6B8E99", marginBottom: 6 }}>✓ Do</p>
+                        {step.doList.map((d, i) => <p key={i} style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 4 }}>• {d}</p>)}
+                    </div>
+                    <div>
+                        <p style={{ fontSize: 11, fontWeight: 600, color: "#C47850", marginBottom: 6 }}>✗ Don't</p>
+                        {step.dontList.map((d, i) => <p key={i} style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 4 }}>• {d}</p>)}
+                    </div>
+                </div>
+
+                <div style={{ display: "flex", gap: 8 }}>
+                    {coachStep > 0 && <button onClick={() => setCoachStep(coachStep - 1)} className="btn-secondary" style={{ flex: 1 }}>Previous</button>}
+                    {coachStep < 4 ? (
+                        <button onClick={() => setCoachStep(coachStep + 1)} className="btn-primary" style={{ flex: 1 }}>Next</button>
+                    ) : (
+                        <button onClick={() => { setView("browse"); setCoachStep(0); }} className="btn-primary" style={{ flex: 1 }}>Done</button>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // BROWSE VIEW (main)
+    const renderSignsList = (signsObj, showHelps) => Object.entries(signsObj).map(([cat, signs]) => {
+        if (!categoryNames[cat]) return null;
+        return (
+            <div key={cat} style={{ marginBottom: 10 }}>
+                <div onClick={() => setExpanded(expanded === cat ? null : cat)} style={{
+                    display: "flex", alignItems: "center", gap: 10, padding: 12, borderRadius: 12,
+                    background: "var(--card)", border: "1px solid var(--border)", cursor: "pointer"
+                }}>
+                    <span style={{ fontSize: 18 }}>{categoryNames[cat].emoji}</span>
+                    <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, fontWeight: 600 }}>{categoryNames[cat].name}</p>
+                        <p style={{ fontSize: 11, color: "var(--text-muted)" }}>{signs.length} signs</p>
+                    </div>
+                    <span style={{ fontSize: 10, transform: expanded === cat ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▼</span>
+                </div>
+                {expanded === cat && (
+                    <div style={{ marginTop: 4 }}>
+                        {signs.map(s => (
+                            <div key={s.id} onClick={() => setExpandedSign(expandedSign === s.id ? null : s.id)} style={{
+                                padding: 12, marginLeft: 8, marginBottom: 4, background: "var(--card)",
+                                border: "1px solid var(--border)", borderRadius: 10, cursor: "pointer"
+                            }}>
+                                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                                    <span style={{ fontSize: 16, flexShrink: 0 }}>{s.icon}</span>
+                                    <div style={{ flex: 1 }}>
+                                        <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{s.title}</p>
+                                        <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>{s.desc}</p>
+                                    </div>
+                                </div>
+                                {expandedSign === s.id && (
+                                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
+                                        {showHelps && s.selfCheck && <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}><strong>Self-check:</strong> {s.selfCheck}</p>}
+                                        {s.helps && <p style={{ fontSize: 11, color: categoryNames[cat].color, lineHeight: 1.4 }}><strong>What helps:</strong> {s.helps}</p>}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    });
+
+    return (
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Recognise the Signs</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>Understanding what to look for.</p>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                <button onClick={() => setTab("self")} style={{
+                    flex: 1, padding: 10, borderRadius: 10,
+                    background: tab === "self" ? "var(--accent)" : "var(--card)",
+                    color: tab === "self" ? "white" : "var(--text)",
+                    border: `1px solid ${tab === "self" ? "var(--accent)" : "var(--border)"}`,
+                    fontWeight: 500, cursor: "pointer", fontSize: 13
+                }}>In Yourself</button>
+                <button onClick={() => setTab("others")} style={{
+                    flex: 1, padding: 10, borderRadius: 10,
+                    background: tab === "others" ? "var(--accent)" : "var(--card)",
+                    color: tab === "others" ? "white" : "var(--text)",
+                    border: `1px solid ${tab === "others" ? "var(--accent)" : "var(--border)"}`,
+                    fontWeight: 500, cursor: "pointer", fontSize: 13
+                }}>In Others</button>
+            </div>
+
+            {tab === "self" && (
+                <div>
+                    <div onClick={() => setView("checkin")} className="card" style={{ marginBottom: 16, cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(212, 148, 43, 0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🔍</div>
+                        <div>
+                            <p style={{ fontSize: 13, fontWeight: 600 }}>Guided Check-in</p>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)" }}>Walk through 25 signs — takes 3-5 minutes</p>
+                        </div>
+                    </div>
+                    {renderSignsList(selfSigns, true)}
+                </div>
+            )}
+
+            {tab === "others" && (
+                <div>
+                    <div onClick={() => setView("coach")} className="card" style={{ marginBottom: 16, cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(139, 115, 85, 0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>💬</div>
+                        <div>
+                            <p style={{ fontSize: 13, fontWeight: 600 }}>Conversation Coach</p>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)" }}>How to talk to someone you're worried about</p>
+                        </div>
+                    </div>
+                    {renderSignsList(othersSigns, false)}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function GroundingScreen({ navigate }) {
+    const [phase, setPhase] = useState("intro");
+    const [senseIndex, setSenseIndex] = useState(0);
+    const [acknowledged, setAcknowledged] = useState(0);
+    const [showQuietNote, setShowQuietNote] = useState(false);
+    const quietTimerRef = useRef(null);
+
+    const senses = [
+        { name: "See", verb: "see", emoji: "👀", color: "#6BA894", count: 5, prompt: "Look around slowly", hint: "Whatever your eyes land on — no right answer", nudges: ["a colour", "a shape", "something still", "something moving", "a shadow or light"], quietNote: null },
+        { name: "Touch", verb: "feel", emoji: "👋", color: "#8778B0", count: 4, prompt: "Notice what you can feel", hint: "On your skin, under your hands, beneath your feet", nudges: ["a temperature", "a texture", "something solid", "something soft"], quietNote: null },
+        { name: "Hear", verb: "hear", emoji: "👂", color: "#5C94AD", count: 3, prompt: "Be still and listen", hint: "Close, far away, or just the quiet itself", nudges: ["something close", "something far", "your own breathing"], quietNote: null },
+        { name: "Smell", verb: "smell", emoji: "👃", color: "#D4942B", count: 2, prompt: "Breathe in slowly", hint: "This one's often subtle — and that's fine", nudges: ["the air itself", "your clothes or skin"], quietNote: "Not much there? That's normal. Even 'nothing' is you paying attention." },
+        { name: "Taste", verb: "taste", emoji: "👅", color: "#B8858F", count: 1, prompt: "Notice your mouth", hint: "Don't search — just notice what's already there", nudges: ["whatever's on your tongue"], quietNote: "Can't find anything? Notice the inside of your cheeks, your breath. That counts." }
+    ];
+
+    const current = senses[senseIndex];
+    const nudge = current ? current.nudges[Math.min(acknowledged, current.nudges.length - 1)] : "";
+    const isComplete = acknowledged >= (current ? current.count : 0);
+
+    useEffect(() => {
+        if (phase === "sensing" && current.quietNote && !isComplete) {
+            setShowQuietNote(false);
+            quietTimerRef.current = setTimeout(() => setShowQuietNote(true), 6000);
+        }
+        return () => { if (quietTimerRef.current) clearTimeout(quietTimerRef.current); };
+    }, [phase, senseIndex]);
+
+    const handleTap = () => {
+        if (isComplete) return;
+        setAcknowledged(acknowledged + 1);
+    };
+
+    const nextSense = () => {
+        if (senseIndex < 4) {
+            setPhase("breathing");
+            setShowQuietNote(false);
+            setTimeout(() => {
+                setSenseIndex(senseIndex + 1);
+                setAcknowledged(0);
+                setPhase("sensing");
+            }, 3500);
+        } else {
+            setPhase("complete");
+        }
+    };
+
+    const skipSense = () => {
+        setAcknowledged(current.count);
+    };
+
+    // SVG progress ring
+    const ringSize = 140;
+    const strokeWidth = 6;
+    const radius = (ringSize - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const progressOffset = circumference - (acknowledged / (current ? current.count : 1)) * circumference;
+
+    if (phase === "intro") {
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                <p style={{ fontSize: 32, marginBottom: 16 }}>5 · 4 · 3 · 2 · 1</p>
+                <h1 className="serif" style={{ fontSize: 24, marginBottom: 8 }}>Grounding</h1>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 8, maxWidth: 280, lineHeight: 1.5 }}>When your mind is racing, this brings you back to right now — gently, using your five senses.</p>
+                <p style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 30, maxWidth: 260 }}>No typing. Just noticing. There are no wrong answers.</p>
+                <button onClick={() => setPhase("sensing")} className="btn-primary" style={{ width: 200 }}>Begin</button>
+                <button onClick={() => navigate("home")} className="btn-secondary" style={{ width: 200, marginTop: 12 }}>Back</button>
+            </div>
+        );
+    }
+
+    if (phase === "breathing") {
+        const nextSenseData = senses[Math.min(senseIndex + 1, 4)];
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                <div style={{
+                    width: 100, height: 100, borderRadius: "50%",
+                    background: `${nextSenseData.color}25`,
+                    boxShadow: `0 0 40px ${nextSenseData.color}20`,
+                    marginBottom: 30,
+                    animation: "breathe 3.5s ease-in-out infinite"
+                }} />
+                <p className="serif" style={{ fontSize: 18, marginBottom: 6 }}>Take a breath</p>
+                <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Then notice what you can {nextSenseData.verb}</p>
+            </div>
+        );
+    }
+
+    if (phase === "sensing") {
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{current.emoji} {current.prompt}</span>
+                    <span style={{ fontSize: 11, color: current.color }}>{senseIndex + 1} of 5</span>
+                </div>
+                <p style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 20 }}>{current.hint}</p>
+
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>Tap when you notice {nudge}</p>
+
+                    <div onClick={handleTap} style={{ position: "relative", width: ringSize, height: ringSize, cursor: isComplete ? "default" : "pointer", marginBottom: 20 }}>
+                        <svg width={ringSize} height={ringSize} style={{ transform: "rotate(-90deg)" }}>
+                            <circle cx={ringSize/2} cy={ringSize/2} r={radius} fill="none" stroke={`${current.color}20`} strokeWidth={strokeWidth} />
+                            <circle cx={ringSize/2} cy={ringSize/2} r={radius} fill="none" stroke={current.color} strokeWidth={strokeWidth}
+                                strokeDasharray={circumference} strokeDashoffset={progressOffset}
+                                strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" }} />
+                        </svg>
+                        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                            {isComplete ? (
+                                <span style={{ fontSize: 28, color: current.color }}>✓</span>
+                            ) : (
+                                <>
+                                    <p style={{ fontSize: 14, fontWeight: 500, color: current.color, textAlign: "center", maxWidth: 90, lineHeight: 1.3 }}>{nudge}</p>
+                                    <p style={{ fontSize: 11, color: `${current.color}66`, marginTop: 4 }}>{acknowledged} of {current.count}</p>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {showQuietNote && current.quietNote && !isComplete && (
+                        <div onClick={skipSense} style={{
+                            padding: "10px 16px", background: `${current.color}10`, borderRadius: 12,
+                            cursor: "pointer", marginBottom: 16, maxWidth: 280, textAlign: "center"
+                        }}>
+                            <p style={{ fontSize: 12, color: current.color, lineHeight: 1.4 }}>{current.quietNote}</p>
+                        </div>
+                    )}
+
+                    {isComplete && (
+                        <button onClick={nextSense} className="btn-primary" style={{ width: 200, background: current.color }}>
+                            {senseIndex < 4 ? "Continue" : "Finish"}
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    if (phase === "complete") {
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                <span style={{ fontSize: 56, marginBottom: 16 }}>✓</span>
+                <h1 className="serif" style={{ fontSize: 32, marginBottom: 12 }}>You're here</h1>
+                <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 12, maxWidth: 280, lineHeight: 1.6 }}>You brought yourself back to this moment. That takes real strength.</p>
+                <p style={{ fontSize: 13, color: "var(--accent)", marginBottom: 30, maxWidth: 260, lineHeight: 1.5 }}>It doesn't matter what you noticed. What matters is that you stopped and paid attention.</p>
+                <button onClick={() => navigate("home")} className="btn-primary" style={{ width: 200 }}>Done</button>
+            </div>
+        );
+    }
+}
+
+function ArticlesScreen({ navigate }) {
+    const [filter, setFilter] = useState("all");
+    const [selectedArticle, setSelectedArticle] = useState(null);
+
+    const categories = ["Anxiety", "Low Mood", "Stress", "Loneliness", "Grief", "Sleep", "Relationships", "Anger", "Alcohol", "Work", "Money"];
+
+    const articles = {
+        Anxiety: [
+            { id: 1, title: "Understanding your racing mind", body: "Anxiety creates a loop where your brain becomes hyper-focused on potential threats. When you're in this state, your threat detection system (amygdala) is working overtime while your rational brain (prefrontal cortex) is offline. This isn't weakness — it's neurobiology. The racing thoughts, catastrophic predictions, and physical symptoms you experience are real. Your nervous system truly believes there's danger. The key is learning to signal safety back to your body through grounding, breathing, and small acts of courage. Each time you do something despite anxiety, you're rewiring your brain's threat assessment." },
+            { id: 2, title: "When avoidance feeds anxiety", body: "Every time you avoid something because of anxiety, your brain logs it as 'that was dangerous and I survived by escaping.' The relief is immediate and powerful — which is why avoidance is so seductive. But over time, your world gradually shrinks. The list of things you avoid grows. And the anxiety doesn't decrease — it actually increases because your brain has learned that avoidance = safety. Breaking this cycle means approaching avoided situations gradually, starting with what feels only slightly uncomfortable. You're not pushing yourself to be 'tough.' You're retraining your nervous system." }
+        ],
+        "Low Mood": [
+            { id: 3, title: "Depression isn't sadness", body: "Depression is a flattening — of energy, interest, motivation, and hope. You might not feel sad at all. You might feel numb. This numbness is your mind protecting itself from overwhelming pain, but it also cuts you off from connection and meaning. The good news: depression is highly treatable. 60-80% of people respond to first-line interventions like therapy and lifestyle changes. When depression is telling you that nothing will change, remember: that's a symptom, not the truth. Your brain in a depressed state generates thoughts that feel like facts but are actually cognitive distortions. The hopelessness is temporary, even when it feels permanent." },
+            { id: 4, title: "Activity over motivation", body: "Depression hijacks motivation. You're waiting to feel like doing things before you do them. But that's backwards. When you're depressed, feelings follow action, not the other way around. This is called behavioural activation. You schedule activities you used to value — regardless of whether you feel like doing them — and rate your mood before and after. Almost always, people are surprised: the mood lifts a little after the activity. It's not about forcing yourself to be happy. It's about creating evidence that things still matter, even when your brain says they don't." }
+        ],
+        Stress: [
+            { id: 5, title: "Chronic stress rewires your brain", body: "When you're under prolonged stress, your body keeps pumping out cortisol (the stress hormone). This changes your brain's structure and function. Your prefrontal cortex (decision-making, planning) shrinks. Your amygdala (threat detection) enlarges. You become more reactive, less able to think clearly, more prone to anxiety and low mood. Your immune system suffers. Your sleep becomes fragmented. This isn't just 'feeling stressed' — stress is physically reshaping your brain and body. The pathway back involves interrupting the stress cycle: sleep, movement, breathing, connection, and meaning. Small consistent actions compound." },
+            { id: 6, title: "The Sunday dread spiral", body: "Sunday evening anxiety is real and it's worth paying attention to. As the week looms, your threat system activates. You're not weak for feeling it — you're responding reasonably to a situation that feels unmanageable. The pathway forward isn't pushing through. It's examining what specifically about the coming week feels overwhelming, breaking it into manageable pieces, identifying one thing you can control, and taking one small step. Also: if Sunday dread is a regular feature of your week, that's important information. Your work or life structure might need changing, not just your mindset." }
+        ],
+        Loneliness: [
+            { id: 7, title: "Loneliness is a signal", body: "Loneliness isn't a character flaw. It's a signal that you need connection. But loneliness can create a trap: the more isolated you feel, the harder it becomes to reach out. Social anxiety kicks in. You assume you're a burden. You withdraw further. The spiral deepens. Breaking this cycle starts small: one message, one call, one moment of genuine connection. You don't need a large friend group. Research shows that even one meaningful relationship buffers against loneliness. And connection begets connection — vulnerability invites vulnerability." },
+            { id: 8, title: "The difference between alone and lonely", body: "You can be surrounded by people and still feel desperately lonely. Loneliness isn't about proximity — it's about feeling understood and accepted. Solitude, by contrast, can be deeply nourishing. The difference is agency. Chosen time alone restores you. Unwanted isolation depletes you. If you're feeling lonely in a crowd, that's often a signal that the connection isn't genuine or mutual. You might need to seek out people who get you — online communities, groups centred on your interests, therapy, where people are gathered for real conversation rather than superficial socialising." }
+        ],
+        Grief: [
+            { id: 9, title: "Grief has no timeline", body: "There's no 'getting over' grief. There's integrating it. Grief is love with nowhere to go, and it doesn't follow stages. It's not linear. You can have a good day and then be undone by a song or a date or a moment that reminds you. This is normal. This is how you know that person or that life mattered. Over time, the acute pain softens. The grief becomes part of your story rather than the whole story. You're not 'moving on' — you're moving forward while carrying what was." },
+            { id: 10, title: "Grief in a culture that minimises pain", body: "Irish culture has both deep rituals around death and a tendency to 'get on with it.' Grief can feel isolating when people around you seem to have moved on. Your pain might be read as weakness or inability to cope. It's not. It's the depth of your love made visible. You might need to find spaces where your grief is witnessed and honoured — whether that's a grief counselor, a support group, or people who know how to sit with pain without trying to fix it. Your grief is valid. Take the time you need." }
+        ],
+        Sleep: [
+            { id: 11, title: "Why your mind races at bedtime", body: "You lie down and suddenly your mind is full of worries, plans, replays of the day. This is partly because your threat system is more active when your body is still. It's also because daytime stress activates your nervous system, leaving you revved when you try to sleep. The pathway to better sleep isn't forcing yourself to relax — that creates tension. It's: protecting sleep time ruthlessly, limiting screens an hour before bed, gentle movement or stretching, breathing exercises, and giving your mind somewhere to go (journaling your worries before bed, having a 'worry window' during the day instead of at night)." },
+            { id: 12, title: "The sleep and mood connection", body: "Sleep deprivation is one of the most powerful generators of low mood, anxiety, and rumination. When you're sleep-deprived, your emotional regulation tank is empty. Things that feel manageable on good sleep feel catastrophic when you're tired. Your threat system is more active. Your reward system is more muted. Improving sleep might be the single most impactful intervention for your mental health. One good night won't fix everything, but a consistent practice of sleep protection — same bedtime, no screens, cool dark room, wind-down routine — can shift your baseline mood and resilience significantly." }
+        ],
+        Relationships: [
+            { id: 13, title: "Loneliness in love", body: "You can be in a relationship and feel deeply lonely. This happens when there's physical proximity but emotional distance. When you're not known. When you're performing rather than being. This kind of loneliness is uniquely painful because the person is right there but unreachable. If this is your experience, there's usually repair possible — but it requires vulnerability. One of you needs to say 'I feel lonely in this relationship' and mean it. That creates the possibility of reconnection." },
+            { id: 14, title: "Communication after conflict", body: "The hours after an argument are crucial. Your threat system is activated. Your ability to hear is compromised. Rather than trying to resolve things immediately, it often works better to: cool down with separate time, come back when calmer, start with something true (not an accusation), listen without defending, and name what you're both feeling. A repair conversation isn't about winning. It's about understanding and reconnecting. 'I felt hurt when...' and 'I didn't realise you felt that way' can heal what seems irreparable." }
+        ],
+        Anger: [
+            { id: 15, title: "Understanding reactive anger", body: "You snap at someone over something small and immediately regret it. This is reactive anger — your threat system firing without you having time to think. It's not a character flaw. It's often a sign that your emotional reserves are depleted, something triggered an old wound, or your nervous system is already activated. Understanding what's beneath the anger — the hurt, fear, or unmet need — helps you respond differently next time. The Anger Iceberg technique helps: the anger is the tip, but beneath it is usually sadness, fear, or feeling unseen." },
+            { id: 16, title: "Anger as a boundary signal", body: "Anger often appears when a boundary has been crossed repeatedly. Your nervous system is saying 'this is too much.' Rather than suppressing the anger, it's worth listening to it. What boundary is being crossed? Can you name it clearly? Can you communicate it before you hit the limit? Anger expressed clearly and early is far less damaging than rage that erupts after months of violation. 'This doesn't work for me and I need to change it' is often what anger is trying to say." }
+        ],
+        Alcohol: [
+            { id: 17, title: "Irish drinking culture and the 'fear'", body: "In Ireland, drinking is woven into nearly every social context. The normalization of heavy drinking makes it hard to spot when it's shifted from social enjoyment to emotional coping. Add the cultural acceptance of 'the fear' (next-day anxiety and shame) as a punch line, and people struggle to take their own drinking seriously. But if you're regularly experiencing anxiety hangovers, if you're hiding how much you drink, if drinking is creating consequences — that's worth paying attention to. You're not weak. You're noticing a pattern that needs addressing." },
+            { id: 18, title: "Drinking to cope versus social drinking", body: "The key difference is function. Are you drinking to feel okay, or to celebrate and connect? If you're reaching for a drink when you're stressed, anxious, bored, or lonely — that's coping. The relief is immediate and that's the trap: it works so well that your brain learns to reach for it automatically. But alcohol is a depressant. It increases anxiety and low mood 12-24 hours later. You're essentially stealing tomorrow's peace to ease today's discomfort. Breaking the cycle means finding other ways to soothe, regulate, and celebrate." }
+        ],
+        Work: [
+            { id: 19, title: "Burnout isn't laziness", body: "You're exhausted, cynical, and your performance is declining. You're not weak. Your nervous system is overloaded and your recovery systems can't keep up. This is burnout — and it's usually a signal that something about your work situation is unsustainable. You might need to: set firmer boundaries between work and rest, reduce your workload, change your role, or actually change jobs. Sometimes the intervention is personal (better sleep, exercise, therapy). Sometimes it's structural (the job genuinely needs to change). Usually it's both." },
+            { id: 20, title: "The Sunday night spiral", body: "As the work week approaches, anxiety kicks in. You're dreading Monday. Your body is already tense. This is your nervous system responding reasonably to work that feels unmanageable or unsafe. Rather than pushing through, ask: what specifically about work is overwhelming? Is it the volume, the relationships, the lack of autonomy, the mismatch between your values and the work? Once you know what's actually wrong, you can address it — whether through conversations with your manager, changes to your schedule, or bigger decisions about whether this role or workplace is right for you." }
+        ],
+        Money: [
+            { id: 21, title: "Money anxiety versus money problems", body: "Money anxiety is the feeling even when your financial situation is stable. Money problems are actual financial difficulty. Both are real and both can be addressed. If you're anxious about money, that's often rooted in deeper fears: safety, shame, control, or identity. The pathway forward involves both: getting clear on your actual financial situation (knowledge reduces catastrophic thinking) and addressing the underlying fear. If you have actual financial difficulty, organisations like MABS offer free, confidential money advice." },
+            { id: 22, title: "Cost of living and mental health", body: "Ireland is experiencing a cost-of-living crisis and that's generating real stress. Rent, energy, childcare, food — everything costs more. This isn't 'poor budgeting.' This is structural. Your mental health is affected. Anxiety, low mood, relationship stress, and a sense of being trapped increase when financial pressure is real. You're not imagining the stress. Supporting yourself involves: getting practical help with budgeting or grants, connecting with others facing the same challenge (you're not alone), and advocating for structural change. Individual coping skills matter, but so does recognizing when the problem isn't personal." }
+        ]
+    };
+
+    if (selectedArticle) {
+        const cat = Object.keys(articles).find(c => articles[c].find(a => a.id === selectedArticle));
+        const article = articles[cat].find(a => a.id === selectedArticle);
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+                <BackButton onClick={() => setSelectedArticle(null)} />
+                <h1 className="serif" style={{ fontSize: 20, marginBottom: 4 }}>{article.title}</h1>
+                <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 16 }}>{cat}</p>
+                <p style={{ fontSize: 13, lineHeight: 1.8, color: "var(--text)" }}>{article.body}</p>
+            </div>
+        );
+    }
+
+    const filtered = filter === "all" ? articles : { [filter]: articles[filter] };
+
+    return (
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Articles</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>Read and learn.</p>
+
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                {["all", ...categories].map(cat => (
+                    <button key={cat} onClick={() => setFilter(cat)} style={{
+                        padding: "8px 12px", borderRadius: 20, fontSize: 12,
+                        background: filter === cat ? "var(--accent)" : "var(--card)",
+                        color: filter === cat ? "white" : "var(--text)",
+                        border: `1px solid ${filter === cat ? "var(--accent)" : "var(--border)"}`,
+                        cursor: "pointer", fontWeight: 500
+                    }}>
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {Object.entries(filtered).map(([cat, arts]) => (
+                <div key={cat}>
+                    {filter !== "all" && <h2 className="serif" style={{ fontSize: 16, marginBottom: 12 }}>{cat}</h2>}
+                    {arts.map(a => (
+                        <div key={a.id} onClick={() => setSelectedArticle(a.id)} className="card" style={{ marginBottom: 10, cursor: "pointer" }}>
+                            <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{a.title}</p>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.4 }}>{a.body.substring(0, 100)}...</p>
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function AssessmentScreen({ navigate }) {
+    const [results, setResults] = useState(null);
+    const [answers, setAnswers] = useState({});
+
+    const questions = [
+        { id: "e1", domain: "Emotional", text: "I can name and express my feelings clearly" },
+        { id: "e2", domain: "Emotional", text: "I feel hopeful about the future" },
+        { id: "e3", domain: "Emotional", text: "I'm managing stress well" },
+        { id: "en1", domain: "Energy", text: "I have energy for activities I care about" },
+        { id: "en2", domain: "Energy", text: "I sleep well and wake refreshed" },
+        { id: "c1", domain: "Connection", text: "I feel connected to people who matter to me" },
+        { id: "c2", domain: "Connection", text: "I have someone I can talk to about difficulties" },
+        { id: "t1", domain: "Thinking", text: "My thinking is clear and I can focus" },
+        { id: "t2", domain: "Thinking", text: "I'm not trapped in worry loops" },
+        { id: "t3", domain: "Thinking", text: "I can see things in perspective" },
+        { id: "co1", domain: "Coping", text: "I have healthy ways to manage stress" },
+        { id: "co2", domain: "Coping", text: "I take care of my physical health" },
+        { id: "p1", domain: "Purpose", text: "My life feels meaningful" },
+        { id: "p2", domain: "Purpose", text: "I'm working toward things that matter to me" }
+    ];
+
+    const submit = () => {
+        const total = Object.values(answers).reduce((a, b) => a + b, 0);
+        const domains = {};
+        questions.forEach(q => {
+            if (!domains[q.domain]) domains[q.domain] = { total: 0, count: 0 };
+            domains[q.domain].total += answers[q.id] || 0;
+            domains[q.domain].count += 1;
+        });
+        setResults({ total, domains });
+    };
+
+    if (results) {
+        const percentage = (results.total / 70) * 100;
+        return (
+            <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+                <BackButton onClick={() => { setResults(null); setAnswers({}); }} />
+                <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Your Results</h1>
+
+                <div style={{ textAlign: "center", marginBottom: 24, padding: 20, background: "var(--card)", borderRadius: 16 }}>
+                    <div style={{ width: 120, height: 120, margin: "0 auto 16px", borderRadius: "50%", background: `conic-gradient(var(--accent) 0deg ${percentage * 3.6}deg, var(--border) ${percentage * 3.6}deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ width: 100, height: 100, borderRadius: "50%", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <p className="serif" style={{ fontSize: 24, fontWeight: 600 }}>{Math.round(percentage)}%</p>
+                        </div>
+                    </div>
+                    <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Overall Score</p>
+                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{results.total} out of 70</p>
+                </div>
+
+                <h2 className="serif" style={{ fontSize: 16, marginBottom: 12 }}>By Domain</h2>
+                {Object.entries(results.domains).map(([domain, data]) => {
+                    const domainPercent = (data.total / (data.count * 5)) * 100;
+                    return (
+                        <div key={domain} style={{ marginBottom: 12 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>{domain}</p>
+                            <div style={{ height: 8, background: "var(--border)", borderRadius: 4, overflow: "hidden" }}>
+                                <div style={{ height: "100%", background: "var(--accent)", width: `${domainPercent}%`, transition: "width 0.3s" }} />
+                            </div>
+                            <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>{data.total} / {data.count * 5}</p>
+                        </div>
+                    );
+                })}
+
+                <button onClick={() => navigate("home")} className="btn-primary" style={{ marginTop: 24 }}>Done</button>
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <BackButton onClick={() => navigate("home")} />
+            <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Wellbeing Check-In</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Rate from 1 (struggling) to 5 (thriving).</p>
+
+            <div style={{ marginBottom: 20 }}>
+                {questions.map(q => (
+                    <div key={q.id} style={{ marginBottom: 16 }}>
+                        <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{q.text}</p>
+                        <div style={{ display: "flex", gap: 6 }}>
+                            {[1, 2, 3, 4, 5].map(v => (
+                                <button key={v} onClick={() => setAnswers({ ...answers, [q.id]: v })} style={{
+                                    flex: 1, padding: 10, borderRadius: 8,
+                                    background: answers[q.id] === v ? "var(--accent)" : "var(--card)",
+                                    color: answers[q.id] === v ? "white" : "var(--text)",
+                                    border: `1px solid ${answers[q.id] === v ? "var(--accent)" : "var(--border)"}`,
+                                    fontWeight: 500, cursor: "pointer", fontSize: 12
+                                }}>
+                                    {v}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <button onClick={submit} disabled={Object.keys(answers).length < 14} className="btn-primary" style={{
+                opacity: Object.keys(answers).length < 14 ? 0.5 : 1,
+                cursor: Object.keys(answers).length < 14 ? "default" : "pointer"
+            }}>
+                See Results
+            </button>
+        </div>
+    );
+}
+
+function ChatScreen({ navigate }) {
+    const [messages, setMessages] = useState(() => loadData("clarus_chat", []));
+    const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false);
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView();
+    }, [messages]);
+
+    const send = async () => {
+        if (!input.trim()) return;
+        const msg = input;
+        setInput("");
+        setMessages(p => [...p, { role: "user", content: msg }]);
+        setLoading(true);
+
+        try {
+            const r = await fetch("https://clarus-api.eoghanhoman.workers.dev/web/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: msg })
+            });
+            if (r.ok) {
+                const d = await r.json();
+                setMessages(p => [...p, { role: "assistant", content: d.reply }]);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div style={{ padding: "20px 22px 0", minHeight: "100%", display: "flex", flexDirection: "column" }}>
+            <div style={{ flex: 1, overflowY: "auto", marginBottom: 16 }}>
+                <h1 className="serif" style={{ fontSize: 22, marginBottom: 4 }}>Chat</h1>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>I'm here to listen.</p>
+
+                {messages.length === 0 ? (
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: 20 }}>Start whenever you're ready.</p>
+                ) : (
+                    messages.map((m, i) => (
+                        <div key={i} style={{
+                            display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start",
+                            marginBottom: 12
+                        }}>
+                            <div style={{
+                                maxWidth: "85%", padding: 12, borderRadius: 12,
+                                background: m.role === "user" ? "var(--accent)" : "var(--card)",
+                                color: m.role === "user" ? "white" : "var(--text)",
+                                fontSize: 13, lineHeight: 1.5
+                            }}>
+                                {m.content}
+                            </div>
+                        </div>
+                    ))
+                )}
+                {loading && <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Typing...</div>}
+                <div ref={scrollRef} />
+            </div>
+
+            <div style={{ paddingBottom: 20, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                    <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} placeholder="Type here..." style={{
+                        flex: 1, padding: "10px 12px", borderRadius: 10,
+                        border: "1px solid var(--border)", background: "var(--card)",
+                        fontFamily: "inherit", fontSize: 14
+                    }} />
+                    <button onClick={send} style={{
+                        width: 40, height: 40, borderRadius: 10,
+                        background: "var(--accent)", color: "white", border: "none", cursor: "pointer"
+                    }}>→</button>
+                </div>
+                {messages.length > 0 && <button onClick={() => { setMessages([]); saveData("clarus_chat", []); }} style={{ fontSize: 12, color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer" }}>Clear</button>}
             </div>
         </div>
     );
 }
 
-// ─── Support Screen ─────────────────────────────────
-
 function SupportScreen({ navigate }) {
-    const baseTint = "rgb(122, 158, 107)";
-    const [selectedNeed, setSelectedNeed] = React.useState(null);
-    const [showAll, setShowAll] = React.useState(false);
-    const [expandedId, setExpandedId] = React.useState(null);
+    const [need, setNeed] = useState(null);
+    const [showAll, setShowAll] = useState(false);
+    const [expanded, setExpanded] = useState(null);
 
-    const activeTint = selectedNeed ? supportNeeds.find(n => n.id === selectedNeed)?.tint || baseTint : baseTint;
+    const needs = [
+        { id: "crisis", label: "In crisis", emoji: "🆘", tint: "rgb(196, 120, 79)" },
+        { id: "therapy", label: "Talk to someone", emoji: "💬", tint: "#8B7355" },
+        { id: "general", label: "General support", emoji: "🤝", tint: "#D4942B" },
+        { id: "community", label: "Connect", emoji: "👥", tint: "#6B8E99" }
+    ];
 
-    const filteredPro = selectedNeed ? supportResources.filter(r => r.needs.includes(selectedNeed)) : supportResources;
-    const filteredCom = selectedNeed ? communityResources.filter(r => r.needs.includes(selectedNeed)) : communityResources;
+    const pros = [
+        { name: "Pieta House", phone: "1800 247 247", hours: "24/7", url: "https://www.pieta.ie", tint: "rgb(196, 120, 79)", desc: "Crisis support" },
+        { name: "Samaritans", phone: "116 123", hours: "24/7", url: "https://www.samaritans.ie", tint: "rgb(196, 120, 79)", desc: "Emotional support" },
+        { name: "Your GP", phone: null, hours: "Varies", url: "https://www.irishhealth.com", tint: "#8B7355", desc: "Mental health support" },
+        { name: "Counselling Ireland", phone: null, hours: "Varies", url: "https://www.counsellingireland.ie", tint: "#8B7355", desc: "Find counsellor" },
+        { name: "Accord", phone: "1800 393 393", hours: "Mon-Fri", url: "https://www.accord.ie", tint: "#8B7355", desc: "Couples counselling" },
+        { name: "Parentline", phone: "1800 928 328", hours: "10am-10pm", url: "https://www.parentline.ie", tint: "#D4942B", desc: "Parenting support" },
+        { name: "MABS", phone: "0761 07 2000", hours: "9am-8pm", url: "https://www.mabs.ie", tint: "#D4942B", desc: "Money advice" },
+        { name: "Women's Aid", phone: "1800 341 900", hours: "24/7", url: "https://www.womensaid.ie", tint: "#C47850", desc: "Domestic abuse" },
+    ];
 
-    const goBack = () => { setSelectedNeed(null); setShowAll(false); setExpandedId(null); };
+    const community = [
+        { name: "Men's Sheds", phone: null, url: "https://www.menssheds.ie", tint: "#6B8E99", desc: "Community workshops" },
+        { name: "GAA Healthy Club", phone: null, url: "https://learning.gaa.ie/my-gaa/community-and-health/healthy-club/", tint: "#D4942B", desc: "Local GAA support" },
+        { name: "parkrun", phone: null, url: "https://www.parkrun.com", tint: "#6B8E99", desc: "Weekly community" },
+        { name: "Grow", phone: "1890 474 474", url: "https://www.grow.ie", tint: "#7A6B8E", desc: "Peer support" },
+        { name: "Women's Sheds Ireland", phone: null, url: "https://www.womenssheds.ie", tint: "#6B8E99", desc: "Community spaces" },
+    ];
 
-    const ResourceCard = ({ r, isCommunity }) => {
-        const isOpen = expandedId === r.name;
-        const hasPhone = !isCommunity && (r.phone.startsWith("1") || r.phone.startsWith("0"));
+    const ResourceCard = ({ r, isCom }) => {
+        const isOpen = expanded === r.name;
         return (
-            <div className="card" style={{ marginBottom: 6, padding: 0, overflow: "hidden" }}>
-                <div onClick={() => { setExpandedId(isOpen ? null : r.name); }} style={{ display: "flex", alignItems: "center", gap: 12, padding: 14, cursor: "pointer" }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 9, background: `${activeTint}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{r.icon}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600 }}>{r.name}</div>
-                        <div style={{ fontSize: 12, color: isCommunity ? "var(--text-muted)" : activeTint }}>{isCommunity ? r.category : r.phone}</div>
+            <div onClick={() => setExpanded(isOpen ? null : r.name)} style={{
+                padding: "14px 16px", background: "var(--card)", borderRadius: 12,
+                border: "1px solid var(--border)", marginBottom: 8, cursor: "pointer"
+            }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                    <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{r.name}</p>
+                        <p style={{ fontSize: 11, color: r.tint, fontWeight: 500 }}>{r.phone || "Online"}</p>
                     </div>
-                    {hasPhone && (
-                        <a href={`tel:${r.phone.replace(/\s/g, "")}`} onClick={e => e.stopPropagation()} style={{ width: 34, height: 34, borderRadius: 9, background: activeTint, display: "flex", alignItems: "center", justifyContent: "center", color: "white", textDecoration: "none", fontSize: 14, flexShrink: 0 }}>{"\u{1F4DE}"}</a>
-                    )}
-                    <span style={{ fontSize: 10, color: "var(--text-muted)", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>{"\u25BC"}</span>
+                    {r.phone && <a href={`tel:${r.phone.replace(/\s/g, "")}`} onClick={e => e.stopPropagation()} style={{
+                        width: 34, height: 34, borderRadius: 9, background: r.tint,
+                        display: "flex", alignItems: "center", justifyContent: "center", color: "white",
+                        textDecoration: "none", fontSize: 14, flexShrink: 0
+                    }}>📞</a>}
+                    <span style={{ fontSize: 10, transform: isOpen ? "rotate(180deg)" : "none" }}>▼</span>
                 </div>
                 {isOpen && (
-                    <div style={{ padding: "0 14px 14px" }}>
-                        <div style={{ height: 1, background: "var(--border)", marginBottom: 10 }}></div>
+                    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
                         <p style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5, marginBottom: 10 }}>{r.desc}</p>
-                        {!isCommunity && <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10 }}>{"\u{1F552}"} {r.hours}</p>}
-                        <a href={r.url} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px 0", background: `${activeTint}15`, color: activeTint, borderRadius: 10, border: `1px solid ${activeTint}30`, textDecoration: "none", fontSize: 12, fontWeight: 600 }}>{isCommunity ? "Find out more" : "Visit website"}</a>
+                        {r.hours && <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 10 }}>🕐 {r.hours}</p>}
+                        <a href={r.url} target="_blank" rel="noopener" style={{
+                            display: "block", textAlign: "center", padding: "10px 0", background: `${r.tint}15`,
+                            color: r.tint, borderRadius: 10, border: `1px solid ${r.tint}30`,
+                            textDecoration: "none", fontSize: 12, fontWeight: 600
+                        }}>
+                            {isCom ? "Find out more" : "Visit website"}
+                        </a>
                     </div>
                 )}
             </div>
@@ -1094,84 +1613,85 @@ function SupportScreen({ navigate }) {
     };
 
     return (
-        <div className="section-support" style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
-            <BackButton onClick={() => navigate("home")} color={baseTint} />
-            <h1 className="serif" style={{ fontSize: 22, color: baseTint, marginBottom: 4 }}>Get Support</h1>
-            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>You don't have to do this alone.</p>
+        <div style={{ padding: "20px 22px 40px", minHeight: "100%" }}>
+            <h1 className="serif" style={{ fontSize: 22, color: "#C47850", marginBottom: 4 }}>Get Support</h1>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>You're not alone.</p>
 
-            {/* Crisis banner */}
-            <div style={{ display: "flex", alignItems: "center", gap: 14, padding: 16, background: "var(--card)", borderRadius: 16, border: "1px solid rgba(196, 120, 79, 0.25)", marginBottom: 20 }}>
+            <div style={{
+                display: "flex", alignItems: "center", gap: 14, padding: 16, background: "var(--card)",
+                borderRadius: 16, border: "1px solid rgba(196, 120, 79, 0.25)", marginBottom: 20
+            }}>
                 <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>In crisis or immediate danger?</p>
-                    <p style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.4 }}>Call 999 / 112 or Samaritans on 116 123 (free, 24/7)</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>In crisis?</p>
+                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Call 999 or Samaritans 116 123 (24/7)</p>
                 </div>
-                <a href="tel:116123" style={{ width: 42, height: 42, borderRadius: 12, background: "rgb(196, 120, 79)", display: "flex", alignItems: "center", justifyContent: "center", color: "white", textDecoration: "none", fontSize: 16, flexShrink: 0 }}>{"\u{1F4DE}"}</a>
+                <a href="tel:116123" style={{
+                    width: 42, height: 42, borderRadius: 12, background: "rgb(196, 120, 79)",
+                    display: "flex", alignItems: "center", justifyContent: "center", color: "white",
+                    textDecoration: "none", fontSize: 16
+                }}>📞</a>
             </div>
 
-            {!selectedNeed && !showAll ? (
-                /* ── Need selection ── */
+            {!need && !showAll ? (
                 <div>
-                    <h2 className="serif" style={{ fontSize: 18, marginBottom: 14 }}>What do you need right now?</h2>
-                    {supportNeeds.map(need => (
-                        <div key={need.id} onClick={() => { setSelectedNeed(need.id); setExpandedId(null); }} className="card" style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", marginBottom: 6, cursor: "pointer" }}>
-                            <div style={{ width: 38, height: 38, borderRadius: 10, background: `${need.tint}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{need.icon}</div>
-                            <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{need.label}</span>
-                            <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{"\u203A"}</span>
+                    <h2 className="serif" style={{ fontSize: 18, marginBottom: 14 }}>What do you need?</h2>
+                    {needs.map(n => (
+                        <div key={n.id} onClick={() => setNeed(n.id)} className="card" style={{
+                            display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", marginBottom: 6, cursor: "pointer"
+                        }}>
+                            <div style={{
+                                width: 38, height: 38, borderRadius: 10, background: `${n.tint}15`,
+                                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16
+                            }}>
+                                {n.emoji}
+                            </div>
+                            <span style={{ flex: 1, fontSize: 14, fontWeight: 500 }}>{n.label}</span>
+                            <span style={{ fontSize: 10, color: "var(--text-muted)" }}>›</span>
                         </div>
                     ))}
-                    <div onClick={() => { setShowAll(true); setExpandedId(null); }} style={{ textAlign: "center", padding: 14, fontSize: 13, fontWeight: 500, color: "var(--text-muted)", cursor: "pointer", marginTop: 6 }}>Show all services</div>
-                    <div style={{ padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginTop: 8 }}>
-                        <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
-                            This app is not a substitute for professional medical advice, diagnosis, or treatment. If you're struggling, please reach out — asking for help is a sign of strength.
-                        </p>
+                    <div onClick={() => setShowAll(true)} style={{
+                        textAlign: "center", padding: 14, fontSize: 13, fontWeight: 500,
+                        color: "var(--text-muted)", cursor: "pointer", marginTop: 6
+                    }}>
+                        Show all
                     </div>
                 </div>
             ) : (
-                /* ── Filtered results ── */
                 <div>
-                    <div onClick={goBack} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, color: activeTint, cursor: "pointer", marginBottom: 14 }}>
-                        <span>{"\u2039"}</span> {selectedNeed ? "Different need" : "Back"}
+                    <div onClick={() => { setNeed(null); setShowAll(false); }} style={{
+                        display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500,
+                        color: "#C47850", cursor: "pointer", marginBottom: 14
+                    }}>
+                        <span>‹</span> Back
                     </div>
 
-                    {selectedNeed && (
+                    {need && (
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                            <span style={{ fontSize: 16 }}>{supportNeeds.find(n => n.id === selectedNeed)?.icon}</span>
-                            <h2 className="serif" style={{ fontSize: 18 }}>{supportNeeds.find(n => n.id === selectedNeed)?.label}</h2>
-                        </div>
-                    )}
-                    {!selectedNeed && <h2 className="serif" style={{ fontSize: 18, marginBottom: 16 }}>All Services</h2>}
-
-                    {filteredPro.length > 0 && filteredCom.length > 0 && (
-                        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>Support Services</p>
-                    )}
-                    {filteredPro.map(r => <ResourceCard key={r.name} r={r} isCommunity={false} />)}
-
-                    {filteredCom.length > 0 && (
-                        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10, marginTop: filteredPro.length > 0 ? 16 : 0 }}>{filteredPro.length === 0 ? "Community & Connection" : "Community"}</p>
-                    )}
-                    {filteredCom.map(r => <ResourceCard key={r.name} r={r} isCommunity={true} />)}
-
-                    {selectedNeed && needNudges[selectedNeed] && (
-                        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginTop: 12 }}>
-                            <span style={{ fontSize: 16 }}>{needNudges[selectedNeed].emoji}</span>
-                            <p style={{ fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.5 }}>{needNudges[selectedNeed].text}</p>
+                            <span style={{ fontSize: 16 }}>{needs.find(n => n.id === need)?.emoji}</span>
+                            <h2 className="serif" style={{ fontSize: 18 }}>{needs.find(n => n.id === need)?.label}</h2>
                         </div>
                     )}
 
-                    <div style={{ padding: 14, background: "var(--card)", borderRadius: 14, border: "1px solid var(--border)", marginTop: 12 }}>
-                        <p style={{ fontSize: 12, color: "var(--text-muted)", fontStyle: "italic", lineHeight: 1.5 }}>
-                            This app is not a substitute for professional medical advice, diagnosis, or treatment. If you're struggling, please reach out — asking for help is a sign of strength.
-                        </p>
-                    </div>
+                    <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10 }}>Services</p>
+                    {pros.map(r => <ResourceCard key={r.name} r={r} isCom={false} />)}
+
+                    {(need === "community" || showAll) && (
+                        <>
+                            <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.8, color: "var(--text-muted)", textTransform: "uppercase", marginBottom: 10, marginTop: 16 }}>Community</p>
+                            {community.map(r => <ResourceCard key={r.name} r={r} isCom={true} />)}
+                        </>
+                    )}
                 </div>
             )}
         </div>
     );
 }
 
-// ─── Render ─────────────────────────────────────────
-
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
