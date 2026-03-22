@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="description" content="Clarus is an Irish-built mental health app. Guided breathing, ambient meditation, mood tracking, CBT tools, and an AI companion — designed with Irish people in mind.">
+    <meta name="description" content="Clarus is an Irish-built mental health app. Mood tracking, breathing exercises, journaling, CBT toolkit with 41 techniques, guided meditation, AI chat, crisis resources — designed with Irish people in mind.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
@@ -65,20 +65,21 @@
         .nav-logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); text-decoration: none; }
         .nav-logo span { color: var(--accent); }
 
-        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
         .nav-links a { font-size: 14px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
         .nav-links a:hover { color: var(--accent); }
 
         .nav-cta {
-            font-size: 13px; font-weight: 600; color: var(--accent);
-            text-decoration: none; padding: 8px 20px;
-            border: 1.5px solid var(--accent); border-radius: 24px;
+            font-size: 13px; font-weight: 600; color: #fff; background: var(--accent);
+            text-decoration: none; padding: 10px 24px;
+            border-radius: 24px;
             transition: all 0.2s ease;
         }
-        .nav-cta:hover { background: var(--accent); color: #fff; }
+        .nav-cta:hover { box-shadow: 0 6px 20px rgba(212, 148, 43, 0.3); transform: translateY(-1px); }
 
         @media (max-width: 768px) {
             .nav-links a:not(.nav-cta) { display: none; }
+            nav .container { padding: 16px 24px; }
         }
 
         /* ── Hero ────────────────────────────────── */
@@ -240,36 +241,72 @@
         .mock-chart-bar { width: 20px; border-radius: 4px 4px 0 0; background: var(--accent); opacity: 0.6; }
         .mock-chart-label { font-size: 7px; color: var(--text-dim); text-align: center; margin-top: 4px; }
 
-        /* CBT mockup */
-        .mock-module { background: var(--surface); border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        .mock-module-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .mock-module-text { font-size: 10px; font-weight: 600; color: var(--text); }
-        .mock-module-sub { font-size: 8px; color: var(--text-muted); margin-top: 2px; }
-        .mock-progress { height: 4px; background: var(--bg); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-        .mock-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+        /* ── Features Grid ─────────────────────── */
+        .features-intro { text-align: center; margin-bottom: 48px; }
+        .features-intro h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 10px; }
+        .features-intro p { font-size: 16px; color: var(--text-muted); max-width: 520px; margin: 0 auto; }
 
-        /* ── Feature Showcase ──────────────────── */
-        .showcase { padding: 60px 0; }
-        .showcase.alt-bg { background: var(--bg-deep); }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
 
-        .showcase-inner {
+        @media (min-width: 769px) {
+            .features-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(61, 51, 42, 0.06); }
+
+        .feature-icon { font-size: 36px; margin-bottom: 12px; }
+        .feature-name { font-family: 'DM Serif Display', serif; font-size: 15px; font-weight: 400; margin-bottom: 6px; }
+        .feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+        .features-free { text-align: center; font-size: 14px; color: var(--text-muted); padding: 16px; background: var(--accent-soft); border-radius: 12px; }
+
+        /* ── Spotlight Sections ────────────────── */
+        .spotlight { padding: 60px 0; }
+        .spotlight.dark-bg { background: var(--bg-deep); }
+
+        .spotlight-hero {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 64px;
             align-items: center;
+            margin-bottom: 80px;
         }
 
-        .showcase-inner.reverse .showcase-visual { order: -1; }
+        .spotlight-hero.reverse { grid-auto-flow: dense; }
+        .spotlight-hero.reverse .spotlight-visual { grid-column: 1; }
+        .spotlight-hero.reverse .spotlight-text { grid-column: 2; }
 
-        .showcase-text .section-label { margin-bottom: 12px; }
-        .showcase-text h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
-        .showcase-text p { font-size: 16px; color: var(--text-muted); line-height: 1.8; max-width: 420px; }
+        .spotlight-text h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
+        .spotlight-text p { font-size: 16px; color: var(--text-muted); line-height: 1.8; max-width: 420px; }
 
-        .showcase-visual {
-            display: flex; justify-content: center;
-        }
+        .spotlight-visual { display: flex; justify-content: center; }
 
-        /* ── Why Ireland ────────────────────────── */
+        .feature-phones { display: flex; justify-content: center; gap: 20px; }
+
+        .feature-phones .phone-frame { width: 220px; height: 440px; }
+
+        /* Ambient sound chips */
+        .ambient-chips { display: flex; gap: 8px; margin-top: 16px; justify-content: center; flex-wrap: wrap; }
+        .ambient-chip { font-size: 9px; padding: 5px 12px; border-radius: 12px; background: var(--surface); color: var(--text-muted); }
+        .ambient-chip.active { background: var(--accent); color: #fff; }
+
+        /* ── Statistics Section ────────────────── */
         .why-ireland { padding: 80px 0; background: var(--bg-deep); }
 
         .ireland-inner {
@@ -305,14 +342,18 @@
 
         .stat-label { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
 
-        /* ── Difference Grid ───────────────────── */
+        /* ── What Makes This Different ────────── */
         .difference { padding: 80px 0; }
 
         .difference-header { text-align: center; margin-bottom: 48px; }
         .difference-header h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 10px; }
         .difference-header p { font-size: 16px; color: var(--text-muted); }
 
-        .diff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .diff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+        @media (min-width: 769px) {
+            .diff-grid { grid-template-columns: repeat(4, 1fr); }
+        }
 
         .diff-card {
             background: var(--card); border-radius: 18px; padding: 24px;
@@ -322,40 +363,28 @@
         }
 
         .diff-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(61, 51, 42, 0.06); }
-        .diff-icon { font-size: 32px; margin-bottom: 14px; }
+        .diff-icon { font-size: 36px; margin-bottom: 14px; }
         .diff-card h3 { font-family: 'DM Serif Display', serif; font-size: 17px; font-weight: 400; margin-bottom: 8px; }
         .diff-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-        /* ── About Us ──────────────────────────── */
-        .about { padding: 80px 0; background: var(--bg-deep); }
+        /* ── The Monday Note ───────────────────── */
+        .monday-note { padding: 80px 0; background: var(--bg-deep); }
 
-        .about-inner {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 64px;
-            align-items: center;
-        }
+        .monday-inner { text-align: center; max-width: 620px; margin: 0 auto; }
+        .monday-inner h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
+        .monday-inner p { font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; }
 
-        .about-text .section-label { margin-bottom: 12px; }
-        .about-text h2 { font-size: clamp(26px, 4vw, 36px); margin-bottom: 14px; }
-        .about-text p { font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
-
-        .about-values {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .value-card {
+        .monday-preview {
             background: var(--card);
-            border-radius: 14px;
-            padding: 20px;
             border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 32px;
+            margin-bottom: 24px;
         }
 
-        .value-icon { font-size: 24px; margin-bottom: 8px; }
-        .value-card h3 { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .value-card p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .monday-preview-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); opacity: 0.7; margin-bottom: 12px; }
+        .monday-preview h3 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 8px; }
+        .monday-preview p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
 
         /* ── Newsletter ────────────────────────── */
         .newsletter { text-align: center; padding: 80px 0; }
@@ -397,10 +426,12 @@
         .newsletter-success { display: none; padding: 16px; background: rgba(212, 148, 43, 0.08); border-radius: 12px; font-size: 14px; font-weight: 500; color: var(--accent); }
         .newsletter-error { display: none; padding: 12px; background: rgba(200, 60, 60, 0.08); border-radius: 12px; font-size: 13px; color: #c43c3c; margin-top: 10px; }
 
-        /* ── App Store ─────────────────────────── */
+        /* ── App Store / Try Now ──────────────── */
         .app-store-section { background: var(--bg-deep); text-align: center; padding: 80px 0; }
         .app-store-section h2 { font-size: clamp(24px, 3.5vw, 36px); margin-bottom: 12px; }
         .app-store-section p { font-size: 16px; color: var(--text-muted); max-width: 440px; margin: 0 auto 32px; }
+
+        .app-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
         .app-store-badge {
             display: inline-flex; align-items: center; gap: 12px;
@@ -413,6 +444,14 @@
         .app-store-badge .badge-text { text-align: left; }
         .app-store-badge .badge-text small { display: block; font-size: 10px; opacity: 0.7; font-weight: 400; }
         .app-store-badge .badge-text span { font-size: 16px; font-weight: 600; }
+
+        .web-app-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 15px; font-weight: 600; color: #fff; background: var(--accent);
+            padding: 14px 32px; border-radius: 14px; text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .web-app-link:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(212, 148, 43, 0.25); }
 
         /* ── Footer ────────────────────────────── */
         footer { padding: 40px 0; text-align: center; border-top: 1px solid var(--card-border); }
@@ -438,23 +477,25 @@
             .phone-frame.tilt-left, .phone-frame.tilt-right { display: none; }
             .phone-notch { width: 72px; height: 18px; border-radius: 0 0 12px 12px; }
 
-            .showcase-inner, .showcase-inner.reverse { grid-template-columns: 1fr; gap: 32px; }
-            .showcase-inner.reverse .showcase-visual { order: 0; }
-            .showcase-text { text-align: center; }
-            .showcase-text p { margin-left: auto; margin-right: auto; }
+            .spotlight-hero, .spotlight-hero.reverse { grid-template-columns: 1fr; gap: 32px; grid-auto-flow: revert; }
+            .spotlight-hero.reverse .spotlight-visual { grid-column: auto; }
+            .spotlight-hero.reverse .spotlight-text { grid-column: auto; }
+            .spotlight-text { text-align: center; }
+            .spotlight-text p { margin-left: auto; margin-right: auto; }
 
             .ireland-inner { grid-template-columns: 1fr; gap: 32px; text-align: center; }
-            .about-inner { grid-template-columns: 1fr; gap: 32px; text-align: center; }
 
-            .diff-grid { grid-template-columns: 1fr 1fr; }
+            .diff-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr !important; }
+
             .newsletter-form { flex-direction: column; }
             .newsletter-box { padding: 32px 24px; }
+
+            .app-ctas { flex-direction: column; align-items: center; }
         }
 
         @media (max-width: 480px) {
-            .diff-grid { grid-template-columns: 1fr; }
-            .ireland-stats { grid-template-columns: 1fr 1fr; }
-            .about-values { grid-template-columns: 1fr; }
+            .ireland-stats { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -466,8 +507,8 @@
             <a href="#" class="nav-logo">Clarus<span>.</span></a>
             <div class="nav-links">
                 <a href="#features">Features</a>
-                <a href="#about">About</a>
-                <a href="#notify" class="nav-cta">Get notified</a>
+                <a href="#difference">Why</a>
+                <a href="#newsletter" class="nav-cta">Get notified</a>
             </div>
         </div>
     </nav>
@@ -481,13 +522,10 @@
                         <span class="dot"></span>
                         Made in Ireland
                     </div>
-                    <h1>Your mental health,<br>in your <em>pocket</em></h1>
-                    <p>Breathing exercises, mood tracking, CBT tools, and an AI companion — built in Ireland, for Irish people.</p>
+                    <h1>For the days when <em>"I'm grand"</em> isn't the full story</h1>
+                    <p>A quiet place to check in with yourself. Mood tracking, breathing exercises, journaling, CBT tools, guided meditation, and an AI companion — all designed for Irish people.</p>
                     <div class="hero-actions">
-                        <a href="#notify" class="btn-primary">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            Notify me at launch
-                        </a>
+                        <a href="#newsletter" class="btn-primary">Get notified at launch</a>
                         <a href="#features" class="btn-secondary">See what's inside</a>
                     </div>
                 </div>
@@ -501,7 +539,7 @@
                                     <span class="mock-breathing-text">Breathe in</span>
                                 </div>
                             </div>
-                            <div class="mock-phase-label">Inhale slowly</div>
+                            <div class="mock-phase-label">Let it go</div>
                             <div class="mock-timer">3:42</div>
                         </div>
                     </div>
@@ -510,29 +548,29 @@
                         <div class="phone-notch"></div>
                         <div class="phone-screen">
                             <div class="mock-greeting">Good morning</div>
-                            <div class="mock-subtitle">What does today need from you?</div>
+                            <div class="mock-subtitle">What does today need?</div>
                             <div class="mock-card">
                                 <div class="mock-card-icon">🌬️</div>
-                                <div><div class="mock-card-text">Take a breath</div><div class="mock-card-sub">Guided breathing with ambient sound</div></div>
-                            </div>
-                            <div class="mock-card">
-                                <div class="mock-card-icon">🎧</div>
-                                <div><div class="mock-card-text">Sounds & meditation</div><div class="mock-card-sub">Timed sessions with calming sounds</div></div>
+                                <div><div class="mock-card-text">Breathe</div><div class="mock-card-sub">Guided breathing + sound</div></div>
                             </div>
                             <div class="mock-card">
                                 <div class="mock-card-icon">😊</div>
-                                <div><div class="mock-card-text">Check in</div><div class="mock-card-sub">How are you feeling right now?</div></div>
+                                <div><div class="mock-card-text">Check in</div><div class="mock-card-sub">How are you feeling?</div></div>
+                            </div>
+                            <div class="mock-card">
+                                <div class="mock-card-icon">📝</div>
+                                <div><div class="mock-card-text">Journal</div><div class="mock-card-sub">Three words or more</div></div>
                             </div>
                             <div class="mock-card">
                                 <div class="mock-card-icon">💬</div>
-                                <div><div class="mock-card-text">Talk it through</div><div class="mock-card-sub">AI companion for thinking out loud</div></div>
+                                <div><div class="mock-card-text">Talk</div><div class="mock-card-sub">Think out loud</div></div>
                             </div>
                             <div class="mock-explore-label">Explore</div>
                             <div class="mock-explore-grid">
-                                <div class="mock-explore-item"><span>🧠</span><small>CBT</small></div>
+                                <div class="mock-explore-item"><span>🛠️</span><small>Tools</small></div>
                                 <div class="mock-explore-item"><span>👁️</span><small>Signs</small></div>
-                                <div class="mock-explore-item"><span>❤️</span><small>Support</small></div>
-                                <div class="mock-explore-item"><span>✅</span><small>Assess</small></div>
+                                <div class="mock-explore-item"><span>📖</span><small>Read</small></div>
+                                <div class="mock-explore-item"><span>❤️</span><small>Help</small></div>
                             </div>
                         </div>
                     </div>
@@ -546,12 +584,14 @@
                                 <p>Your companion</p>
                             </div>
                             <div class="mock-chat-area">
-                                <div class="mock-bubble ai">Hi there. What's on your mind today?</div>
-                                <div class="mock-bubble user">I've been feeling overwhelmed lately</div>
-                                <div class="mock-bubble ai">That sounds tough. Would you like to explore what's behind that feeling?</div>
+                                <div class="mock-bubble ai">I'm here when you need to talk. What's on your mind?</div>
+                                <div class="mock-bubble user">Just feeling overwhelmed</div>
+                                <div class="mock-bubble ai">That sounds tough. What's making you feel that way?</div>
+                                <div class="mock-bubble user">Work's been mental lately</div>
+                                <div class="mock-bubble ai">When work gets like that, it affects everything. What would help right now?</div>
                             </div>
                             <div class="mock-chat-input">
-                                <span>Say what's on your mind...</span>
+                                <span>Tell me more...</span>
                                 <div class="send"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></div>
                             </div>
                         </div>
@@ -561,192 +601,193 @@
         </div>
     </section>
 
-    <!-- Feature Showcase 1: Breathing -->
-    <section class="showcase alt-bg" id="features">
+    <!-- What's Inside - Feature Grid -->
+    <section id="features" class="spotlight">
         <div class="container">
-            <div class="showcase-inner fade-in">
-                <div class="showcase-visual">
-                    <div class="phone-frame">
-                        <div class="phone-notch"></div>
-                        <div class="phone-screen" style="align-items: center; justify-content: center;">
-                            <div style="font-size: 8px; font-weight: 600; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">4-7-8 Relaxation</div>
-                            <div class="mock-breathing-ring">
-                                <div class="inner">
-                                    <span class="mock-breathing-text">Breathe in</span>
+            <div class="features-intro fade-in">
+                <h2>What's inside</h2>
+                <p>Everything you need to understand yourself and feel a bit better — all free, no paywalls.</p>
+            </div>
+
+            <div class="features-grid fade-in">
+                <div class="feature-card">
+                    <div class="feature-icon">😊</div>
+                    <div class="feature-name">Mood Tracking</div>
+                    <div class="feature-desc">Spot patterns in how you feel</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-name">Journaling</div>
+                    <div class="feature-desc">Three words or three pages</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌬️</div>
+                    <div class="feature-name">Breathing</div>
+                    <div class="feature-desc">Calm your nervous system</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛠️</div>
+                    <div class="feature-name">Toolkit</div>
+                    <div class="feature-desc">41 practical techniques</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👁️</div>
+                    <div class="feature-name">Signs</div>
+                    <div class="feature-desc">Recognise what you're carrying</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🖐️</div>
+                    <div class="feature-name">Grounding</div>
+                    <div class="feature-desc">5-4-3-2-1 to bring you back</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-name">Assessment</div>
+                    <div class="feature-desc">A gentle check-in</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📖</div>
+                    <div class="feature-name">Articles</div>
+                    <div class="feature-desc">Real reading for real struggles</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <div class="feature-name">AI Chat</div>
+                    <div class="feature-desc">Think out loud, no judgement</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">❤️</div>
+                    <div class="feature-name">Support</div>
+                    <div class="feature-desc">Irish crisis & community resources</div>
+                </div>
+            </div>
+
+            <div class="features-free fade-in">
+                ✓ Every tool is free. No paywall, no premium tier.
+            </div>
+        </div>
+    </section>
+
+    <!-- Spotlight 1: Breathing -->
+    <section class="spotlight dark-bg">
+        <div class="container">
+            <div class="spotlight-hero fade-in">
+                <div class="spotlight-visual">
+                    <div class="feature-phones">
+                        <div class="phone-frame">
+                            <div class="phone-notch"></div>
+                            <div class="phone-screen" style="align-items: center; justify-content: center;">
+                                <div style="font-size: 8px; font-weight: 600; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;">Box breathing</div>
+                                <div class="mock-breathing-ring">
+                                    <div class="inner">
+                                        <span class="mock-breathing-text">Breathe in</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mock-phase-label">Inhale slowly through your nose</div>
-                            <div class="mock-timer">3:42</div>
-                            <div style="display: flex; gap: 8px; margin-top: 16px;">
-                                <div style="font-size: 8px; padding: 4px 10px; border-radius: 10px; background: var(--accent); color: #fff;">Rain</div>
-                                <div style="font-size: 8px; padding: 4px 10px; border-radius: 10px; background: var(--surface); color: var(--text-muted);">Ocean</div>
-                                <div style="font-size: 8px; padding: 4px 10px; border-radius: 10px; background: var(--surface); color: var(--text-muted);">Night</div>
+                                <div class="mock-phase-label">Inhale for 7 counts</div>
+                                <div class="mock-timer">7</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="showcase-text">
+                <div class="spotlight-text">
                     <div class="section-label">Guided breathing</div>
                     <h2>Calm your mind in minutes</h2>
-                    <p>Follow gentle breathing patterns with ambient sounds — rain, ocean, storm, brook, fire, or night crickets. Choose from 3, 5, or 10-minute sessions.</p>
+                    <p>Four breathing patterns to match what you need: Calm when you're scattered, Box when you need structure, 4-7-8 for deeper relaxation, and Reset when anxiety spikes. Each with optional ambient sound — rain, ocean, wind, creek, fire, birds, or night.</p>
+                    <div class="ambient-chips">
+                        <div class="ambient-chip active">🌧️ Rain</div>
+                        <div class="ambient-chip">🌊 Ocean</div>
+                        <div class="ambient-chip">💨 Wind</div>
+                        <div class="ambient-chip">🌊 Creek</div>
+                        <div class="ambient-chip">🔥 Fire</div>
+                        <div class="ambient-chip">🦉 Night</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Feature Showcase 2: Mood Tracking -->
-    <section class="showcase">
+    <!-- Spotlight 2: Signs Check-In -->
+    <section class="spotlight">
         <div class="container">
-            <div class="showcase-inner reverse fade-in">
-                <div class="showcase-visual">
-                    <div class="phone-frame">
-                        <div class="phone-notch"></div>
-                        <div class="phone-screen">
-                            <div style="font-family: 'DM Serif Display', serif; font-size: 15px; margin-bottom: 4px;">How are you feeling?</div>
-                            <div class="mock-mood-row">
-                                <span class="mock-mood-face">😔</span>
-                                <span class="mock-mood-face">😐</span>
-                                <span class="mock-mood-face active">🙂</span>
-                                <span class="mock-mood-face">😊</span>
-                                <span class="mock-mood-face">😄</span>
-                            </div>
-                            <div class="mock-mood-label">Feeling okay</div>
-                            <div style="font-size: 8px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">What's influencing this?</div>
-                            <div>
-                                <span class="mock-tag selected">Work</span>
-                                <span class="mock-tag">Family</span>
-                                <span class="mock-tag selected">Exercise</span>
-                                <span class="mock-tag">Sleep</span>
-                                <span class="mock-tag">Social</span>
-                                <span class="mock-tag">Weather</span>
-                            </div>
-                            <div class="mock-chart-bar-row">
-                                <div><div class="mock-chart-bar" style="height: 30px;"></div><div class="mock-chart-label">Mon</div></div>
-                                <div><div class="mock-chart-bar" style="height: 45px;"></div><div class="mock-chart-label">Tue</div></div>
-                                <div><div class="mock-chart-bar" style="height: 35px;"></div><div class="mock-chart-label">Wed</div></div>
-                                <div><div class="mock-chart-bar" style="height: 55px;"></div><div class="mock-chart-label">Thu</div></div>
-                                <div><div class="mock-chart-bar" style="height: 40px;"></div><div class="mock-chart-label">Fri</div></div>
-                                <div><div class="mock-chart-bar" style="height: 60px;"></div><div class="mock-chart-label">Sat</div></div>
-                                <div><div class="mock-chart-bar" style="height: 50px;"></div><div class="mock-chart-label">Sun</div></div>
+            <div class="spotlight-hero reverse fade-in">
+                <div class="spotlight-visual">
+                    <div class="feature-phones">
+                        <div class="phone-frame">
+                            <div class="phone-notch"></div>
+                            <div class="phone-screen" style="padding-top: 8px;">
+                                <div style="font-family: 'DM Serif Display', serif; font-size: 14px; margin-bottom: 4px;">Guided check-in</div>
+                                <div style="font-size: 8px; color: var(--text-muted); margin-bottom: 12px;">How are you really doing?</div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 9px; font-weight: 600; color: var(--accent); margin-bottom: 8px;">Are you feeling anxious?</div>
+                                    <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 12px;">
+                                        <div style="font-size: 10px; padding: 5px 12px; border-radius: 8px; background: var(--surface); color: var(--text-muted);">No</div>
+                                        <div style="font-size: 10px; padding: 5px 12px; border-radius: 8px; background: var(--surface); color: var(--text-muted);">Sometimes</div>
+                                        <div style="font-size: 10px; padding: 5px 12px; border-radius: 8px; background: var(--accent); color: #fff;">Yes</div>
+                                    </div>
+                                    <div style="width: 100%; height: 2px; background: var(--surface); border-radius: 1px; margin-bottom: 12px; overflow: hidden;">
+                                        <div style="width: 35%; height: 100%; background: var(--accent);"></div>
+                                    </div>
+                                    <div style="font-size: 7px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">Question 3 of 25</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="showcase-text">
-                    <div class="section-label">Mood tracking</div>
-                    <h2>Spot patterns you can't see</h2>
-                    <p>Log how you feel in seconds. Tag what's influencing your mood, add a reflection, and watch patterns emerge over time.</p>
+                <div class="spotlight-text">
+                    <div class="section-label">Self-check</div>
+                    <h2>Recognise what you're carrying</h2>
+                    <p>Guided check-in walks through 25 signs across burnout, anxiety, depression, substance use, and trauma. No diagnosis — just a gentle way to name what you're experiencing. Or spot signs in someone you're worried about and get a conversation guide.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Feature Showcase 3: AI Chat -->
-    <section class="showcase alt-bg">
+    <!-- Spotlight 3: Chat -->
+    <section class="spotlight dark-bg">
         <div class="container">
-            <div class="showcase-inner fade-in">
-                <div class="showcase-visual">
-                    <div class="phone-frame">
-                        <div class="phone-notch"></div>
-                        <div class="phone-screen">
-                            <div class="mock-chat-header">
-                                <div class="avatar">🤝</div>
-                                <h4>Clarus</h4>
-                                <p>Your mental health companion</p>
-                            </div>
-                            <div class="mock-chat-area">
-                                <div class="mock-bubble ai">Hi there. I'm here whenever you need to talk. What's on your mind?</div>
-                                <div class="mock-bubble user">Work has been really stressful and I can't switch off at night</div>
-                                <div class="mock-bubble ai">That sounds exhausting — when your mind won't let go, sleep becomes another source of stress. What does the stress feel like when you're trying to wind down?</div>
-                                <div class="mock-bubble user">Like my brain is running through tomorrow's to-do list on repeat</div>
-                                <div class="mock-bubble ai">That racing thought pattern is really common. Have you tried a breathing exercise before bed? It can help signal your body that it's time to switch off.</div>
-                            </div>
-                            <div class="mock-chat-input">
-                                <span>Say what's on your mind...</span>
-                                <div class="send"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></div>
+            <div class="spotlight-hero fade-in">
+                <div class="spotlight-visual">
+                    <div class="feature-phones">
+                        <div class="phone-frame">
+                            <div class="phone-notch"></div>
+                            <div class="phone-screen">
+                                <div class="mock-chat-header">
+                                    <div class="avatar">🤝</div>
+                                    <h4>Clarus</h4>
+                                    <p>Your mental health companion</p>
+                                </div>
+                                <div class="mock-chat-area">
+                                    <div class="mock-bubble ai">Hi. I'm here when you need to talk. What's on your mind?</div>
+                                    <div class="mock-bubble user">Been drinking more than I should lately</div>
+                                    <div class="mock-bubble ai">That awareness itself is important. What's going on?</div>
+                                    <div class="mock-bubble user">Work stress, I guess. Using it to wind down</div>
+                                    <div class="mock-bubble ai">Using something to manage stress is understandable, but when it becomes a pattern, it can mask what you actually need. Want to explore that?</div>
+                                </div>
+                                <div class="mock-chat-input">
+                                    <span>Say what's on your mind...</span>
+                                    <div class="send"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="showcase-text">
-                    <div class="section-label">AI companion</div>
+                <div class="spotlight-text">
+                    <div class="section-label">AI Companion</div>
                     <h2>Think out loud, without judgment</h2>
-                    <p>Not a therapist — a calm, thoughtful companion for when you need to talk things through. Private, patient, and always available.</p>
+                    <p>Not a therapist — a calm, thoughtful companion. Talk about what's on your mind. Work through something. Or just vent. Available 24/7, private, and trained to listen and ask questions that help you understand yourself better.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Feature Showcase 4: CBT -->
-    <section class="showcase">
-        <div class="container">
-            <div class="showcase-inner reverse fade-in">
-                <div class="showcase-visual">
-                    <div class="phone-frame">
-                        <div class="phone-notch"></div>
-                        <div class="phone-screen">
-                            <div style="font-family: 'DM Serif Display', serif; font-size: 15px; margin-bottom: 4px;">CBT Toolkit</div>
-                            <div style="font-size: 9px; color: var(--text-muted); margin-bottom: 14px;">Evidence-based techniques at your pace</div>
-                            <div class="mock-module">
-                                <div class="mock-module-icon">💭</div>
-                                <div style="flex: 1;">
-                                    <div class="mock-module-text">Thought Records</div>
-                                    <div class="mock-module-sub">Challenge negative thinking</div>
-                                    <div class="mock-progress"><div class="mock-progress-fill" style="width: 65%;"></div></div>
-                                </div>
-                            </div>
-                            <div class="mock-module">
-                                <div class="mock-module-icon">🎯</div>
-                                <div style="flex: 1;">
-                                    <div class="mock-module-text">Behavioural Activation</div>
-                                    <div class="mock-module-sub">Small steps forward</div>
-                                    <div class="mock-progress"><div class="mock-progress-fill" style="width: 30%;"></div></div>
-                                </div>
-                            </div>
-                            <div class="mock-module">
-                                <div class="mock-module-icon">😰</div>
-                                <div style="flex: 1;">
-                                    <div class="mock-module-text">Anxiety Management</div>
-                                    <div class="mock-module-sub">Tools for when it spikes</div>
-                                    <div class="mock-progress"><div class="mock-progress-fill" style="width: 80%;"></div></div>
-                                </div>
-                            </div>
-                            <div class="mock-module">
-                                <div class="mock-module-icon">🧭</div>
-                                <div style="flex: 1;">
-                                    <div class="mock-module-text">Values & Direction</div>
-                                    <div class="mock-module-sub">What matters to you</div>
-                                    <div class="mock-progress"><div class="mock-progress-fill" style="width: 10%;"></div></div>
-                                </div>
-                            </div>
-                            <div class="mock-module">
-                                <div class="mock-module-icon">😴</div>
-                                <div style="flex: 1;">
-                                    <div class="mock-module-text">Sleep Hygiene</div>
-                                    <div class="mock-module-sub">Better rest, better days</div>
-                                    <div class="mock-progress"><div class="mock-progress-fill" style="width: 45%;"></div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="showcase-text">
-                    <div class="section-label">CBT toolkit</div>
-                    <h2>Real tools, not just tips</h2>
-                    <p>Structured cognitive behavioural therapy modules — thought records, anxiety management, behavioural activation, and more. Work through them at your own pace.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Ireland -->
+    <!-- Ireland Stats -->
     <section class="why-ireland" id="why">
         <div class="container">
             <div class="ireland-inner fade-in">
                 <div class="ireland-text">
                     <div class="section-label">Why this matters here</div>
                     <h2>We're not great at asking for help</h2>
-                    <p>Ireland has come a long way with mental health — but there's still a gap between "I'm grand" and actually getting support. Clarus sits in that gap. Private, on your phone, and it doesn't need you to be in crisis to be useful.</p>
+                    <p>Ireland has come a long way with mental health conversation — but there's still a gap between "I'm grand" and actually getting support. Between 1 in 4 experiencing something and reaching out. Between recognising you need help and waiting months for it. Clarus sits in that gap. Private, on your phone, always available, and it doesn't need you to be in crisis to be useful.</p>
                 </div>
                 <div class="ireland-stats">
                     <div class="stat-card">
@@ -770,85 +811,67 @@
         </div>
     </section>
 
-    <!-- Why Not Headspace -->
+    <!-- What Makes This Different -->
     <section class="difference" id="difference">
         <div class="container">
             <div class="difference-header fade-in">
-                <div class="section-label">Why not just use Headspace?</div>
-                <h2>Built different, on purpose</h2>
+                <h2>What makes this different</h2>
             </div>
             <div class="diff-grid fade-in">
                 <div class="diff-card">
                     <div class="diff-icon">🇮🇪</div>
-                    <h3>Built here</h3>
-                    <p>The tone, language, and references are all Irish. No "manifesting your best self."</p>
+                    <h3>Built in Ireland</h3>
+                    <p>The tone, the references, the resources — all Irish. No "manifesting your best self."</p>
                 </div>
                 <div class="diff-card">
                     <div class="diff-icon">🔓</div>
-                    <h3>No paywall</h3>
-                    <p>Every tool is available upfront. Your mental health shouldn't depend on your budget.</p>
+                    <h3>Everything is free</h3>
+                    <p>Your mental health shouldn't depend on your budget. No paywalls, ever.</p>
                 </div>
                 <div class="diff-card">
                     <div class="diff-icon">🤫</div>
-                    <h3>Private by default</h3>
-                    <p>No accounts, no social features. Your data stays on your device and your iCloud. Chat is processed securely and never stored.</p>
+                    <h3>Private by design</h3>
+                    <p>No accounts. No social features. Your data stays yours. Chat is never stored.</p>
                 </div>
                 <div class="diff-card">
-                    <div class="diff-icon">💬</div>
-                    <h3>AI that listens</h3>
-                    <p>A conversational companion for when you need to think out loud — not follow a script.</p>
+                    <div class="diff-icon">🪞</div>
+                    <h3>Covers what others won't</h3>
+                    <p>Alcohol awareness, grief, money stress, anger, parenting, work pressure, trauma.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Us -->
-    <section class="about" id="about">
+    <!-- The Monday Note -->
+    <section class="monday-note fade-in">
         <div class="container">
-            <div class="about-inner fade-in">
-                <div class="about-text">
-                    <div class="section-label">About Clarus</div>
-                    <h2>Made with care, in Ireland</h2>
-                    <p>Clarus was born from a simple idea: mental health tools should be practical, private, and built for how we actually live. Not everyone needs a therapist — but everyone deserves a quiet place to check in with themselves.</p>
-                    <p>We're a small team building something we believe Ireland needs. No VC funding, no data harvesting, no hidden agendas. Just an honest app for honest people.</p>
+            <div class="monday-inner">
+                <div class="section-label">Every Monday morning</div>
+                <h2>The Monday Note</h2>
+                <p>A short letter about mental health — honest, practical, written for Irish people. Sometimes it's about understanding what's happening in your head. Sometimes it's about a small decision that changes everything. Always written by someone who gets it.</p>
+
+                <div class="monday-preview">
+                    <div class="monday-preview-label">Sample issue</div>
+                    <h3>"the thing about telling people"</h3>
+                    <p>You've decided you want to talk to someone. You know it would help. But then you're sitting across from them and the words don't come. Or they come out all wrong. You hear yourself minimising it, laughing it off, making it sound less real than it is. Because saying it out loud makes it real. And real is scary...</p>
                 </div>
-                <div class="about-values">
-                    <div class="value-card">
-                        <div class="value-icon">🔒</div>
-                        <h3>Privacy first</h3>
-                        <p>Your data stays private. Chat is processed securely — we never store it.</p>
-                    </div>
-                    <div class="value-card">
-                        <div class="value-icon">🧪</div>
-                        <h3>Evidence-based</h3>
-                        <p>Every tool is grounded in real psychology, not trends.</p>
-                    </div>
-                    <div class="value-card">
-                        <div class="value-icon">🤝</div>
-                        <h3>Honest support</h3>
-                        <p>We're not a replacement for therapy. We say that clearly.</p>
-                    </div>
-                    <div class="value-card">
-                        <div class="value-icon">🇮🇪</div>
-                        <h3>Irish-built</h3>
-                        <p>Designed and developed right here, for people here.</p>
-                    </div>
-                </div>
+
+                <p style="font-size: 14px; color: var(--text-dim); font-style: italic;">A new issue every Monday morning.</p>
             </div>
         </div>
     </section>
 
     <!-- Newsletter -->
-    <section class="newsletter" id="notify">
+    <section class="newsletter" id="newsletter">
         <div class="container">
             <div class="newsletter-box fade-in">
-                <div class="section-label">Stay in the loop</div>
-                <h2>Be the first to know</h2>
-                <p>Drop your email and we'll let you know the moment Clarus lands on the App Store.</p>
+                <div class="section-label">Get The Monday Note</div>
+                <h2>One email a week</h2>
+                <p>Sign up for The Monday Note — a short letter about mental health, written for people who are trying to figure this out.</p>
 
                 <form class="newsletter-form" id="signup-form">
                     <input type="email" id="email-input" placeholder="your@email.com" required>
-                    <button type="submit" id="submit-btn">Notify me</button>
+                    <button type="submit" id="submit-btn">Subscribe</button>
                 </form>
 
                 <div class="newsletter-success" id="success-msg">
@@ -857,7 +880,7 @@
 
                 <div class="newsletter-error" id="error-msg"></div>
 
-                <p class="newsletter-note">No spam, ever. Just one email when we launch.</p>
+                <p class="newsletter-note">No spam, ever. Just one thoughtful email every Monday.</p>
             </div>
         </div>
     </section>
@@ -937,23 +960,23 @@
                 } else if (res.status === 429) {
                     errorMsg.textContent = "Too many attempts — please try again in a few minutes.";
                     errorMsg.style.display = 'block';
-                    submitBtn.textContent = 'Notify me';
+                    submitBtn.textContent = 'Subscribe';
                     submitBtn.disabled = false;
                 } else if (data.error === 'Valid email required') {
                     errorMsg.textContent = "Please check your email address and try again.";
                     errorMsg.style.display = 'block';
-                    submitBtn.textContent = 'Notify me';
+                    submitBtn.textContent = 'Subscribe';
                     submitBtn.disabled = false;
                 } else {
                     errorMsg.textContent = "Something went wrong — please try again in a moment.";
                     errorMsg.style.display = 'block';
-                    submitBtn.textContent = 'Notify me';
+                    submitBtn.textContent = 'Subscribe';
                     submitBtn.disabled = false;
                 }
             } catch (err) {
                 errorMsg.textContent = "Couldn't connect — please check your connection and try again.";
                 errorMsg.style.display = 'block';
-                submitBtn.textContent = 'Notify me';
+                submitBtn.textContent = 'Subscribe';
                 submitBtn.disabled = false;
             }
         });
