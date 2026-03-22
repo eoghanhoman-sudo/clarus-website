@@ -84,21 +84,15 @@
 
         /* ── Hero ────────────────────────────────── */
         .hero {
-            padding: 160px 0 100px;
-        }
-
-        .hero-inner {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 120px;
-            align-items: center;
+            padding: 180px 0 120px;
+            text-align: center;
         }
 
         .hero-badge {
             display: inline-flex; align-items: center; gap: 8px;
             font-size: 12px; font-weight: 600; color: var(--accent);
             background: var(--accent-soft); padding: 6px 16px;
-            border-radius: 20px; margin-bottom: 28px;
+            border-radius: 20px; margin-bottom: 32px;
         }
 
         .hero-badge .dot {
@@ -111,21 +105,24 @@
             50% { opacity: 1; transform: scale(1.1); }
         }
 
-        .hero-text h1 {
-            font-size: clamp(36px, 5vw, 56px);
-            line-height: 1.1;
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 68px);
+            line-height: 1.08;
             margin-bottom: 24px;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+            max-width: 800px;
+            margin-left: auto; margin-right: auto;
         }
-        .hero-text h1 em { font-style: normal; color: var(--accent); }
+        .hero h1 em { font-style: normal; color: var(--accent); }
 
-        .hero-text > p {
-            font-size: 18px; color: var(--text-muted);
+        .hero > .container > p {
+            font-size: 19px; color: var(--text-muted);
             line-height: 1.7; margin-bottom: 40px;
-            max-width: 460px;
+            max-width: 500px;
+            margin-left: auto; margin-right: auto;
         }
 
-        .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+        .hero-actions { display: flex; gap: 14px; justify-content: center; }
 
         .btn-primary {
             display: inline-flex; align-items: center; gap: 8px;
@@ -145,55 +142,6 @@
             transition: all 0.2s ease; text-decoration: none;
         }
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-        /* ── Phone Mockup ─────────────────────────── */
-        .phone-frame {
-            width: 260px; height: 520px;
-            background: var(--card); border-radius: 36px;
-            border: 1px solid var(--card-border);
-            box-shadow: 0 40px 80px rgba(61, 51, 42, 0.1), 0 8px 24px rgba(61, 51, 42, 0.05);
-            overflow: hidden; position: relative;
-            flex-shrink: 0;
-        }
-
-        .phone-notch {
-            width: 100px; height: 28px;
-            background: var(--bg); border-radius: 0 0 16px 16px; margin: 0 auto;
-        }
-
-        .phone-screen {
-            padding: 16px; height: calc(100% - 28px);
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-
-        .mock-greeting { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
-        .mock-subtitle { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
-
-        .mock-card {
-            background: var(--surface); border-radius: 12px;
-            padding: 12px 14px; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .mock-card-icon {
-            width: 32px; height: 32px; border-radius: 10px;
-            background: var(--accent-soft);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; flex-shrink: 0;
-        }
-
-        .mock-card-text { font-size: 11px; font-weight: 600; color: var(--text); }
-        .mock-card-sub { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
-
-        .mock-explore-label {
-            font-size: 8px; font-weight: 600; letter-spacing: 1px;
-            color: var(--text-dim); text-transform: uppercase; margin: 12px 0 8px;
-        }
-
-        .mock-explore-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-        .mock-explore-item { background: var(--surface); border-radius: 10px; padding: 10px; text-align: center; }
-        .mock-explore-item span { display: block; font-size: 18px; margin-bottom: 3px; }
-        .mock-explore-item small { font-size: 9px; font-weight: 500; color: var(--text-muted); }
 
         /* ── Feature: Breathing ────────────────────── */
         .feature-breathing {
@@ -561,12 +509,7 @@
 
         /* ── Responsive ───────────────────────────── */
         @media (max-width: 768px) {
-            .hero { padding: 130px 0 60px; }
-            .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 48px; }
-            .hero-text > p { max-width: 100%; margin-left: auto; margin-right: auto; }
-            .hero-actions { justify-content: center; }
-            .hero-phone { display: flex; justify-content: center; }
-            .phone-frame { width: 240px; height: 480px; border-radius: 32px; }
+            .hero { padding: 140px 0 80px; }
 
             .feature-split, .chat-inner, .monday-inner {
                 grid-template-columns: 1fr; gap: 48px;
@@ -607,44 +550,16 @@
     <!-- Hero -->
     <div class="hero">
         <div class="container">
-            <div class="hero-inner">
-                <div class="hero-text fade-in">
-                    <div class="hero-badge">
-                        <span class="dot"></span>
-                        Made in Ireland
-                    </div>
-                    <h1>For the days when <em>"I'm grand"</em> isn't the full story</h1>
-                    <p>A quiet place to check in with yourself. Mood tracking, breathing exercises, journaling, 41 practical tools, and an AI companion — designed for how Irish people actually live.</p>
-                    <div class="hero-actions">
-                        <a href="#newsletter" class="btn-primary">Get notified at launch</a>
-                        <a href="#features" class="btn-secondary">See what's inside</a>
-                    </div>
+            <div class="fade-in">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Made in Ireland
                 </div>
-
-                <div class="hero-phone fade-in">
-                    <div class="phone-frame">
-                        <div class="phone-notch"></div>
-                        <div class="phone-screen">
-                            <div class="mock-greeting">Good morning</div>
-                            <div class="mock-subtitle">What does today need?</div>
-                            <div class="mock-card">
-                                <div class="mock-card-icon">🌬️</div>
-                                <div><div class="mock-card-text">Breathe</div><div class="mock-card-sub">Guided breathing + sound</div></div>
-                            </div>
-                            <div class="mock-card">
-                                <div class="mock-card-icon">😊</div>
-                                <div><div class="mock-card-text">Check in</div><div class="mock-card-sub">How are you feeling?</div></div>
-                            </div>
-                            <div class="mock-card">
-                                <div class="mock-card-icon">📝</div>
-                                <div><div class="mock-card-text">Journal</div><div class="mock-card-sub">Three words or more</div></div>
-                            </div>
-                            <div class="mock-card">
-                                <div class="mock-card-icon">💬</div>
-                                <div><div class="mock-card-text">Talk</div><div class="mock-card-sub">Think out loud</div></div>
-                            </div>
-                        </div>
-                    </div>
+                <h1>For the days when <em>"I'm grand"</em> isn't the full story</h1>
+                <p>A quiet place to check in with yourself — built for how Irish people actually live.</p>
+                <div class="hero-actions">
+                    <a href="#newsletter" class="btn-primary">Get notified at launch</a>
+                    <a href="#features" class="btn-secondary">See what's inside</a>
                 </div>
             </div>
         </div>
@@ -656,7 +571,7 @@
             <div class="fade-in">
                 <div class="section-label">Guided breathing</div>
                 <h2>Slow down in minutes</h2>
-                <p>Four breathing patterns — Calm, Box, 4-7-8, and Reset — each with ambient sound. Rain on a window. A fire crackling. Whatever helps you settle.</p>
+                <p>Four patterns. Seven ambient sounds. Pick what fits and breathe.</p>
                 <div class="breathing-visual">
                     <div class="breathing-orb"></div>
                 </div>
@@ -728,7 +643,7 @@
                 <div class="feature-split-text">
                     <div class="section-label">AI companion</div>
                     <h2>Think out loud, without judgement</h2>
-                    <p>Not a therapist. A calm, thoughtful companion you can talk to at 2am or on a Tuesday lunchbreak. About work, alcohol, relationships, parenting — whatever's weighing on you. Available 24/7, private, and it never tires of listening.</p>
+                    <p>Not a therapist. A calm companion you can talk to at 2am or on a Tuesday lunchbreak. Private, always available, never tires of listening.</p>
                 </div>
             </div>
         </div>
@@ -747,42 +662,42 @@
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
                     </div>
                     <h3>Mood Tracking</h3>
-                    <p>Log how you feel each day with tags for context. Spot patterns over time — what helps, what doesn't.</p>
+                    <p>Log how you feel, tag what's going on, spot patterns over time.</p>
                 </div>
                 <div class="more-card">
                     <div class="more-card-icon">
                         <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                     </div>
                     <h3>Journaling</h3>
-                    <p>Three words or three pages. Prompted writing, free writing, or just describe your day. No wrong way to do it.</p>
+                    <p>Three words or three pages. No wrong way to do it.</p>
                 </div>
                 <div class="more-card">
                     <div class="more-card-icon">
                         <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
                     </div>
                     <h3>Signs</h3>
-                    <p>A guided check-in across 25 signs of burnout, anxiety, depression, substance use, and trauma. Plus a guide for helping someone you're worried about.</p>
+                    <p>25 signs across burnout, anxiety, depression, substance use, and trauma. Check in on yourself or someone you're worried about.</p>
                 </div>
                 <div class="more-card">
                     <div class="more-card-icon">
                         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
                     </div>
                     <h3>Grounding</h3>
-                    <p>A 5-4-3-2-1 sensory exercise for when anxiety peaks. Guides you through sight, sound, touch, smell, and taste to bring you back.</p>
+                    <p>5-4-3-2-1 sensory exercise. Sight, sound, touch, smell, taste — brings you back.</p>
                 </div>
                 <div class="more-card">
                     <div class="more-card-icon">
                         <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
                     </div>
                     <h3>Articles</h3>
-                    <p>Real reading on anxiety, grief, anger, alcohol, work, money, and relationships. Written for Irish people, not a wellness blog.</p>
+                    <p>Real reading on real struggles. Written for Irish people, not a wellness blog.</p>
                 </div>
                 <div class="more-card">
                     <div class="more-card-icon">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
                     </div>
                     <h3>Crisis Support</h3>
-                    <p>Pieta House, Samaritans, Rape Crisis Centre, Women's Aid, MABS, and more. One tap to call, always accessible.</p>
+                    <p>Pieta House, Samaritans, and 14+ Irish services. One tap to call.</p>
                 </div>
             </div>
         </div>
