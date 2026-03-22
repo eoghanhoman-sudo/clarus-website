@@ -42,7 +42,7 @@
         }
 
         .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-        .hero, .spotlight, .why-ireland, .difference, .monday-note, .newsletter, .app-store-section { padding: 80px 0; }
+        .hero, .spotlight, .why-ireland, .difference, .monday-note, .newsletter, .about, .app-store-section { padding: 80px 0; }
         h1, h2, h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
 
         .section-label {
@@ -67,7 +67,7 @@
         .nav-logo span { color: var(--accent); }
 
         .nav-links { display: flex; align-items: center; gap: 32px; }
-        .nav-links a { font-size: 14px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .nav-links a { font-size: 14px; font-weight: 500; color: var(--text); text-decoration: none; transition: color 0.2s; }
         .nav-links a:hover { color: var(--accent); }
 
         .nav-cta {
@@ -428,6 +428,12 @@
         .newsletter-error { display: none; padding: 12px; background: rgba(200, 60, 60, 0.08); border-radius: 12px; font-size: 13px; color: #c43c3c; margin-top: 10px; }
 
         /* ── App Store / Try Now ──────────────── */
+        .about { text-align: center; }
+        .about-inner { max-width: 600px; margin: 0 auto; }
+        .about h2 { font-size: clamp(24px, 3.5vw, 36px); margin-bottom: 20px; }
+        .about p { font-size: 17px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+        .about p:last-child { margin-bottom: 0; }
+
         .app-store-section { background: var(--bg-deep); text-align: center; padding: 80px 0; }
         .app-store-section h2 { font-size: clamp(24px, 3.5vw, 36px); margin-bottom: 12px; }
         .app-store-section p { font-size: 16px; color: var(--text-muted); max-width: 440px; margin: 0 auto 32px; }
@@ -510,6 +516,7 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#difference">Why</a>
+                <a href="#about">About</a>
                 <a href="#newsletter" class="nav-cta">Get notified</a>
             </div>
         </div>
@@ -883,6 +890,18 @@
                 <div class="newsletter-error" id="error-msg"></div>
 
                 <p class="newsletter-note">No spam, ever. Just one thoughtful email every Monday.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About -->
+    <div class="about" id="about">
+        <div class="container">
+            <div class="about-inner fade-in">
+                <div class="section-label">About</div>
+                <h2>Made with care, in Ireland</h2>
+                <p>Clarus was born from a simple idea: mental health tools should be practical, private, and built for how we actually live. Not everyone needs a therapist — but everyone deserves a quiet place to check in with themselves.</p>
+                <p>We're a small team building something we believe Ireland needs. No VC funding, no data harvesting, no hidden agendas. Just an honest app for honest people.</p>
             </div>
         </div>
     </div>
