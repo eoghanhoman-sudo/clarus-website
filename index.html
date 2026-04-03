@@ -627,7 +627,41 @@
         .closing h2 {
             font-size: clamp(36px, 5.5vw, 56px);
             letter-spacing: -1px;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .closing-story {
+            font-size: 16px; color: var(--text-muted);
+            max-width: 540px; margin: 0 auto 48px;
+            line-height: 1.8;
+        }
+
+        .closing-story strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .closing-details {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 48px;
+        }
+
+        .closing-detail {
+            font-size: 13px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .closing-detail-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.5;
         }
 
         .closing p {
@@ -930,9 +964,17 @@
 
     <!-- ════════ CLOSING ════════ -->
     <div class="closing" id="about">
-        <h2 class="reveal">Made with care,<br>in Ireland</h2>
-        <p class="reveal reveal-delay-1">Free. Private. No hidden agendas.</p>
-        <div class="reveal reveal-delay-2">
+        <h2 class="reveal">Built by one person,<br>for everyone</h2>
+        <div class="closing-story reveal reveal-delay-1">
+            Clarus is built by <strong>Eoghan Homan</strong> in Dublin. It started because the gap between "I'm grand" and actually getting help is too wide for too many people in Ireland. This is an attempt to narrow it — with something free, private, and honest.
+        </div>
+        <div class="closing-details reveal reveal-delay-2">
+            <div class="closing-detail"><div class="closing-detail-dot"></div>Free to use</div>
+            <div class="closing-detail"><div class="closing-detail-dot"></div>No ads, no data selling</div>
+            <div class="closing-detail"><div class="closing-detail-dot"></div>Built in Dublin</div>
+            <div class="closing-detail"><div class="closing-detail-dot"></div>Voice guided by Namasdre Yoga</div>
+        </div>
+        <div class="reveal reveal-delay-3">
             <div class="app-store-badge" style="cursor: default;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" fill="white"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.2-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.28 2.13-9.54 3.24-12.8 3.35-4.93.21-9.84-1.96-14.75-6.52-3.13-2.73-7.04-7.41-11.74-14.04-5.03-7.08-9.17-15.29-12.41-24.65-3.47-10.2-5.21-20.07-5.21-29.59 0-10.93 2.36-20.36 7.07-28.27 3.71-6.35 8.64-11.35 14.81-15.01 6.17-3.66 12.84-5.53 20.02-5.63 3.93 0 9.08 1.21 15.48 3.61 6.38 2.41 10.48 3.62 12.28 3.62 1.35 0 5.92-1.42 13.67-4.24 7.33-2.62 13.52-3.7 18.59-3.26 13.73 1.11 24.05 6.52 30.9 16.27-12.28 7.45-18.36 17.87-18.24 31.24.11 10.42 3.89 19.09 11.33 25.98 3.37 3.19 7.13 5.66 11.31 7.41-.91 2.63-1.87 5.15-2.89 7.57zM119.11 7.24c0 8.17-2.98 15.8-8.93 22.87-7.18 8.4-15.87 13.25-25.28 12.49a25.4 25.4 0 01-.19-3.09c0-7.84 3.41-16.23 9.47-23.09 3.03-3.47 6.88-6.35 11.56-8.65 4.66-2.27 9.07-3.52 13.24-3.76.12 1.09.13 2.18.13 3.23z"/></svg>
                 <div class="badge-text"><small>Coming soon on the</small><span>App Store</span></div>
