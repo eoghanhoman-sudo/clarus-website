@@ -240,6 +240,40 @@
         }
         .sound-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+        .breathing-collab {
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px;
+            margin-top: 48px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .breathing-collab:hover { opacity: 1; }
+        .breathing-collab img {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(212, 148, 43, 0.3);
+            object-fit: cover;
+        }
+        .breathing-collab-text {
+            text-align: left;
+        }
+        .breathing-collab-text span {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--dark-muted);
+            margin-bottom: 2px;
+        }
+        .breathing-collab-text a {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-text);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .breathing-collab-text a:hover { color: var(--accent); }
+
         /* ── Features: visual grid ───────────────── */
         .features {
             padding: clamp(80px, 12vw, 160px) 24px;
@@ -421,41 +455,138 @@
 
         /* ── Newsletter ──────────────────────────── */
         .newsletter {
-            background: var(--dark);
+            background: var(--bg);
             padding: clamp(80px, 12vw, 140px) 24px;
         }
 
         .newsletter-inner {
-            max-width: 600px; margin: 0 auto;
+            max-width: 960px; margin: 0 auto;
+        }
+
+        .newsletter-header {
             text-align: center;
+            margin-bottom: clamp(48px, 6vw, 72px);
         }
 
         .newsletter h2 {
             font-size: clamp(32px, 5vw, 48px);
-            color: var(--dark-text);
+            color: var(--text);
             letter-spacing: -1px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .newsletter-sub {
-            font-size: 17px; color: var(--dark-muted);
-            margin-bottom: 40px;
+            font-size: 17px; color: var(--text-muted);
+            max-width: 520px; margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .newsletter-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(32px, 5vw, 64px);
+            align-items: start;
+        }
+
+        .newsletter-preview {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .newsletter-preview-header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .newsletter-preview-header small {
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--accent);
+        }
+
+        .newsletter-preview-header h3 {
+            font-size: 22px; color: var(--text);
+            margin-top: 8px; line-height: 1.3;
+        }
+
+        .newsletter-preview-body {
+            padding: 24px 28px 28px;
+        }
+
+        .newsletter-preview-body p {
+            font-size: 14.5px; line-height: 1.75;
+            color: var(--text-muted);
+        }
+
+        .newsletter-preview-body p + p {
+            margin-top: 14px;
+        }
+
+        .newsletter-preview-fade {
+            position: relative;
+        }
+
+        .newsletter-preview-fade::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, var(--card));
+            pointer-events: none;
+        }
+
+        .newsletter-signup-side {
+            padding-top: 8px;
+        }
+
+        .newsletter-pillars {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        .newsletter-pillar {
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+        }
+
+        .newsletter-pillar-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .newsletter-pillar h4 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px; font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .newsletter-pillar p {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            line-height: 1.5;
         }
 
         .newsletter-form {
             display: flex; gap: 10px;
-            max-width: 460px; margin: 0 auto;
         }
         .newsletter-form input[type="email"] {
             flex: 1; font-family: 'DM Sans', sans-serif; font-size: 15px;
             padding: 16px 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--card-border);
             border-radius: 14px;
-            background: var(--dark-card);
-            color: var(--dark-text);
+            background: var(--card);
+            color: var(--text);
             outline: none; transition: border-color 0.2s;
         }
-        .newsletter-form input::placeholder { color: var(--dark-muted); }
+        .newsletter-form input::placeholder { color: var(--text-dim); }
         .newsletter-form input:focus { border-color: var(--accent); }
         .newsletter-form button {
             font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
@@ -466,7 +597,21 @@
         .newsletter-form button:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(212, 148, 43, 0.3); }
         .newsletter-form button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .newsletter-note { font-size: 13px; color: var(--dark-muted); margin-top: 16px; }
+        .newsletter-note { font-size: 13px; color: var(--text-dim); margin-top: 16px; }
+
+        .newsletter-cta-line {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--card-border);
+            line-height: 1.6;
+        }
+
+        .newsletter-cta-line strong {
+            color: var(--text);
+        }
+
         .signup-success { display: none; padding: 16px; background: rgba(212, 148, 43, 0.1); border-radius: 14px; font-size: 15px; font-weight: 500; color: var(--accent); margin-top: 16px; }
         .signup-error { display: none; padding: 14px; background: rgba(200, 60, 60, 0.1); border-radius: 14px; font-size: 14px; color: #e05555; margin-top: 12px; }
 
@@ -530,6 +675,9 @@
             .hero h1 { letter-spacing: -1px; }
             .hero-actions { flex-direction: column; align-items: center; }
             .stats-row { grid-template-columns: 1fr; gap: 48px; }
+            .newsletter-layout { grid-template-columns: 1fr; }
+            .newsletter-preview { order: 2; }
+            .newsletter-signup-side { order: 1; }
             .newsletter-form { flex-direction: column; }
             .breathing-orb-wrap { width: 160px; height: 160px; }
             .breathing-orb { width: 160px; height: 160px; }
@@ -583,6 +731,13 @@
             <span class="sound-pill">Creek</span>
             <span class="sound-pill">Fire</span>
             <span class="sound-pill">Night</span>
+        </div>
+        <div class="breathing-collab reveal reveal-delay-3">
+            <img src="namasdre_profile.png" alt="Namasdre Yoga" loading="lazy">
+            <div class="breathing-collab-text">
+                <span>Guided by</span>
+                <a href="https://www.instagram.com/namasdreyoga/" target="_blank" rel="noopener">Namasdre Yoga</a>
+            </div>
         </div>
     </div>
 
@@ -708,18 +863,65 @@
     <!-- ════════ NEWSLETTER ════════ -->
     <div class="newsletter" id="newsletter">
         <div class="newsletter-inner">
-            <div class="section-label reveal" style="color: var(--accent);">Every Monday morning</div>
-            <h2 class="reveal reveal-delay-1">The Monday Note</h2>
-            <p class="newsletter-sub reveal reveal-delay-2">One short letter about mental health. Honest, practical, written for Irish people.</p>
+            <div class="newsletter-header">
+                <div class="section-label reveal">Every Monday morning</div>
+                <h2 class="reveal reveal-delay-1">The Monday Note</h2>
+                <p class="newsletter-sub reveal reveal-delay-2">A short, honest letter about mental health — written for people in Ireland who don't do self-help books but could use something real in their inbox.</p>
+            </div>
 
-            <form class="newsletter-form reveal reveal-delay-3" id="signup-form">
-                <input type="email" id="email-input" placeholder="your@email.com" required>
-                <button type="submit" id="submit-btn">Subscribe</button>
-            </form>
+            <div class="newsletter-layout">
+                <!-- Left: Preview of an actual issue -->
+                <div class="newsletter-preview reveal">
+                    <div class="newsletter-preview-header">
+                        <small>Issue #1 — The Monday Note</small>
+                        <h3>the thing about stolen hours</h3>
+                    </div>
+                    <div class="newsletter-preview-body newsletter-preview-fade">
+                        <p>The clocks went forward last night. You lost an hour. And honestly, you probably didn't notice — because you've been losing hours for a while now.</p>
+                        <p>Not to anything dramatic. To the scroll before bed that turns into forty minutes. To the Sunday dread that eats the evening. To lying awake replaying a conversation that happened three weeks ago.</p>
+                        <p>There's a word for this: allostatic load. It's what happens when your stress response stays switched on so long that the background hum of tension starts to feel normal...</p>
+                    </div>
+                </div>
 
-            <div class="newsletter-note reveal reveal-delay-3">No spam. Unsubscribe anytime.</div>
-            <div class="signup-success" id="success-msg"></div>
-            <div class="signup-error" id="error-msg"></div>
+                <!-- Right: What it is + signup -->
+                <div class="newsletter-signup-side reveal reveal-delay-1">
+                    <div class="newsletter-pillars">
+                        <div class="newsletter-pillar">
+                            <div class="newsletter-pillar-icon">🧠</div>
+                            <h4>Understanding your mind</h4>
+                            <p>Why your brain does what it does</p>
+                        </div>
+                        <div class="newsletter-pillar">
+                            <div class="newsletter-pillar-icon">🛠</div>
+                            <h4>Practical resilience</h4>
+                            <p>Things you can actually try this week</p>
+                        </div>
+                        <div class="newsletter-pillar">
+                            <div class="newsletter-pillar-icon">🤝</div>
+                            <h4>Relationships</h4>
+                            <p>The people side of mental health</p>
+                        </div>
+                        <div class="newsletter-pillar">
+                            <div class="newsletter-pillar-icon">🔭</div>
+                            <h4>Perspective</h4>
+                            <p>Reframing what you're going through</p>
+                        </div>
+                    </div>
+
+                    <form class="newsletter-form" id="signup-form">
+                        <input type="email" id="email-input" placeholder="your@email.com" required>
+                        <button type="submit" id="submit-btn">Subscribe</button>
+                    </form>
+
+                    <div class="newsletter-note">Free. No spam. Unsubscribe anytime.</div>
+                    <div class="signup-success" id="success-msg"></div>
+                    <div class="signup-error" id="error-msg"></div>
+
+                    <div class="newsletter-cta-line">
+                        <strong>Start here.</strong> The Monday Note is the easiest way into Clarus — one letter a week, no app required. When you're ready, the app goes deeper.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -760,7 +962,7 @@
 
         // ── Nav dark mode on dark sections ─────────
         const navEl = document.getElementById('main-nav');
-        const darkSections = document.querySelectorAll('.breathing, .chat-section, .newsletter');
+        const darkSections = document.querySelectorAll('.breathing, .chat-section');
 
         const navObserver = new IntersectionObserver((entries) => {
             let inDark = false;
