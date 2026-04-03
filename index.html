@@ -241,38 +241,41 @@
         .sound-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .breathing-collab {
-            display: flex; align-items: center; justify-content: center;
-            gap: 14px;
+            display: inline-flex; align-items: center;
+            gap: 10px;
             margin-top: 48px;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            padding: 8px 20px 8px 8px;
+            background: rgba(212, 148, 43, 0.1);
+            border: 1px solid rgba(212, 148, 43, 0.25);
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.3s;
         }
-        .breathing-collab:hover { opacity: 1; }
+        .breathing-collab:hover {
+            background: rgba(212, 148, 43, 0.16);
+            border-color: rgba(212, 148, 43, 0.4);
+            transform: translateY(-1px);
+        }
         .breathing-collab img {
-            width: 40px; height: 40px;
+            width: 32px; height: 32px;
             border-radius: 50%;
             border: 1.5px solid rgba(212, 148, 43, 0.3);
             object-fit: cover;
         }
-        .breathing-collab-text {
-            text-align: left;
-        }
-        .breathing-collab-text span {
-            display: block;
+        .breathing-collab-label {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             color: var(--dark-muted);
+            line-height: 1;
             margin-bottom: 2px;
         }
-        .breathing-collab-text a {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--dark-text);
-            text-decoration: none;
-            transition: color 0.2s;
+        .breathing-collab-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 15px;
+            color: var(--accent);
+            line-height: 1;
         }
-        .breathing-collab-text a:hover { color: var(--accent); }
 
         /* ── Features: visual grid ───────────────── */
         .features {
@@ -732,13 +735,13 @@
             <span class="sound-pill">Fire</span>
             <span class="sound-pill">Night</span>
         </div>
-        <div class="breathing-collab reveal reveal-delay-3">
+        <a class="breathing-collab reveal reveal-delay-3" href="https://www.instagram.com/namasdreyoga/" target="_blank" rel="noopener">
             <img src="namasdre_profile.png" alt="Namasdre Yoga" loading="lazy">
-            <div class="breathing-collab-text">
-                <span>Guided by</span>
-                <a href="https://www.instagram.com/namasdreyoga/" target="_blank" rel="noopener">Namasdre Yoga</a>
+            <div>
+                <div class="breathing-collab-label">Guided by</div>
+                <div class="breathing-collab-name">Namasdre Yoga</div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- ════════ FEATURES: visual cards ════════ -->
