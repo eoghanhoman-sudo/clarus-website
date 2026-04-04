@@ -664,17 +664,20 @@
             line-height: 1.7;
         }
 
+        .store-badges {
+            display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+        }
         .app-store-badge {
             display: inline-flex; align-items: center; gap: 12px;
-            background: var(--dark); color: #fff; padding: 16px 32px;
-            border-radius: 16px; text-decoration: none;
+            background: var(--dark); color: #fff; padding: 14px 28px;
+            border-radius: 14px; text-decoration: none;
             transition: all 0.25s ease; opacity: 0.9;
         }
         .app-store-badge:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
-        .app-store-badge svg { width: 28px; height: 28px; }
+        .app-store-badge svg { width: 26px; height: 26px; }
         .app-store-badge .badge-text { text-align: left; }
         .app-store-badge .badge-text small { display: block; font-size: 10px; opacity: 0.7; }
-        .app-store-badge .badge-text span { font-size: 16px; font-weight: 600; }
+        .app-store-badge .badge-text span { font-size: 15px; font-weight: 600; }
 
         /* ── Footer ────────────────────────────────── */
         footer {
@@ -968,9 +971,15 @@
             <div class="closing-detail"><div class="closing-detail-dot"></div>Voice guided by Namasdre Yoga</div>
         </div>
         <div class="reveal reveal-delay-3">
-            <div class="app-store-badge" style="cursor: default;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" fill="white"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.2-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.28 2.13-9.54 3.24-12.8 3.35-4.93.21-9.84-1.96-14.75-6.52-3.13-2.73-7.04-7.41-11.74-14.04-5.03-7.08-9.17-15.29-12.41-24.65-3.47-10.2-5.21-20.07-5.21-29.59 0-10.93 2.36-20.36 7.07-28.27 3.71-6.35 8.64-11.35 14.81-15.01 6.17-3.66 12.84-5.53 20.02-5.63 3.93 0 9.08 1.21 15.48 3.61 6.38 2.41 10.48 3.62 12.28 3.62 1.35 0 5.92-1.42 13.67-4.24 7.33-2.62 13.52-3.7 18.59-3.26 13.73 1.11 24.05 6.52 30.9 16.27-12.28 7.45-18.36 17.87-18.24 31.24.11 10.42 3.89 19.09 11.33 25.98 3.37 3.19 7.13 5.66 11.31 7.41-.91 2.63-1.87 5.15-2.89 7.57zM119.11 7.24c0 8.17-2.98 15.8-8.93 22.87-7.18 8.4-15.87 13.25-25.28 12.49a25.4 25.4 0 01-.19-3.09c0-7.84 3.41-16.23 9.47-23.09 3.03-3.47 6.88-6.35 11.56-8.65 4.66-2.27 9.07-3.52 13.24-3.76.12 1.09.13 2.18.13 3.23z"/></svg>
-                <div class="badge-text"><small>Coming soon on the</small><span>App Store</span></div>
+            <div class="store-badges">
+                <div class="app-store-badge" style="cursor: default;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 170" fill="white"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.2-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.28 2.13-9.54 3.24-12.8 3.35-4.93.21-9.84-1.96-14.75-6.52-3.13-2.73-7.04-7.41-11.74-14.04-5.03-7.08-9.17-15.29-12.41-24.65-3.47-10.2-5.21-20.07-5.21-29.59 0-10.93 2.36-20.36 7.07-28.27 3.71-6.35 8.64-11.35 14.81-15.01 6.17-3.66 12.84-5.53 20.02-5.63 3.93 0 9.08 1.21 15.48 3.61 6.38 2.41 10.48 3.62 12.28 3.62 1.35 0 5.92-1.42 13.67-4.24 7.33-2.62 13.52-3.7 18.59-3.26 13.73 1.11 24.05 6.52 30.9 16.27-12.28 7.45-18.36 17.87-18.24 31.24.11 10.42 3.89 19.09 11.33 25.98 3.37 3.19 7.13 5.66 11.31 7.41-.91 2.63-1.87 5.15-2.89 7.57zM119.11 7.24c0 8.17-2.98 15.8-8.93 22.87-7.18 8.4-15.87 13.25-25.28 12.49a25.4 25.4 0 01-.19-3.09c0-7.84 3.41-16.23 9.47-23.09 3.03-3.47 6.88-6.35 11.56-8.65 4.66-2.27 9.07-3.52 13.24-3.76.12 1.09.13 2.18.13 3.23z"/></svg>
+                    <div class="badge-text"><small>Coming soon on the</small><span>App Store</span></div>
+                </div>
+                <div class="app-store-badge" style="cursor: default;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+                    <div class="badge-text"><small>Coming soon on</small><span>Google Play</span></div>
+                </div>
             </div>
         </div>
     </div>
