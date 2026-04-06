@@ -1070,13 +1070,36 @@
                     submitBtn.textContent = 'Subscribe';
                     submitBtn.disabled = false;
                 } else {
-                    errorMsg.textContent = "Something went wrong — please try again.";
+                    // Worker returned an error — try Buttondown directly as fallback
+                    await buttondownFallback(email);
+                }
+            } catch (err) {
+                // Worker unreachable — try Buttondown directly as fallback
+                try {
+                    await buttondownFallback(email);
+                } catch (fallbackErr) {
+                    errorMsg.textContent = "Couldn't connect — check your connection.";
                     errorMsg.style.display = 'block';
                     submitBtn.textContent = 'Subscribe';
                     submitBtn.disabled = false;
                 }
-            } catch (err) {
-                errorMsg.textContent = "Couldn't connect — check your connection.";
+            }
+        });
+
+        async function buttondownFallback(email) {
+            // Public Buttondown endpoint — no API key needed
+            const fbRes = await fetch('https://buttondown.com/api/emails/embed-subscribe/clarusapp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, tag: 'website-launch' })
+            });
+            if (fbRes.ok || fbRes.status === 201 || fbRes.status === 409) {
+                form.style.display = 'none';
+                successMsg.textContent = "You're in. Check your email to confirm.";
+                successMsg.style.display = 'block';
+                document.querySelector('.newsletter-note').style.display = 'none';
+            } else {
+                errorMsg.textContent = "Something went wrong — please try again.";
                 errorMsg.style.display = 'block';
                 submitBtn.textContent = 'Subscribe';
                 submitBtn.disabled = false;
