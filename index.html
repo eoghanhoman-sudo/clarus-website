@@ -104,8 +104,8 @@
             position: absolute;
             width: 500px; height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle at 40% 35%, rgba(212, 148, 43, 0.25), rgba(212, 148, 43, 0.03) 70%, transparent);
-            filter: blur(60px);
+            background: radial-gradient(circle at 40% 35%, rgba(212, 148, 43, 0.18), rgba(212, 148, 43, 0.02) 70%, transparent);
+            filter: blur(80px);
             animation: hero-pulse 8s ease-in-out infinite;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
@@ -113,17 +113,44 @@
         }
 
         @keyframes hero-pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.9; }
         }
 
         .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+        .hero-icon-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 36px;
+        }
+        .hero-icon-glow {
+            position: absolute;
+            width: 200px; height: 200px;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 148, 43, 0.4), rgba(212, 148, 43, 0.05) 60%, transparent 80%);
+            filter: blur(24px);
+            animation: icon-glow 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes icon-glow {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+        }
+        .hero-icon {
+            position: relative;
+            width: 120px; height: 120px;
+            border-radius: 28px;
+            box-shadow: 0 8px 40px rgba(212, 148, 43, 0.25), 0 2px 12px rgba(0,0,0,0.08);
+        }
 
         .hero-badge {
             display: inline-flex; align-items: center; gap: 8px;
             font-size: 12px; font-weight: 600; color: var(--accent);
             background: var(--accent-soft); padding: 6px 16px;
-            border-radius: 20px; margin-bottom: 40px;
+            border-radius: 20px; margin-bottom: 32px;
         }
         .hero-badge .dot {
             width: 6px; height: 6px; background: var(--accent);
@@ -135,17 +162,17 @@
         }
 
         .hero h1 {
-            font-size: clamp(42px, 7vw, 72px);
-            line-height: 1.05;
+            font-size: clamp(38px, 6vw, 64px);
+            line-height: 1.08;
             letter-spacing: -2px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .hero h1 em { font-style: normal; color: var(--accent); white-space: nowrap; }
 
         .hero-sub {
-            font-size: clamp(17px, 2.2vw, 20px);
+            font-size: clamp(16px, 2vw, 19px);
             color: var(--text-muted); line-height: 1.6;
-            margin-bottom: 48px;
+            margin-bottom: 44px;
         }
 
         .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
@@ -696,6 +723,7 @@
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.45s; }
 
         /* ── Responsive ───────────────────────────── */
         @media (max-width: 900px) {
@@ -706,6 +734,9 @@
         }
 
         @media (max-width: 768px) {
+            .hero-icon { width: 96px; height: 96px; border-radius: 22px; }
+            .hero-icon-glow { width: 160px; height: 160px; }
+            .hero-icon-wrap { margin-bottom: 28px; }
             .hero h1 { letter-spacing: -1px; }
             .hero-actions { flex-direction: column; align-items: center; }
             .stats-row { grid-template-columns: 1fr; gap: 48px; }
@@ -728,7 +759,7 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#about">About</a>
-                <a href="#newsletter" class="nav-cta">Get notified</a>
+                <a href="https://apps.apple.com/ie/app/clarus-mental-health/id6760700428" class="nav-cta">Download</a>
             </div>
         </div>
     </nav>
@@ -738,11 +769,17 @@
         <div class="hero-orb"></div>
         <div class="hero-content">
             <div class="reveal">
+                <div class="hero-icon-wrap">
+                    <div class="hero-icon-glow"></div>
+                    <img src="web-app-manifest-512x512.png" alt="Clarus" class="hero-icon">
+                </div>
+            </div>
+            <div class="reveal reveal-delay-1">
                 <div class="hero-badge"><span class="dot"></span> Made in Ireland</div>
             </div>
-            <h1 class="reveal reveal-delay-1">For the days when <em>"I'm grand"</em> isn't the full story</h1>
-            <p class="hero-sub reveal reveal-delay-2">A quiet place to check in with yourself.</p>
-            <div class="hero-actions reveal reveal-delay-3">
+            <h1 class="reveal reveal-delay-2">For the days when <em>"I'm grand"</em> isn't the full story</h1>
+            <p class="hero-sub reveal reveal-delay-3">A quiet place to check in with yourself.</p>
+            <div class="hero-actions reveal reveal-delay-4">
                 <a href="https://apps.apple.com/ie/app/clarus-mental-health/id6760700428" class="btn-primary">Download free on the App Store</a>
                 <a href="#features" class="btn-ghost">See what's inside <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a>
             </div>
